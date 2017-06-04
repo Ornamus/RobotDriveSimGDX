@@ -1,6 +1,7 @@
 package ryan.game;
 
 import java.awt.geom.Point2D;
+import java.util.Random;
 
 public class Utils {
 
@@ -49,5 +50,36 @@ public class Utils {
 
     public static double distance(double x1, double y1, double x2, double y2) {
         return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+    }
+
+    public static boolean hasDecimal(double d) {
+        if ((d == Math.floor(d)) && !Double.isInfinite(d)) {
+            return false;
+        }
+        return true;
+    }
+
+    static Random rand = new Random();
+
+    public static int randomInt(int min, int max) {
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+        return randomNum;
+    }
+
+    public static float maxFloat(float... nums) {
+        float currMax = Math.abs(nums[0]);
+
+        for (float i : nums) {
+            currMax = Math.abs(i) > currMax ? Math.abs(i) : currMax;
+        }
+
+        return currMax;
+    }
+
+    public static float minMax(float val, float min, float max) {
+        if (val == 0) return 0; //Needed to avoid DivideByZeroException
+        val = Math.abs(val) < min ? 0 : val;
+        val = Math.abs(val) > max ? max * sign(val) : val;
+        return val;
     }
 }

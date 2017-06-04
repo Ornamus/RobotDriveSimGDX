@@ -2,55 +2,156 @@ package ryan.game.entity;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import ryan.game.Utils;
+import ryan.game.controls.Button;
 import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
-import ryan.game.drive.Arcade;
-import ryan.game.drive.CheesyDrive;
-import ryan.game.drive.DriveController;
-import ryan.game.drive.DriveOrder;
+import ryan.game.drive.*;
 
-public class Robot {
+public class Robot extends Entity {
 
     public final int id;
     public Body left, right;
-    private DriveController controller;
+    private int controllerIndex;
+    private DriveController[] scrollOptions = {new Arcade(false), new Arcade(true), new Tank()};
+    private FieldCentricStrafe fieldCentric;
+    private Sprite gear;
+
+    private Button changeAlliance;
+    private Button changeControls;
+    private Button gearToggle;
+
+    private float maxTurn = 1.5f;
+    private boolean blue;
+    private boolean hasGear = false;
 
     private static final float maxSpeed = 4.572f * 3.0f;
-    private static final float maxAccel = 4.572f * 3.0f;
-    private float maxTurn = 1.5f;
+    private static final float maxAccel = 4.572f * 3.4f;
+    private static final float robot_size = 0.9144f;
+
+    private static final Texture blueTex = new Texture(Gdx.files.internal("core/assets/robot_blue.png"));
+    private static final Texture redTex = new Texture(Gdx.files.internal("core/assets/robot_red.png"));
+    private static final Texture gearTex = new Texture(Gdx.files.internal("core/assets/gear.png"));
 
     private static int robots = 0;
 
     private Robot(Body left, Body right) {
+        super(robot_size, robot_size, left, right);
         id = robots++;
         this.left = left;
         this.right = right;
-        controller = new Arcade(id == 0 ? true : false);
+        controllerIndex = 0;
+        //setPrimary(null);
+        blue = !Utils.hasDecimal(id / 2.0);
+        setSprite(blue ? blueTex : redTex);
+        Gamepad g = ControllerManager.getGamepad(id);
+        changeAlliance = g.getButton(7);
+        changeControls = g.getButton(6);
+        gearToggle = g.getButton(5);
+        gear = new Sprite(gearTex);
+        gear.setBounds(-999, -999, 1f, 1f);
+        fieldCentric = new FieldCentricStrafe(this);
     }
 
+    @Override
+    public Vector2 getPhysicsPosition() {
+        float xAvg = 0, yAvg = 0;
+        for (Body b : getBodies()) {
+            Vector2 pos = b.getPosition();
+            xAvg += pos.x;
+            yAvg += pos.y;
+        }
+        xAvg /= getBodies().size();
+        yAvg /= getBodies().size();
+        return new Vector2(xAvg, yAvg);
+    }
+
+    @Override
+    public float getPhysicsAngle() {
+        float angle = 0;
+        for (Body b : getBodies()) {
+            angle += b.getAngle();
+        }
+        angle /= getBodies().size();
+        return (float) Math.toDegrees(angle);
+    }
+
+    boolean changeAllianceWasTrue = false;
+    boolean changeControlsWasTrue = false;
+    boolean gearToggleWasTrue = false;
+
+    @Override
     public void tick() {
+        super.tick();
+        gear.setPosition(getX() - gear.getWidth()/2, getY() - gear.getHeight()/2);
+        gear.setOriginCenter();
+        gear.setRotation(getAngle());
         float leftMotor, rightMotor;
+        Float middleMotor = null;
         if (ControllerManager.getGamepads().isEmpty()) {
             leftMotor = Gdx.input.isKeyPressed(Input.Keys.A) ? 1 : 0;
             rightMotor = Gdx.input.isKeyPressed(Input.Keys.D) ? 1 : 0;
         } else {
             Gamepad g = ControllerManager.getGamepad(id);
-            DriveOrder o = controller.calculate(g);
+
+            boolean val = changeControls.get();
+            if (val && !changeControlsWasTrue) {
+                controllerIndex++;
+                Utils.log("Robot " + id + " changing controls (" + g.hasSecondJoystick() + ")");
+                while ((controllerIndex == 1 || controllerIndex == 2) && !g.hasSecondJoystick()) {
+                    controllerIndex++;
+                    if (controllerIndex >= scrollOptions.length) controllerIndex = 0;
+                }
+                if (controllerIndex >= scrollOptions.length) controllerIndex = 0;
+            }
+            changeControlsWasTrue = val;
+
+            DriveOrder o = scrollOptions[controllerIndex].calculate(g);
+            //DriveOrder o = fieldCentric.calculate(g);
+
             leftMotor = o.left;
             rightMotor = o.right;
+            if (o.hasMiddle()) middleMotor = o.middle;
+
+            val = changeAlliance.get();
+            if (val && !changeAllianceWasTrue) {
+                blue = !blue;
+                setSprite(blue ? blueTex : redTex);
+                Utils.log("Swap");
+            }
+            changeAllianceWasTrue = val;
+
+            val = gearToggle.get();
+            if (val && !gearToggleWasTrue) {
+                hasGear = !hasGear;
+            }
+            gearToggleWasTrue = val;
         }
         leftMotor = Utils.cap(leftMotor, 1);
         rightMotor = Utils.cap(rightMotor, 1);
+        if (middleMotor != null) Utils.cap(middleMotor, 1);
         updateMotors(leftMotor, rightMotor);
-        doFriction(left);
-        doFriction(right);
+        if (middleMotor != null) {
+            updateMiddleMotor(middleMotor);
+        } else {
+            doFriction(left);
+            doFriction(right);
+        }
     }
 
-    final float k = 2.25f;
+    @Override
+    public void draw(SpriteBatch b) {
+        super.draw(b);
+        if (hasGear) gear.draw(b);
+    }
+
+    final float k = 2.25f; //2.25
 
     public void updateMotors(float l, float r) {
         //if (l != 0 || r != 0) Utils.log(l + " / " + r);
@@ -81,7 +182,7 @@ public class Robot {
             turnMult += twoCloseness * .5;
         }
 
-        maxTurn = turnMult * 1.5f;
+        maxTurn = turnMult * 2f; //1.5f
 
         if (Math.abs(left.getAngularVelocity()) > maxTurn) {
             left.setAngularVelocity((maxTurn) * Utils.sign(left.getAngularVelocity()));
@@ -92,7 +193,16 @@ public class Robot {
         }
     }
 
-    private static final float robot_size = 0.9144f;
+    public void updateMiddleMotor(float m) {
+        //Vector2 vel = getLateralVelocity(left).add(getLateralVelocity(right));
+        //vel.scl(0.5f);
+
+        float forceX = ((maxSpeed * 2) * (m * 2)) * (float) Math.sin(getAngle() + 90);
+        float forceY = ((maxSpeed * 2) * (m * 2)) * (float) Math.cos(getAngle() + 90);
+
+        left.applyForceToCenter(Utils.cap(forceX, maxAccel * 2), Utils.cap(forceY, maxAccel * 2), true);
+        //right.applyForceToCenter(Utils.cap(k * (forceX - vel.x), maxAccel), Utils.cap(k * (forceY - vel.y), maxAccel), true);
+    }
 
     public static Robot create(float x, float y, World w) {
         Body left = createRobotPart(x - (robot_size * 1), y, w);

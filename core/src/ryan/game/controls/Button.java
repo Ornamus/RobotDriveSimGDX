@@ -4,7 +4,7 @@ import net.java.games.input.Component;
 
 public class Button {
 
-    int id;
+    public final int id;
     Component button;
 
     private static int buttons = 0;

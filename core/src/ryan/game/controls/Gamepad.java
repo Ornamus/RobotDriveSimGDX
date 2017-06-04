@@ -17,7 +17,7 @@ public class Gamepad {
 
     protected Gamepad(Controller c) {
         this.c = c;
-        if (c.getName().contains("keyboard")) {
+        if (c.getType() == Controller.Type.KEYBOARD) {
             for (Component comp : c.getComponents()) {
                 //TODO
             }
@@ -46,11 +46,17 @@ public class Gamepad {
     }
 
     public float getX2() {
-        return xAxis2.getPollData();
+        if (xAxis2 != null) return xAxis2.getPollData();
+        return 0;
     }
 
     public float getY2() {
-        return -yAxis2.getPollData();
+        if (yAxis2 != null) return -yAxis2.getPollData();
+        return 0;
+    }
+
+    public boolean hasSecondJoystick() {
+        return xAxis2 != null && yAxis2 != null;
     }
 
     public List<Button> getButtons() {

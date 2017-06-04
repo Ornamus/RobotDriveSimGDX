@@ -15,13 +15,12 @@ public class ControllerManager {
     private static List<Gamepad> gamepads = new ArrayList<Gamepad>();
     private static Timer update;
 
-
     public static void init() {
         Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
         for (Controller c : controllers) {
-            if (c.getName().toLowerCase().contains("controller")) {
+            if (c.getType() == Controller.Type.GAMEPAD) {
                 gamepads.add(new Gamepad(c));
-                Utils.log("Detected Controller: " + c.getName());
+                Utils.log("Detected Gamepad: " + c.getName());
             }
         }
         if (gamepads.isEmpty()) {

@@ -5,35 +5,50 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.FrictionJointDef;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
+import ryan.game.entity.Hopper;
 import ryan.game.entity.Robot;
 import ryan.game.entity.Entity;
+import ryan.game.image.Image;
+
+import javax.xml.soap.Text;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Main extends ApplicationAdapter {
 	SpriteBatch batch;
-	Texture img;
-    World world;
+    public World world;
     Box2DDebugRenderer debugRenderer;
+    ExtendViewport viewport;
     OrthographicCamera camera;
-    List<Robot> robots = new ArrayList<Robot>();
-    List<ryan.game.entity.Entity> entities = new ArrayList<Entity>();
+    public static List<Robot> robots = new ArrayList<Robot>();
+    public static List<Entity> entitiesAdd = new ArrayList<Entity>();
+    public static List<Entity> entities = new ArrayList<Entity>();
+    public static List<CollisionListener.Collision> collisions = new ArrayList<CollisionListener.Collision>();
+
+    Texture botTexture;
+    Sprite field;
+
+    private static Main self = null;
+    public static final float PPM = 32;
 
 	@Override
 	public void create () {
+        self = this;
         ControllerManager.init();
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
+        world.setContactListener(new CollisionListener());
         debugRenderer = new Box2DDebugRenderer();
-        camera = new OrthographicCamera(1100, 600);
-        camera.position.set(0, 0, 0);
-        camera.zoom = .25f / 5f;
+        camera = new OrthographicCamera(56, 24);
         camera.update();
         int index = 0;
         for (Gamepad g : ControllerManager.getGamepads()) {
@@ -44,11 +59,25 @@ public class Main extends ApplicationAdapter {
         for (Robot r : robots) {
             addFriction(r.left);
             addFriction(r.right);
+            entities.add(r);
         }
 
+        /*
         Entity e = Entity.rectangleEntity(5, 5, .9f, .9f, world);
-        addFriction(e.body, 12f);
+        for (Body b : e.getBodies()) {
+            addFriction(b, 12f);
+        }
         entities.add(e);
+        */
+
+        entities.add(Hopper.create(-9.5f, 12.25f, true, world)); //left top hopper
+        entities.add(Hopper.create(8.35f, 12.25f, true, world)); //right top hopper
+
+
+        entities.add(Hopper.create(-16f, -13.45f, false, world)); //left bottom hopper
+        entities.add(Hopper.create(-0.6f, -13.45f, false, world)); //middle bottom hopper
+        entities.add(Hopper.create(16f - 1.15f, -13.45f, false, world)); //right bottom hopper
+
 
         entities.add(Entity.barrier(0, 12, 28f, .5f, world)); //top wall
         entities.add(Entity.barrier(0, -13.2f, 28f, .5f, world)); //bottom wall
@@ -80,8 +109,30 @@ public class Main extends ApplicationAdapter {
         entities.add(Entity.barrier(-17.65f, -2.75f, s, world)); //red airship
 
 		batch = new SpriteBatch();
-        img = new Texture(Gdx.files.internal("core/assets/steamworks.png"));
+        batch.setProjectionMatrix(camera.combined);
+
+        field = new Sprite(new Texture(Gdx.files.internal("core/assets/steamworks.png")));
+        field.setBounds(-27.5f, -15, 54, 30);
 	}
+
+    @Override
+    public void resize(int width, int height) {
+        // Lets check aspect ratio of our visible window
+        float screenAR = width / (float) height;
+        // Our camera needs to be created with new aspect ratio
+        // Our visible gameworld width is still 20m but we need to
+        // calculate what height keeps the AR correct.
+        camera = new OrthographicCamera(56, 48 /screenAR);
+        // Finally set camera position so that (0,0) is at bottom left
+        //camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
+        camera.position.set(0, 0, 0);
+        camera.update();
+
+        // If we use spritebatch to draw lets update it here for new camera
+        batch = new SpriteBatch();
+        // This line says:"Camera lower left corner is 0,0. Width is 20 and height is 20/AR. Draw there!"
+        batch.setProjectionMatrix(camera.combined);
+    }
 
     public void addFriction(Body b) {
         addFriction(b, 8f);
@@ -110,15 +161,32 @@ public class Main extends ApplicationAdapter {
         world.createJoint(friction);
     }
 
+    public void spawnEntity(Entity e) {
+        for (Body b : e.getBodies()) {
+            addFriction(b);
+        }
+        entities.add(e);
+    }
+
+    public void spawnEntity(float friction, Entity e) {
+        for (Body b : e.getBodies()) {
+            addFriction(b, friction);
+        }
+        entitiesAdd.add(e);
+    }
+
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        batch.begin();
-        batch.draw(img, 0, 0);
-        batch.end();
-        debugRenderer.render(world, camera.combined);
         doPhysicsStep(Gdx.graphics.getDeltaTime());
+        batch.begin();
+        field.draw(batch);
+        for (Entity e : entities) {
+            e.draw(batch);
+        }
+        batch.end();
+        //debugRenderer.render(world, camera.combined);
 	}
 
     private float accumulator = 0;
@@ -135,14 +203,25 @@ public class Main extends ApplicationAdapter {
     }
 
     private void tick() {
-        for (Robot r : robots) {
-            r.tick();
+        entities.addAll(entitiesAdd);
+        entitiesAdd.clear();
+        for (Entity e : entities) {
+            e.tick();
         }
+        for (CollisionListener.Collision c : collisions) {
+            c.a.onCollide(c.b);
+            c.b.onCollide(c.a);
+        }
+        collisions.clear();
     }
 	
 	@Override
 	public void dispose () {
 		batch.dispose();
-		img.dispose();
+		//field.dispose();
 	}
+
+	public static Main getInstance() {
+        return self;
+    }
 }
