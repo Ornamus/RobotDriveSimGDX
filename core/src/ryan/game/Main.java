@@ -2,14 +2,19 @@ package ryan.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.FrictionJointDef;
+import com.badlogic.gdx.utils.IntFloatMap;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
@@ -34,8 +39,14 @@ public class Main extends ApplicationAdapter {
     public static List<Entity> entities = new ArrayList<Entity>();
     public static List<CollisionListener.Collision> collisions = new ArrayList<CollisionListener.Collision>();
 
-    Texture botTexture;
+    BitmapFont font;
     Sprite field;
+
+    boolean matchPlay = false;
+    long matchStart = 0;
+    Sound matchStartSound;
+    Sound ropeDropSound;
+    Sound matchEndSound;
 
     private static Main self = null;
     public static final float PPM = 32;
@@ -48,7 +59,7 @@ public class Main extends ApplicationAdapter {
         world = new World(new Vector2(0, 0), true);
         world.setContactListener(new CollisionListener());
         debugRenderer = new Box2DDebugRenderer();
-        camera = new OrthographicCamera(56, 24);
+        camera = new OrthographicCamera(56, 29);
         camera.update();
         int index = 0;
         for (Gamepad g : ControllerManager.getGamepads()) {
@@ -113,6 +124,14 @@ public class Main extends ApplicationAdapter {
 
         field = new Sprite(new Texture(Gdx.files.internal("core/assets/steamworks.png")));
         field.setBounds(-27.5f, -15, 54, 30);
+
+        matchStartSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/charge_3.wav"));
+        ropeDropSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/whoop.wav"));
+        matchEndSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/end.wav"));
+
+        font = new BitmapFont();
+        font.setColor(Color.BLACK);
+        font.getData().setScale(.25f);
 	}
 
     @Override
@@ -122,7 +141,7 @@ public class Main extends ApplicationAdapter {
         // Our camera needs to be created with new aspect ratio
         // Our visible gameworld width is still 20m but we need to
         // calculate what height keeps the AR correct.
-        camera = new OrthographicCamera(56, 48 /screenAR);
+        camera = new OrthographicCamera(56, (28 * 2) /screenAR);
         // Finally set camera position so that (0,0) is at bottom left
         //camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.position.set(0, 0, 0);
@@ -175,15 +194,42 @@ public class Main extends ApplicationAdapter {
         entitiesAdd.add(e);
     }
 
+    boolean didWhoop = false;
+
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
+		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         doPhysicsStep(Gdx.graphics.getDeltaTime());
+
+        long timeIn = System.currentTimeMillis() - matchStart;
+        long timeLeft = (((2 * 60) + 15) * 1000) - timeIn;
+        float seconds = timeLeft / 1000f;
+        int minutes = 0;
+        while (seconds > 60) {
+            seconds-=60;
+            minutes++;
+        }
+
+        if (minutes == 0 && seconds <= 30 && !didWhoop && matchPlay) {
+            ropeDropSound.play(.4f);
+            didWhoop = true;
+        }
+
+        if (minutes == 0 && seconds <= 0 && matchPlay) {
+            matchEndSound.play(.6f);
+            matchPlay = false;
+            didWhoop = false;
+        }
+
         batch.begin();
         field.draw(batch);
         for (Entity e : entities) {
             e.draw(batch);
+        }
+        if (matchPlay) {
+            int roundSecs = Math.round(seconds);
+            font.draw(batch, minutes +  ":" + (roundSecs < 10 ? "0" : "") + roundSecs, -3, 15);
         }
         batch.end();
         //debugRenderer.render(world, camera.combined);
@@ -213,6 +259,11 @@ public class Main extends ApplicationAdapter {
             c.b.onCollide(c.a);
         }
         collisions.clear();
+        if (Gdx.input.isKeyPressed(Input.Keys.P) && !matchPlay) {
+            matchPlay = true;
+            matchStart = System.currentTimeMillis();
+            matchStartSound.play(.5f);
+        }
     }
 	
 	@Override

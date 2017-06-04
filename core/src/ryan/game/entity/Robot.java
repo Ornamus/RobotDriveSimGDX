@@ -19,7 +19,7 @@ public class Robot extends Entity {
     public final int id;
     public Body left, right;
     private int controllerIndex;
-    private DriveController[] scrollOptions = {new Arcade(false), new Arcade(true), new Tank()};
+    private DriveController[] scrollOptions = {new Arcade(false), new Arcade(true), new Tank(), new CheesyDrive()};
     private FieldCentricStrafe fieldCentric;
     private Sprite gear;
 
@@ -38,6 +38,13 @@ public class Robot extends Entity {
     private static final Texture blueTex = new Texture(Gdx.files.internal("core/assets/robot_blue.png"));
     private static final Texture redTex = new Texture(Gdx.files.internal("core/assets/robot_red.png"));
     private static final Texture gearTex = new Texture(Gdx.files.internal("core/assets/gear.png"));
+
+    private static final Texture joyTex = new Texture(Gdx.files.internal("core/assets/joystick.png"));
+    private static final Texture joysTex = new Texture(Gdx.files.internal("core/assets/joysticks.png"));
+    private static final Texture tankTex = new Texture(Gdx.files.internal("core/assets/tank.png"));
+    private static final Texture cheeseTex = new Texture(Gdx.files.internal("core/assets/cheese.png"));
+
+    private Sprite icon;
 
     private static int robots = 0;
 
@@ -86,12 +93,20 @@ public class Robot extends Entity {
     boolean changeControlsWasTrue = false;
     boolean gearToggleWasTrue = false;
 
+    float iconAlpha;
+
     @Override
     public void tick() {
         super.tick();
         gear.setPosition(getX() - gear.getWidth()/2, getY() - gear.getHeight()/2);
         gear.setOriginCenter();
         gear.setRotation(getAngle());
+        if (icon != null) {
+            icon.setPosition(getX() - icon.getWidth() / 2, getY() + 1f);
+            icon.setAlpha(iconAlpha);
+            iconAlpha -= 0.01;
+            if (iconAlpha <= 0) icon = null;
+        }
         float leftMotor, rightMotor;
         Float middleMotor = null;
         if (ControllerManager.getGamepads().isEmpty()) {
@@ -104,11 +119,19 @@ public class Robot extends Entity {
             if (val && !changeControlsWasTrue) {
                 controllerIndex++;
                 Utils.log("Robot " + id + " changing controls (" + g.hasSecondJoystick() + ")");
-                while ((controllerIndex == 1 || controllerIndex == 2) && !g.hasSecondJoystick()) {
+                while ((controllerIndex == 1 || controllerIndex == 2 || controllerIndex == 3) && !g.hasSecondJoystick()) {
                     controllerIndex++;
                     if (controllerIndex >= scrollOptions.length) controllerIndex = 0;
                 }
                 if (controllerIndex >= scrollOptions.length) controllerIndex = 0;
+                Texture newTex = null;
+                if (controllerIndex == 0) newTex = joyTex;
+                if (controllerIndex == 1) newTex = joysTex;
+                if (controllerIndex == 2) newTex = tankTex;
+                if (controllerIndex == 3) newTex = cheeseTex;
+                icon = new Sprite(newTex);
+                icon.setBounds(-999, -999, 1.25f, 1.25f);
+                iconAlpha = 1f;
             }
             changeControlsWasTrue = val;
 
@@ -149,6 +172,7 @@ public class Robot extends Entity {
     public void draw(SpriteBatch b) {
         super.draw(b);
         if (hasGear) gear.draw(b);
+        if (icon != null) icon.draw(b);
     }
 
     final float k = 2.25f; //2.25
@@ -197,11 +221,13 @@ public class Robot extends Entity {
         //Vector2 vel = getLateralVelocity(left).add(getLateralVelocity(right));
         //vel.scl(0.5f);
 
+        Utils.log("Bot angle: " + Utils.roundToPlace(getAngle() + 90, 2));
+
         float forceX = ((maxSpeed * 2) * (m * 2)) * (float) Math.sin(getAngle() + 90);
         float forceY = ((maxSpeed * 2) * (m * 2)) * (float) Math.cos(getAngle() + 90);
 
         left.applyForceToCenter(Utils.cap(forceX, maxAccel * 2), Utils.cap(forceY, maxAccel * 2), true);
-        //right.applyForceToCenter(Utils.cap(k * (forceX - vel.x), maxAccel), Utils.cap(k * (forceY - vel.y), maxAccel), true);
+        right.applyForceToCenter(Utils.cap(forceX, maxAccel * 2), Utils.cap(forceY, maxAccel * 2), true);
     }
 
     public static Robot create(float x, float y, World w) {

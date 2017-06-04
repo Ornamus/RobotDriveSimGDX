@@ -30,7 +30,7 @@ public class FieldCentricStrafe implements DriveController {
                 while (adjustAngle > 360) {
                     adjustAngle -= 360;
                 }
-                Utils.log("ANGLE: " + adjustAngle);
+                //Utils.log("ANGLE: " + adjustAngle);
                 return adjustAngle;
             }
 
@@ -59,8 +59,8 @@ public class FieldCentricStrafe implements DriveController {
         if (!rotatePID.isEnabled()) rotatePID.enable();
         rotatePID.setTarget(target);
 
-        Utils.log("Target angle: " + target);
-        Utils.log("PID output: " + pidOutput.getPower());
+        //Utils.log("Target angle: " + target);
+        //Utils.log("PID output: " + pidOutput.getPower());
 
         float z = (float) pidOutput.getPower();
         float angle = (float) Math.toRadians(gyro.getForPID());
@@ -70,7 +70,7 @@ public class FieldCentricStrafe implements DriveController {
         ySet = (float)(y * Math.cos(angle) - x * Math.sin(angle));
 
         DriveOrder o = setFiltered(ySet + z, -(z - ySet), xSet);
-        Utils.log("Motors: " + Utils.roundToPlace(o.left, 2) + " / " + Utils.roundToPlace(o.right, 2) + " / " + Utils.roundToPlace(o.middle, 2));
+        //Utils.log("Motors: " + Utils.roundToPlace(o.left, 2) + " / " + Utils.roundToPlace(o.right, 2) + " / " + Utils.roundToPlace(o.middle, 2));
         return o;
     }
 
