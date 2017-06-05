@@ -3,7 +3,9 @@ package ryan.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -39,8 +41,12 @@ public class Main extends ApplicationAdapter {
     public static List<Entity> entities = new ArrayList<Entity>();
     public static List<CollisionListener.Collision> collisions = new ArrayList<CollisionListener.Collision>();
 
+    public static boolean playMusic = true;
+
     BitmapFont font;
     Sprite field;
+    FileHandle[] musicChoices;
+    Music music = null;
 
     boolean matchPlay = false;
     long matchStart = 0;
@@ -128,6 +134,8 @@ public class Main extends ApplicationAdapter {
         matchStartSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/charge_3.wav"));
         ropeDropSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/whoop.wav"));
         matchEndSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/end.wav"));
+
+        musicChoices = Gdx.files.internal("core/assets/music").list();
 
         font = new BitmapFont();
         font.setColor(Color.BLACK);
@@ -218,6 +226,11 @@ public class Main extends ApplicationAdapter {
 
         if (minutes == 0 && seconds <= 0 && matchPlay) {
             matchEndSound.play(.6f);
+            if (playMusic) {
+                if (music.isPlaying()) music.stop();
+                music.dispose();
+                music = null;
+            }
             matchPlay = false;
             didWhoop = false;
         }
@@ -262,6 +275,16 @@ public class Main extends ApplicationAdapter {
             matchPlay = true;
             matchStart = System.currentTimeMillis();
             matchStartSound.play(.45f);
+            if (playMusic) {
+                music = Gdx.audio.newMusic(musicChoices[Utils.randomInt(0, musicChoices.length - 1)]);
+                music.setVolume(.25f);
+                music.play();
+            }
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.I) && matchPlay) {
+            //TODO: play foghorn hoise
+            matchPlay = false;
+            if (playMusic && music.isPlaying()) music.stop();
         }
         if (Gdx.input.isKeyPressed(Input.Keys.R)) {
             for (Entity e : new ArrayList<Entity>(entities)) {

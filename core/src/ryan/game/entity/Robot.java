@@ -26,6 +26,11 @@ public class Robot extends Entity {
     private Button changeAlliance;
     private Button changeControls;
     private Button gearToggle;
+    private Button dozerToggle;
+
+    private boolean dozer = false;
+    private boolean dozerUnlocked = false;
+    private Long dozerHoldStart = null;
 
     private float maxTurn = 1.5f;
     private boolean blue;
@@ -37,6 +42,10 @@ public class Robot extends Entity {
 
     private static final Texture blueTex = new Texture(Gdx.files.internal("core/assets/robot_blue.png"));
     private static final Texture redTex = new Texture(Gdx.files.internal("core/assets/robot_red.png"));
+
+    private static final Texture blueDozerTex = new Texture(Gdx.files.internal("core/assets/dozer_blue.png"));
+    private static final Texture redDozerTex = new Texture(Gdx.files.internal("core/assets/dozer_red.png"));
+
     private static final Texture gearTex = new Texture(Gdx.files.internal("core/assets/gear.png"));
 
     private static final Texture joyTex = new Texture(Gdx.files.internal("core/assets/joystick.png"));
@@ -61,6 +70,7 @@ public class Robot extends Entity {
         changeAlliance = g.getButton(7);
         changeControls = g.getButton(6);
         gearToggle = g.getButton(5);
+        dozerToggle = g.getButton(1);
         gear = new Sprite(gearTex);
         gear.setBounds(-999, -999, 1f, 1f);
         fieldCentric = new FieldCentricStrafe(this);
@@ -92,6 +102,7 @@ public class Robot extends Entity {
     boolean changeAllianceWasTrue = false;
     boolean changeControlsWasTrue = false;
     boolean gearToggleWasTrue = false;
+    boolean dozerToggleWasTrue = false;
 
     float iconAlpha;
 
@@ -142,10 +153,39 @@ public class Robot extends Entity {
             rightMotor = o.right;
             if (o.hasMiddle()) middleMotor = o.middle;
 
+
+            val = dozerToggle.get();
+            if (val && !dozerUnlocked) {
+                if (dozerHoldStart == null) dozerHoldStart = System.currentTimeMillis();
+                if (System.currentTimeMillis() - dozerHoldStart >= 5000) {
+                    dozerUnlocked = true;
+                    Utils.log("Robot " + id + " unlocked Dozer!");
+                }
+            } else {
+                dozerHoldStart = null;
+            }
+            if (val && !dozerToggleWasTrue && dozerUnlocked) {
+                dozer = !dozer;
+                if (blue) {
+                    if (dozer) setSprite(blueDozerTex);
+                    else setSprite(blueTex);
+                } else {
+                    if (dozer) setSprite(redDozerTex);
+                    else setSprite(redTex);
+                }
+            }
+            dozerToggleWasTrue = val;
+
             val = changeAlliance.get();
             if (val && !changeAllianceWasTrue) {
                 blue = !blue;
-                setSprite(blue ? blueTex : redTex);
+                if (blue) {
+                    if (dozer) setSprite(blueDozerTex);
+                    else setSprite(blueTex);
+                } else {
+                    if (dozer) setSprite(redDozerTex);
+                    else setSprite(redTex);
+                }
                 Utils.log("Swap");
             }
             changeAllianceWasTrue = val;

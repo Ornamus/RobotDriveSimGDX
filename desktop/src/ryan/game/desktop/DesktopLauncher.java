@@ -15,6 +15,11 @@ public class DesktopLauncher {
 		config.width = 1100;
 		config.height = 630;
 		config.title = "Robot Drive Sim GDX - " + random[Utils.randomInt(0, random.length-1)];
+		for (String s : arg) {
+			if (s.equalsIgnoreCase("no_music")) {
+				Main.playMusic = false;
+			}
+		}
 		new LwjglApplication(new Main(), config);
 	}
 }
