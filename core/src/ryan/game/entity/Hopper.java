@@ -5,8 +5,6 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import ryan.game.Main;
 import ryan.game.Utils;
-import javax.swing.*;
-import java.awt.geom.Point2D;
 
 public class Hopper extends Entity {
 
@@ -14,7 +12,6 @@ public class Hopper extends Entity {
     boolean dumping = false;
     boolean dumped = false;
     boolean dropDown;
-    Timer dumpTimer;
 
     private static final Texture full = new Texture("core/assets/hopper_full.png");
     private static final Texture empty = new Texture("core/assets/hopper_empty.png");
@@ -69,7 +66,6 @@ public class Hopper extends Entity {
     @Override
     public void onCollide(Entity e) {
         if (e instanceof Robot && !dumped) {
-            Utils.log("Hopper hit a roboto");
             dumping = true;
             timeOfLastDump = System.currentTimeMillis();
         }

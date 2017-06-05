@@ -122,7 +122,7 @@ public class Main extends ApplicationAdapter {
 		batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
 
-        field = new Sprite(new Texture(Gdx.files.internal("core/assets/steamworks.png")));
+        field = new Sprite(new Texture(Gdx.files.internal("core/assets/steamworks_pegs.png")));
         field.setBounds(-27.5f, -15, 54, 30);
 
         matchStartSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/charge_3.wav"));
