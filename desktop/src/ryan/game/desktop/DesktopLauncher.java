@@ -7,7 +7,8 @@ import ryan.game.Utils;
 
 public class DesktopLauncher {
 
-    static String[] random = {"Water Game Confirmed", "Driver Practice Confirmed", "Driver Skill Simulator", "pOrK liFt", "100%* real physics"};
+    static String[] random = {"Water Game Confirmed", "Driver Practice Confirmed", "Driver Skill Simulator", "pOrK liFt", "100%* real physics",
+	"Phillip Approved", "Fuel Is Still Useless"};
 
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
