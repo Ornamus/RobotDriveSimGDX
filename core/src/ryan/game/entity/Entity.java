@@ -15,6 +15,7 @@ import java.util.List;
 
 public class Entity {
 
+    private String name = "entity";
     private float width = -1, height = -1;
     private float x = 0, y = 0;
     private float angle = 0;
@@ -50,6 +51,15 @@ public class Entity {
     public void setSprite(Texture t) {
         s = new Sprite(t);
         s.setPosition(-999, -999);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Entity setName(String s) {
+        name = s;
+        return this;
     }
 
     public void tick() {
@@ -202,6 +212,7 @@ public class Entity {
     public static Entity generateFuelBall(float x, float y, World w) {
         Entity e = Entity.circleEntity(x, y, 0.2f, .4f, w);
         e.setSprite(fuelTex);
+        e.setName("fuel");
         return e;
     }
 

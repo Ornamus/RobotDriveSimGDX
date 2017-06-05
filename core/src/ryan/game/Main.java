@@ -204,15 +204,15 @@ public class Main extends ApplicationAdapter {
 
         long timeIn = System.currentTimeMillis() - matchStart;
         long timeLeft = (((2 * 60) + 15) * 1000) - timeIn;
-        float seconds = timeLeft / 1000f;
+        int seconds = Math.round(timeLeft / 1000f);
         int minutes = 0;
-        while (seconds > 60) {
+        while (seconds >= 60) {
             seconds-=60;
             minutes++;
         }
 
         if (minutes == 0 && seconds <= 30 && !didWhoop && matchPlay) {
-            ropeDropSound.play(.4f);
+            ropeDropSound.play(.35f);
             didWhoop = true;
         }
 
@@ -228,8 +228,7 @@ public class Main extends ApplicationAdapter {
             e.draw(batch);
         }
         if (matchPlay) {
-            int roundSecs = Math.round(seconds);
-            font.draw(batch, minutes +  ":" + (roundSecs < 10 ? "0" : "") + roundSecs, -3, 15);
+            font.draw(batch, minutes +  ":" + (seconds < 10 ? "0" : "") + seconds, -3, 15);
         }
         batch.end();
         //debugRenderer.render(world, camera.combined);
@@ -262,7 +261,19 @@ public class Main extends ApplicationAdapter {
         if (Gdx.input.isKeyPressed(Input.Keys.P) && !matchPlay) {
             matchPlay = true;
             matchStart = System.currentTimeMillis();
-            matchStartSound.play(.5f);
+            matchStartSound.play(.45f);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.R)) {
+            for (Entity e : new ArrayList<Entity>(entities)) {
+                if (e.getName().equalsIgnoreCase("fuel")) {
+                    for (Body b : e.getBodies()) {
+                        world.destroyBody(b);
+                    }
+                    entities.remove(e);
+                } else if (e instanceof Hopper) {
+                    ((Hopper)e).reset();
+                }
+            }
         }
     }
 	

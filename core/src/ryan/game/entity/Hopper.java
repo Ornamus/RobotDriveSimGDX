@@ -16,12 +16,23 @@ public class Hopper extends Entity {
     boolean dropDown;
     Timer dumpTimer;
 
+    private static final Texture full = new Texture("core/assets/hopper_full.png");
+    private static final Texture empty = new Texture("core/assets/hopper_empty.png");
+
     protected Hopper(float x, float y, boolean dropDown, Body b) {
         super(.9f, .9f, b);
         this.x = x;
         this.y = y;
         this.dropDown = dropDown;
-        setSprite(new Texture("core/assets/hopper_temp.png"));
+        setSprite(full);
+    }
+
+    public void reset() {
+        fuelInHopper = 100;
+        timeOfLastDump = 0;
+        dumping = false;
+        dumped = false;
+        setSprite(full);
     }
 
     long timeOfLastDump = 0;
@@ -33,7 +44,6 @@ public class Hopper extends Entity {
         super.tick();
         if (dumping) {
             if (System.currentTimeMillis() - timeOfLastDump > dumpRate) {
-                Utils.log("Spawning fuel");
                 for (int i=0; 2>i; i++) {
                     Entity e = Entity.generateFuelBall(x + (i == 0 ? 2 : -2), y + (dropDown ? -1 : 1), Main.getInstance().world);
                     for (Body b : e.getBodies()) {
@@ -50,6 +60,7 @@ public class Hopper extends Entity {
                 if (fuelInHopper <= 0) {
                     dumping = false;
                     dumped = true;
+                    setSprite(empty);
                 }
             }
         }
