@@ -87,14 +87,11 @@ public class Utils {
         return val;
     }
 
-    /*
+
     public static Texture colorImage(String texturename, Color... newColors) {
         Texture image = new Texture(texturename);
 
-        //int width = image.getWidth();
-        //int height = image.getHeight();
-        //WritableRaster raster = image.getRaster();
-
+        image.getTextureData().prepare();
         Pixmap pixmap = image.getTextureData().consumePixmap();
 
         for (int xx = 0; xx < pixmap.getWidth(); xx++) {
@@ -102,49 +99,61 @@ public class Utils {
 
                 Color color = new Color();
                 Color.rgba8888ToColor(color, pixmap.getPixel(xx, yy));
+                if (color.a > 0) {
 
-                float changeAmount = 0;
-                int colorType = -1;
-                if (true) { //pixels.length >= 3
-                    if (color.r == color.g && color.r == color.b) { //White
-                        changeAmount = color.r / 255f;
-                        colorType = 0;
-                    } else if (color.r != 0 && color.g == 0 && color.b == 0) { //Red
-                        changeAmount = color.r / 255f;
-                        colorType = 1;
-                    } else if (color.r == 0 && color.g != 0 && color.b == 0) { //Blue
-                        changeAmount = color.g / 255f;
-                        colorType = 2;
-                    } else if (color.r == 0 && color.g == 0 && color.b != 0) { //Green
-                        changeAmount = color.b / 255f;
-                        colorType = 3;
-                    }
-                    float[] hsb = new float[3];
-                    if (newColors.length - 1 >= colorType && colorType != -1) {
+                    int[] rgb = new int[3];
+                    rgb[0] = Math.round(color.r * 255);
+                    rgb[1] = Math.round(color.g * 255);
+                    rgb[2] = Math.round(color.b * 255);
 
+                    float changeAmount = 0;
+                    int colorType = -1;
+                    if (true) { //pixels.length >= 3
+                        //Utils.log("R: " + rgb[0] + ", G: " + rgb[1] + ", B: " + rgb[2]);
+                        if (rgb[0] == rgb[1] && rgb[0] == rgb[2]) { //White
+                            changeAmount = rgb[0] / 255f;
+                            colorType = 0;
+                        } else if (rgb[0] != 0 && rgb[1] == 0 && rgb[2] == 0) { //Red
+                            changeAmount = rgb[0] / 255f;
+                            colorType = 1;
+                        } else if (rgb[0] == 0 && rgb[1] != 0 && rgb[2] == 0) { //Blue
+                            changeAmount = rgb[1] / 255f;
+                            colorType = 2;
+                        } else if (rgb[0] == 0 && rgb[1] == 0 && rgb[2] != 0) { //Green
+                            changeAmount = rgb[2] / 255f;
+                            colorType = 3;
+                        }
+                        float[] hsb = new float[3];
+                        if (newColors.length - 1 >= colorType && colorType != -1) {
 
+                            Color newC = newColors[colorType];
+                            java.awt.Color.RGBtoHSB(Math.round(newC.r * 255), Math.round(newC.g * 255), Math.round(newC.b * 255), hsb);
+                            hsb[2] *= changeAmount;
+                            java.awt.Color c = new java.awt.Color(java.awt.Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]));
 
-                        Color newC = newColors[colorType];
-                        Color.RGBtoHSB(newC.getRed(), newC.getBlue(), newC.getGreen(), hsb);
-                        hsb[2] *= changeAmount;
-                        Color c = new Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]));
-
-                        pixels[0] = c.getRed();
-                        pixels[1] = c.getBlue();
-                        pixels[2] = c.getGreen();
-                        raster.setPixel(xx, yy, pixels);
-                    }
-                } else {
-
+                            Color recolor = toColor(c.getRed(), c.getGreen(), c.getBlue());
+                            pixmap.setColor(recolor);
+                            pixmap.fillRectangle(xx, yy, 1, 1);
+                        }
+                    } else {
+                    /*
                     Log.d("Rejected pixel data: ");
                     int index = 0;
                     for (int i : pixels) {
                         Log.d("[" + index + "] " + i);
                         index++;
+                    }*/
                     }
                 }
             }
         }
-        return image;
-    }*/
+        Texture recolor = new Texture(pixmap);
+        image.getTextureData().disposePixmap();
+        pixmap.dispose();
+        return recolor;
+    }
+
+    public static Color toColor(int r, int g, int b) {
+        return new Color(r / 255f, g / 255f, b / 255f, 1);
+    }
 }

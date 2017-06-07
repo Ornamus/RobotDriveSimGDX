@@ -2,6 +2,7 @@ package ryan.game.entity;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -36,15 +37,10 @@ public class Robot extends Entity {
     private boolean blue;
     private boolean hasGear = false;
 
-    private static final float maxSpeed = 4.572f * 3.0f;
+    static final float maxMps = 16 / 3.28084f; //5
+
     private static final float maxAccel = 4.572f * 3.4f;
     private static final float robot_size = 0.9144f;
-
-    private static final Texture blueTex = new Texture(Gdx.files.internal("core/assets/robot_blue.png"));
-    private static final Texture redTex = new Texture(Gdx.files.internal("core/assets/robot_red.png"));
-
-    private static final Texture blueDozerTex = new Texture(Gdx.files.internal("core/assets/dozer_blue.png"));
-    private static final Texture redDozerTex = new Texture(Gdx.files.internal("core/assets/dozer_red.png"));
 
     private static final Texture gearTex = new Texture(Gdx.files.internal("core/assets/gear.png"));
 
@@ -65,7 +61,7 @@ public class Robot extends Entity {
         controllerIndex = 0;
         //setPrimary(null);
         blue = !Utils.hasDecimal(id / 2.0);
-        setSprite(blue ? blueTex : redTex);
+        //setSprite(blue ? blueTex : redTex);
         Gamepad g = ControllerManager.getGamepad(id);
         changeAlliance = g.getButton(7);
         changeControls = g.getButton(6);
@@ -74,6 +70,18 @@ public class Robot extends Entity {
         gear = new Sprite(gearTex);
         gear.setBounds(-999, -999, 1f, 1f);
         fieldCentric = new FieldCentricStrafe(this);
+        //setSprite(Utils.colorImage("core/assets/robot_recolor.png", Utils.toColor(63, 72, 204)));
+        updateSprite();
+    }
+
+    public void updateSprite() {
+        Color c;
+        if (blue) c = Utils.toColor(63, 72, 204);
+        else c = Utils.toColor(237, 28, 36);
+        String tex;
+        if (dozer) tex = "core/assets/dozer_recolor.png";
+        else tex = "core/assets/robot_recolor.png";
+        setSprite(Utils.colorImage(tex, c));
     }
 
     @Override
@@ -166,26 +174,14 @@ public class Robot extends Entity {
             }
             if (val && !dozerToggleWasTrue && dozerUnlocked) {
                 dozer = !dozer;
-                if (blue) {
-                    if (dozer) setSprite(blueDozerTex);
-                    else setSprite(blueTex);
-                } else {
-                    if (dozer) setSprite(redDozerTex);
-                    else setSprite(redTex);
-                }
+                updateSprite();
             }
             dozerToggleWasTrue = val;
 
             val = changeAlliance.get();
             if (val && !changeAllianceWasTrue) {
                 blue = !blue;
-                if (blue) {
-                    if (dozer) setSprite(blueDozerTex);
-                    else setSprite(blueTex);
-                } else {
-                    if (dozer) setSprite(redDozerTex);
-                    else setSprite(redTex);
-                }
+                updateSprite();
                 Utils.log("Swap");
             }
             changeAllianceWasTrue = val;
@@ -215,28 +211,24 @@ public class Robot extends Entity {
         if (icon != null) icon.draw(b);
     }
 
-    final float k = 2.25f; //2.25
+    final float k = 10.0f; //2.25
 
     public void updateMotors(float l, float r) {
         //if (l != 0 || r != 0) Utils.log(l + " / " + r);
         float lAngle = -left.getAngle();
         float rAngle = -right.getAngle();
 
-        Vector2 lVel = left.getLinearVelocity();
-        Vector2 rVel = right.getLinearVelocity();
 
-        float leftX = (maxSpeed * l) * (float) Math.sin(lAngle);
-        float leftY = (maxSpeed * l) * (float) Math.cos(lAngle);
+        float leftX = (maxMps * l) * (float) Math.sin(lAngle);
+        float leftY = (maxMps * l) * (float) Math.cos(lAngle);
 
-        left.applyForceToCenter(Utils.cap(k * (leftX - lVel.x), maxAccel), Utils.cap(k * (leftY - lVel.y), maxAccel), true);
+        left.applyForceToCenter(Utils.cap(k * (leftX - speed.x), maxAccel), Utils.cap(k * (leftY - speed.y), maxAccel), true);
 
 
-        float rightX = (maxSpeed * r) * (float) Math.sin(rAngle);
-        float rightY = (maxSpeed * r) * (float) Math.cos(rAngle);
+        float rightX = (maxMps * r) * (float) Math.sin(rAngle);
+        float rightY = (maxMps * r) * (float) Math.cos(rAngle);
 
-        right.applyForceToCenter(Utils.cap(k * (rightX - rVel.x), maxAccel), Utils.cap(k * (rightY - rVel.y), maxAccel), true);
-
-        //TODO: still not perfect, stationary turning is bleh
+        right.applyForceToCenter(Utils.cap(k * (rightX - speed.x), maxAccel), Utils.cap(k * (rightY - speed.y), maxAccel), true);
 
         float turnMult = Math.abs(l - r);
 
@@ -257,17 +249,58 @@ public class Robot extends Entity {
         }
     }
 
+
+    /*
+    public void updateMotorsOld(float l, float r) {
+        //if (l != 0 || r != 0) Utils.log(l + " / " + r);
+        float lAngle = -left.getAngle();
+        float rAngle = -right.getAngle();
+
+        Vector2 lVel = left.getLinearVelocity();
+        Vector2 rVel = right.getLinearVelocity();
+
+        float leftX = (maxSpeed * l) * (float) Math.sin(lAngle);
+        float leftY = (maxSpeed * l) * (float) Math.cos(lAngle);
+
+        left.applyForceToCenter(Utils.cap(k * (leftX - lVel.x), maxAccel), Utils.cap(k * (leftY - lVel.y), maxAccel), true);
+
+
+        float rightX = (maxSpeed * r) * (float) Math.sin(rAngle);
+        float rightY = (maxSpeed * r) * (float) Math.cos(rAngle);
+
+        right.applyForceToCenter(Utils.cap(k * (rightX - rVel.x), maxAccel), Utils.cap(k * (rightY - rVel.y), maxAccel), true);
+
+        float turnMult = Math.abs(l - r);
+
+        //Utils.log(l + " / " + r+  "  |  " +turnMult);
+        if (turnMult > 1) {
+            float twoCloseness = turnMult - 1f;
+            turnMult += twoCloseness * .5;
+        }
+
+        maxTurn = turnMult * 2f; //1.5f
+
+        if (Math.abs(left.getAngularVelocity()) > maxTurn) {
+            left.setAngularVelocity((maxTurn) * Utils.sign(left.getAngularVelocity()));
+        }
+
+        if (Math.abs(right.getAngularVelocity()) > maxTurn) {
+            right.setAngularVelocity((maxTurn) * Utils.sign(right.getAngularVelocity()));
+        }
+    }*/
+
     public void updateMiddleMotor(float m) {
         //Vector2 vel = getLateralVelocity(left).add(getLateralVelocity(right));
         //vel.scl(0.5f);
 
         Utils.log("Bot angle: " + Utils.roundToPlace(getAngle() + 90, 2));
 
-        float forceX = ((maxSpeed * 2) * (m * 2)) * (float) Math.sin(getAngle() + 90);
-        float forceY = ((maxSpeed * 2) * (m * 2)) * (float) Math.cos(getAngle() + 90);
+        /*
+        float forceX = ((maxSpeed * 2) * (m * 2)) * (float) Math.sin(-getAngle() + 90);
+        float forceY = ((maxSpeed * 2) * (m * 2)) * (float) Math.cos(-getAngle() + 90);
 
         left.applyForceToCenter(Utils.cap(forceX, maxAccel * 2), Utils.cap(forceY, maxAccel * 2), true);
-        right.applyForceToCenter(Utils.cap(forceX, maxAccel * 2), Utils.cap(forceY, maxAccel * 2), true);
+        right.applyForceToCenter(Utils.cap(forceX, maxAccel * 2), Utils.cap(forceY, maxAccel * 2), true);*/
     }
 
     public static Robot create(float x, float y, World w) {

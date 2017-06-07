@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import ryan.game.Constants;
 import ryan.game.Main;
 import ryan.game.Utils;
 
@@ -62,8 +63,15 @@ public class Entity {
         return this;
     }
 
+    Vector2 previousPos = null;
+    protected Vector2 speed = new Vector2(0, 0);
+
     public void tick() {
         Vector2 pos = getPhysicsPosition();
+        if (previousPos != null) {
+            speed = new Vector2(pos.x, pos.y).sub(previousPos);
+            speed.scl(1000f * Constants.TIME_STEP);
+        }
         angle = getPhysicsAngle();
         x = pos.x;
         y = pos.y;
@@ -73,6 +81,7 @@ public class Entity {
             s.setOriginCenter();
             s.setRotation(angle);
         }
+        previousPos = new Vector2(pos.x, pos.y);
     }
 
     public Body getPrimary() {
