@@ -153,6 +153,13 @@ public class Entity {
         return new Entity(radius, radius, right);
     }
 
+    public static Entity peg(float x, float y, float angle) {
+        Entity e = Entity.rectangleEntity(x, y, .8f, .12f, Main.getInstance().world).setName("peg");
+        e.setAngle(angle);
+        e.setSprite(new Texture("core/assets/peg.png"));
+        return e;
+    }
+
     public static Entity rectangleEntity(float x, float y, float width, float height, World w) {
         Body body = rectangleDynamicBody(x, y, width, height, w);
         return new Entity(width, height, body);

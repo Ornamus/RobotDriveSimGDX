@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.controls.Button;
 import ryan.game.controls.ControllerManager;
@@ -36,6 +37,7 @@ public class Robot extends Entity {
     private float maxTurn = 1.5f;
     private boolean blue;
     private boolean hasGear = false;
+    public boolean onPeg = false;
 
     static final float maxMps = 16 / 3.28084f; //5
 
@@ -43,7 +45,6 @@ public class Robot extends Entity {
     private static final float robot_size = 0.9144f;
 
     private static final Texture gearTex = new Texture(Gdx.files.internal("core/assets/gear.png"));
-
     private static final Texture joyTex = new Texture(Gdx.files.internal("core/assets/joystick.png"));
     private static final Texture joysTex = new Texture(Gdx.files.internal("core/assets/joysticks.png"));
     private static final Texture tankTex = new Texture(Gdx.files.internal("core/assets/tank.png"));
@@ -134,6 +135,13 @@ public class Robot extends Entity {
         } else {
             Gamepad g = ControllerManager.getGamepad(id);
 
+
+            for (Button b : g.getButtons()) {
+                if (b.get()) {
+                    Utils.log(b.id + "|");
+                }
+            }
+
             boolean val = changeControls.get();
             if (val && !changeControlsWasTrue) {
                 controllerIndex++;
@@ -188,6 +196,18 @@ public class Robot extends Entity {
 
             val = gearToggle.get();
             if (val && !gearToggleWasTrue) {
+                if (hasGear && !onPeg) {
+                    //drop gear
+
+                    float xChange = -1.75f * (float) Math.sin(Math.toRadians(getAngle()));
+                    float yChange = 1.75f * (float) Math.cos(Math.toRadians(getAngle()));
+
+                    Entity e = Entity.circleEntity(getX() + xChange, getY() + yChange, .5f, .25f, Main.getInstance().world);
+                    e.setAngle(getAngle());
+                    e.setName("Gear");
+                    e.setSprite(gearTex);
+                    Main.getInstance().spawnEntity(e);
+                }
                 hasGear = !hasGear;
             }
             gearToggleWasTrue = val;

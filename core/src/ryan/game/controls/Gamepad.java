@@ -2,6 +2,7 @@ package ryan.game.controls;
 
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
+import ryan.game.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +23,23 @@ public class Gamepad {
                 //TODO
             }
         } else {
+            boolean zRot = false;
             for (Component comp : c.getComponents()) {
+                //Utils.log(comp.getName());
                 if (comp.getName().equalsIgnoreCase("X Axis")) xAxis = comp;
                 if (comp.getName().equalsIgnoreCase("Y Axis")) yAxis = comp;
                 if (comp.getName().equalsIgnoreCase("X Rotation")) xAxis2 = comp;
                 if (comp.getName().equalsIgnoreCase("Y Rotation")) yAxis2 = comp;
+                if (comp.getName().equalsIgnoreCase("Z Rotation")) zRot = true;
                 if (comp.getName().toLowerCase().contains("button")) buttons.add(new Button(comp));
+
+            }
+            if (!hasSecondJoystick() && zRot) {
+                for (Component comp : c.getComponents()) {
+                    //Utils.log(comp.getName());
+                    if (comp.getName().equalsIgnoreCase("Z Axis")) xAxis2 = comp;
+                    if (comp.getName().equalsIgnoreCase("Z Rotation")) yAxis2 = comp;
+                }
             }
         }
         id = gamepads++;

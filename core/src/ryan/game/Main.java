@@ -125,6 +125,21 @@ public class Main extends ApplicationAdapter {
         entities.add(Entity.barrier(8.9f, -2.75f, s, world)); //blue airship
         entities.add(Entity.barrier(-17.65f, -2.75f, s, world)); //red airship
 
+        entities.add(Entity.peg(-18.7f, -.57f, 0));
+        entities.add(Entity.peg(-16.25f, 3.25f, 360-60));
+        entities.add(Entity.peg(-16f, -4.25f, 60));
+
+        float xFix = 1.55f;
+
+        entities.add(Entity.peg(18.9f - xFix, -.57f, 0));
+        entities.add(Entity.peg(16.25f - xFix, 3.25f, 60));
+        entities.add(Entity.peg(16.25f - xFix, -4.25f, 360-60));
+
+        //entities.add(Entity.rectangleEntity(-18.7f, -.57f, .8f, .12f, world).setName("peg"));
+        //entities.add(Entity.rectangleEntity(4, 4, 1, .25f, world).setName("peg"));
+
+
+
 		batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
 
@@ -192,7 +207,7 @@ public class Main extends ApplicationAdapter {
         for (Body b : e.getBodies()) {
             addFriction(b);
         }
-        entities.add(e);
+        entitiesAdd.add(e);
     }
 
     public void spawnEntity(float friction, Entity e) {
@@ -271,7 +286,14 @@ public class Main extends ApplicationAdapter {
             c.b.onCollide(c.a);
         }
         collisions.clear();
-        if (Gdx.input.isKeyPressed(Input.Keys.P) && !matchPlay) {
+        boolean xPressed = false;
+        for (Gamepad g : ControllerManager.getGamepads()) {
+            if (g.getButton(2).get()) {
+                xPressed = true;
+                break;
+            }
+        }
+        if ((xPressed || Gdx.input.isKeyPressed(Input.Keys.P)) && !matchPlay) {
             matchPlay = true;
             matchStart = System.currentTimeMillis();
             matchStartSound.play(.45f);
@@ -288,7 +310,7 @@ public class Main extends ApplicationAdapter {
         }
         if (Gdx.input.isKeyPressed(Input.Keys.R)) {
             for (Entity e : new ArrayList<Entity>(entities)) {
-                if (e.getName().equalsIgnoreCase("fuel")) {
+                if (e.getName().equalsIgnoreCase("fuel") || e.getName().equalsIgnoreCase("gear")) {
                     for (Body b : e.getBodies()) {
                         world.destroyBody(b);
                     }
