@@ -72,6 +72,9 @@ public class Hopper extends Entity {
     }
 
     public static Hopper create(float x, float y, boolean down, World w) {
-        return new Hopper(x, y, down, Entity.rectangleStaticBody(x, y, .9f, .9f, w));
+        Body b = Entity.rectangleStaticBody(x, y, .9f, .9f, w);
+        Hopper h = new Hopper(x, y, down, b);
+        b.setUserData(h);
+        return h;
     }
 }

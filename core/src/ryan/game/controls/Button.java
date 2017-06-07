@@ -9,9 +9,10 @@ public class Button {
 
     private static int buttons = 0;
 
-    protected Button(Component c) {
+    protected Button(Component c/*, int id*/) {
         button = c;
         id = buttons++;
+        //this.id = id;
     }
 
     public boolean get() {

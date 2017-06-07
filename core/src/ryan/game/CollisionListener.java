@@ -8,8 +8,8 @@ public class CollisionListener implements ContactListener {
 
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {
-        Entity a = getEntity(contact.getFixtureA());
-        Entity b = getEntity(contact.getFixtureB());
+        Entity a = (Entity) contact.getFixtureA().getBody().getUserData();
+        Entity b = (Entity) contact.getFixtureB().getBody().getUserData();
         if (a != null || b != null) {
             if ((a != null && a.getName().equalsIgnoreCase("peg")) || (b != null && b.getName().equalsIgnoreCase("peg"))) {
                 contact.setEnabled(false);
@@ -28,32 +28,11 @@ public class CollisionListener implements ContactListener {
 
     @Override
     public void beginContact(Contact contact) {
-        Fixture a = contact.getFixtureA();
-        Fixture b = contact.getFixtureB();
+        Entity a = (Entity) contact.getFixtureA().getBody().getUserData();
+        Entity b = (Entity) contact.getFixtureB().getBody().getUserData();
 
-        Entity eA = null;
-        Entity eB = null;
-
-        for (Entity e : Main.entities) {
-            for (Body body : e.getBodies()) {
-                for (Fixture f : body.getFixtureList()) {
-                    if (f == a) {
-                        eA = e;
-                        break;
-                    }
-                    if (f == b) {
-                        eB = e;
-                        break;
-                    }
-                }
-                if (eA != null && eB != null) break;
-            }
-        }
-        if (eA != null && eB != null) {
-            Main.collisions.add(new Collision(eA, eB));
-            if (eA.getName().equalsIgnoreCase("peg") || eB.getName().equalsIgnoreCase("peg")) {
-                //contact.setEnabled(false);
-            }
+        if (a != null && b != null) {
+            Main.collisions.add(new Collision(a, b));
         }
     }
 
@@ -68,8 +47,8 @@ public class CollisionListener implements ContactListener {
 
     @Override
     public void endContact(Contact contact) {
-        Entity a = getEntity(contact.getFixtureA());
-        Entity b = getEntity(contact.getFixtureB());
+        Entity a = (Entity) contact.getFixtureA().getBody().getUserData();
+        Entity b = (Entity) contact.getFixtureB().getBody().getUserData();
         if (a != null || b != null) {
             if ((a != null && a.getName().equalsIgnoreCase("peg")) || (b != null && b.getName().equalsIgnoreCase("peg"))) {
                 contact.setEnabled(false);
@@ -80,16 +59,5 @@ public class CollisionListener implements ContactListener {
                 }
             }
         }
-    }
-
-    public Entity getEntity(Fixture f) {
-        for (Entity e : Main.entities) {
-            for (Body body : e.getBodies()) {
-                for (Fixture fix : body.getFixtureList()) {
-                    if (f == fix) return e;
-                }
-            }
-        }
-        return null;
     }
 }

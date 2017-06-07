@@ -29,6 +29,7 @@ public class Robot extends Entity {
     private Button changeControls;
     private Button gearToggle;
     private Button dozerToggle;
+    private Button reverseToggle;
 
     private boolean dozer = false;
     private boolean dozerUnlocked = false;
@@ -63,16 +64,18 @@ public class Robot extends Entity {
         //setPrimary(null);
         blue = !Utils.hasDecimal(id / 2.0);
         //setSprite(blue ? blueTex : redTex);
-        Gamepad g = ControllerManager.getGamepad(id);
-        changeAlliance = g.getButton(7);
-        changeControls = g.getButton(6);
-        gearToggle = g.getButton(5);
-        dozerToggle = g.getButton(1);
         gear = new Sprite(gearTex);
         gear.setBounds(-999, -999, 1f, 1f);
         fieldCentric = new FieldCentricStrafe(this);
         //setSprite(Utils.colorImage("core/assets/robot_recolor.png", Utils.toColor(63, 72, 204)));
         updateSprite();
+
+        Gamepad g = ControllerManager.getGamepad(id);
+        changeAlliance = g.getButton(7);
+        changeControls = g.getButton(6);
+        gearToggle = g.getButton(5);
+        dozerToggle = g.getButton(1);
+        reverseToggle = g.getButton(9);
     }
 
     public void updateSprite() {
@@ -112,6 +115,7 @@ public class Robot extends Entity {
     boolean changeControlsWasTrue = false;
     boolean gearToggleWasTrue = false;
     boolean dozerToggleWasTrue = false;
+    boolean reverseToggleWasTrue = false;
 
     float iconAlpha;
 
@@ -138,14 +142,15 @@ public class Robot extends Entity {
 
             for (Button b : g.getButtons()) {
                 if (b.get()) {
-                    Utils.log(b.id + "|");
+                    //Utils.log(b.id + "|");
                 }
             }
+
 
             boolean val = changeControls.get();
             if (val && !changeControlsWasTrue) {
                 controllerIndex++;
-                Utils.log("Robot " + id + " changing controls (" + g.hasSecondJoystick() + ")");
+                //Utils.log("Robot " + id + " changing controls (" + g.hasSecondJoystick() + ")");
                 while ((controllerIndex == 1 || controllerIndex == 2 || controllerIndex == 3) && !g.hasSecondJoystick()) {
                     controllerIndex++;
                     if (controllerIndex >= scrollOptions.length) controllerIndex = 0;
@@ -190,7 +195,6 @@ public class Robot extends Entity {
             if (val && !changeAllianceWasTrue) {
                 blue = !blue;
                 updateSprite();
-                Utils.log("Swap");
             }
             changeAllianceWasTrue = val;
 
@@ -211,6 +215,12 @@ public class Robot extends Entity {
                 hasGear = !hasGear;
             }
             gearToggleWasTrue = val;
+
+            val = reverseToggle.get();
+            if (val && !reverseToggleWasTrue) {
+                g.setReverseSticks(!g.isSticksReversed());
+            }
+            reverseToggleWasTrue = val;
         }
         leftMotor = Utils.cap(leftMotor, 1);
         rightMotor = Utils.cap(rightMotor, 1);
@@ -252,7 +262,6 @@ public class Robot extends Entity {
 
         float turnMult = Math.abs(l - r);
 
-        //Utils.log(l + " / " + r+  "  |  " +turnMult);
         if (turnMult > 1) {
             float twoCloseness = turnMult - 1f;
             turnMult += twoCloseness * .5;
@@ -268,46 +277,6 @@ public class Robot extends Entity {
             right.setAngularVelocity((maxTurn) * Utils.sign(right.getAngularVelocity()));
         }
     }
-
-
-    /*
-    public void updateMotorsOld(float l, float r) {
-        //if (l != 0 || r != 0) Utils.log(l + " / " + r);
-        float lAngle = -left.getAngle();
-        float rAngle = -right.getAngle();
-
-        Vector2 lVel = left.getLinearVelocity();
-        Vector2 rVel = right.getLinearVelocity();
-
-        float leftX = (maxSpeed * l) * (float) Math.sin(lAngle);
-        float leftY = (maxSpeed * l) * (float) Math.cos(lAngle);
-
-        left.applyForceToCenter(Utils.cap(k * (leftX - lVel.x), maxAccel), Utils.cap(k * (leftY - lVel.y), maxAccel), true);
-
-
-        float rightX = (maxSpeed * r) * (float) Math.sin(rAngle);
-        float rightY = (maxSpeed * r) * (float) Math.cos(rAngle);
-
-        right.applyForceToCenter(Utils.cap(k * (rightX - rVel.x), maxAccel), Utils.cap(k * (rightY - rVel.y), maxAccel), true);
-
-        float turnMult = Math.abs(l - r);
-
-        //Utils.log(l + " / " + r+  "  |  " +turnMult);
-        if (turnMult > 1) {
-            float twoCloseness = turnMult - 1f;
-            turnMult += twoCloseness * .5;
-        }
-
-        maxTurn = turnMult * 2f; //1.5f
-
-        if (Math.abs(left.getAngularVelocity()) > maxTurn) {
-            left.setAngularVelocity((maxTurn) * Utils.sign(left.getAngularVelocity()));
-        }
-
-        if (Math.abs(right.getAngularVelocity()) > maxTurn) {
-            right.setAngularVelocity((maxTurn) * Utils.sign(right.getAngularVelocity()));
-        }
-    }*/
 
     public void updateMiddleMotor(float m) {
         //Vector2 vel = getLateralVelocity(left).add(getLateralVelocity(right));
@@ -332,7 +301,11 @@ public class Robot extends Entity {
         jointDef.initialize(left, right, new Vector2(0, 0));
         w.createJoint(jointDef);
 
-        return new Robot(left, right);
+        Robot r = new Robot(left, right);
+        left.setUserData(r);
+        right.setUserData(r);
+
+        return r;
     }
 
     private static Body createRobotPart(float x, float y, World w) {

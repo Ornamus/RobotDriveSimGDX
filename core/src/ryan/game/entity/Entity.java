@@ -150,7 +150,9 @@ public class Entity {
 
         Fixture fixture = right.createFixture(rightFix);
         shape.dispose();
-        return new Entity(radius, radius, right);
+        Entity e = new Entity(radius, radius, right);
+        right.setUserData(e);
+        return e;
     }
 
     public static Entity peg(float x, float y, float angle) {
@@ -162,7 +164,9 @@ public class Entity {
 
     public static Entity rectangleEntity(float x, float y, float width, float height, World w) {
         Body body = rectangleDynamicBody(x, y, width, height, w);
-        return new Entity(width, height, body);
+        Entity e = new Entity(width, height, body);
+        body.setUserData(e);
+        return e;
     }
 
     protected static Body rectangleDynamicBody(float x, float y, float width, float height, World w) {
@@ -214,7 +218,9 @@ public class Entity {
         rightFix.restitution = 0f;
 
         Fixture fixture = right.createFixture(rightFix);
-        return new Entity(right);
+        Entity e = new Entity(right);
+        right.setUserData(e);
+        return e;
     }
 
     public static List<Entity> generateFuelStack(float x, float y, World w) {
