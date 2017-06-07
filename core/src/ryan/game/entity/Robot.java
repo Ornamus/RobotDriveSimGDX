@@ -203,6 +203,7 @@ public class Robot extends Entity {
                 if (hasGear && !onPeg) {
                     //drop gear
 
+                    /*
                     float xChange = -1.75f * (float) Math.sin(Math.toRadians(getAngle()));
                     float yChange = 1.75f * (float) Math.cos(Math.toRadians(getAngle()));
 
@@ -210,7 +211,7 @@ public class Robot extends Entity {
                     e.setAngle(getAngle());
                     e.setName("Gear");
                     e.setSprite(gearTex);
-                    Main.getInstance().spawnEntity(e);
+                    Main.getInstance().spawnEntity(e);*/
                 }
                 hasGear = !hasGear;
             }
