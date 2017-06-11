@@ -14,13 +14,15 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.FrictionJointDef;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
+import ryan.game.render.Drawable;
+import ryan.game.render.ScoreDisplay;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +41,9 @@ public class Main extends ApplicationAdapter {
     OrthographicCamera camera;
     OrthographicCamera nonScaledCamera;
     public static List<Robot> robots = new ArrayList<Robot>();
-    public static List<Entity> entitiesAdd = new ArrayList<Entity>();
-    public static List<Entity> entitiesRemove = new ArrayList<Entity>();
-    public static List<Entity> entities = new ArrayList<Entity>();
+    public static List<Drawable> drawablesAdd = new ArrayList<Drawable>();
+    public static List<Drawable> drawablesRemove = new ArrayList<Drawable>();
+    public static List<Drawable> drawables = new ArrayList<Drawable>();
     public static List<CollisionListener.Collision> collisions = new ArrayList<CollisionListener.Collision>();
 
     List<Sprite> redRotors = new ArrayList<Sprite>();
@@ -66,6 +68,9 @@ public class Main extends ApplicationAdapter {
 
     private static Main self = null;
 
+    private static final int world_width = 56, world_height = 30; //56, 29
+    private static final int camera_y = -4;
+
 	@Override
 	public void create () {
         self = this;
@@ -74,7 +79,8 @@ public class Main extends ApplicationAdapter {
         world = new World(new Vector2(0, 0), true);
         world.setContactListener(new CollisionListener());
         debugRenderer = new Box2DDebugRenderer();
-        camera = new OrthographicCamera(56, 29);
+        camera = new OrthographicCamera(world_width, world_height);
+        camera.position.set(0, camera_y, 0);
         camera.update();
         nonScaledCamera = new OrthographicCamera(1100, 630);
         nonScaledCamera.update();
@@ -87,7 +93,7 @@ public class Main extends ApplicationAdapter {
         for (Robot r : robots) {
             addFriction(r.left);
             addFriction(r.right);
-            entities.add(r);
+            drawables.add(r);
         }
 
         /*
@@ -95,34 +101,34 @@ public class Main extends ApplicationAdapter {
         for (Body b : e.getBodies()) {
             addFriction(b, 12f);
         }
-        entities.add(e);
+        drawables.add(e);
         */
 
-        entities.add(Hopper.create(-9.5f, 12.25f, true, world)); //left top hopper
-        entities.add(Hopper.create(8.35f, 12.25f, true, world)); //right top hopper
+        drawables.add(Hopper.create(-9.5f, 12.25f, true, world)); //left top hopper
+        drawables.add(Hopper.create(8.35f, 12.25f, true, world)); //right top hopper
 
 
-        entities.add(Hopper.create(-16f, -13.45f, false, world)); //left bottom hopper
-        entities.add(Hopper.create(-0.6f, -13.45f, false, world)); //middle bottom hopper
-        entities.add(Hopper.create(16f - 1.15f, -13.45f, false, world)); //right bottom hopper
+        drawables.add(Hopper.create(-16f, -13.45f, false, world)); //left bottom hopper
+        drawables.add(Hopper.create(-0.6f, -13.45f, false, world)); //middle bottom hopper
+        drawables.add(Hopper.create(16f - 1.15f, -13.45f, false, world)); //right bottom hopper
 
 
-        entities.add(Entity.barrier(0, 12, 28f, .5f, world)); //top wall
-        entities.add(Entity.barrier(0, -13.2f, 28f, .5f, world)); //bottom wall
-        entities.add(Entity.barrier(-25.5f, 0, .5f, 10f, world)); //left wall
-        entities.add(Entity.barrier(24.5f, 0, .5f, 10f, world)); //right wall
+        drawables.add(Entity.barrier(0, 12, 28f, .5f, world)); //top wall
+        drawables.add(Entity.barrier(0, -13.2f, 28f, .5f, world)); //bottom wall
+        drawables.add(Entity.barrier(-25.5f, 0, .5f, 10f, world)); //left wall
+        drawables.add(Entity.barrier(24.5f, 0, .5f, 10f, world)); //right wall
 
-        entities.add(LoadingStation.create(true, true, -24.8f, 11, 26)); //blue load left
-        entities.add(LoadingStation.create(true, false, -21.6f, 12.65f, 26)); //blue load right
+        drawables.add(LoadingStation.create(true, true, -24.8f, 11, 26)); //blue load left
+        drawables.add(LoadingStation.create(true, false, -21.6f, 12.65f, 26)); //blue load right
 
-        entities.add(LoadingStation.create(false, true, 20.4f, 12.65f, -26)); //red load left
-        entities.add(LoadingStation.create(false, false, 23.6f, 11, -26)); //red load right
+        drawables.add(LoadingStation.create(false, true, 20.4f, 12.65f, -26)); //red load left
+        drawables.add(LoadingStation.create(false, false, 23.6f, 11, -26)); //red load right
 
-        entities.add(Entity.barrier(-23, 12, 3f, 2f, world).setAngle(26)); //Blue load barrier
-        entities.add(Entity.barrier(22, 12, 3f, 2f, world).setAngle(-26)); //Red load barrier
+        drawables.add(Entity.barrier(-23, 12, 3f, 2f, world).setAngle(26)); //Blue load barrier
+        drawables.add(Entity.barrier(22, 12, 3f, 2f, world).setAngle(-26)); //Red load barrier
 
-        entities.add(Entity.barrier(-24.8f, -12.9f, 2f, 2f, world).setAngle(46)); //Red boiler
-        entities.add(Entity.barrier(23.8f, -12.9f, 2f, 2f, world).setAngle(-46)); //Blue boiler
+        drawables.add(Entity.barrier(-24.8f, -12.9f, 2f, 2f, world).setAngle(46)); //Red boiler
+        drawables.add(Entity.barrier(23.8f, -12.9f, 2f, 2f, world).setAngle(-46)); //Blue boiler
 
         PolygonShape s = new PolygonShape();
 
@@ -140,18 +146,18 @@ public class Main extends ApplicationAdapter {
         };
         s.set(vertices);
 
-        entities.add(Entity.barrier(8.9f, -2.75f, s, world)); //blue airship
-        entities.add(Entity.barrier(-17.65f, -2.75f, s, world)); //red airship
+        drawables.add(Entity.barrier(8.9f, -2.75f, s, world)); //blue airship
+        drawables.add(Entity.barrier(-17.65f, -2.75f, s, world)); //red airship
 
-        entities.add(Entity.peg(-18.7f, -.57f, 0));
-        entities.add(Entity.peg(-16.25f, 3.25f, 360-60));
-        entities.add(Entity.peg(-16f, -4.25f, 60));
+        drawables.add(Entity.peg(-18.7f, -.57f, 0));
+        drawables.add(Entity.peg(-16.25f, 3.25f, 360-60));
+        drawables.add(Entity.peg(-16f, -4.25f, 60));
 
         float xFix = 1.55f;
 
-        entities.add(Entity.peg(18.9f - xFix, -.57f, 0));
-        entities.add(Entity.peg(16.25f - xFix, 3.25f, 60));
-        entities.add(Entity.peg(16.25f - xFix, -4.25f, 360-60));
+        drawables.add(Entity.peg(18.9f - xFix, -.57f, 0));
+        drawables.add(Entity.peg(16.25f - xFix, 3.25f, 60));
+        drawables.add(Entity.peg(16.25f - xFix, -4.25f, 360-60));
 
 
         float sideSpace = 1f;
@@ -176,8 +182,10 @@ public class Main extends ApplicationAdapter {
             }
         }
 
-        //entities.add(Entity.rectangleEntity(-18.7f, -.57f, .8f, .12f, world).setName("peg"));
-        //entities.add(Entity.rectangleEntity(4, 4, 1, .25f, world).setName("peg"));
+        drawables.add(new ScoreDisplay());
+
+        //drawables.add(Entity.rectangleEntity(-18.7f, -.57f, .8f, .12f, world).setName("peg"));
+        //drawables.add(Entity.rectangleEntity(4, 4, 1, .25f, world).setName("peg"));
 
 
 
@@ -196,13 +204,25 @@ public class Main extends ApplicationAdapter {
 
         musicChoices = Gdx.files.internal("core/assets/music").list();
 
-        bigFont = new BitmapFont(Gdx.files.internal("core/assets/fonts/deter.fnt"));
-        bigFont.setColor(Color.BLACK);
-        bigFont.getData().setScale(2.5f);
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/Kozuka.otf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        param.size = 52;
+        param.borderColor = Color.BLACK;
+        param.color = Color.ORANGE;
+        param.borderWidth = 2f;
+        param.shadowColor = Color.BLACK;
+        param.shadowOffsetX = 2;
+        param.shadowOffsetY = 2;
+        bigFont = generator.generateFont(param);
+        generator.dispose();
 
-        smallFont = new BitmapFont(Gdx.files.internal("core/assets/fonts/deter.fnt"));
-        smallFont.setColor(Color.BLACK);
-        smallFont.getData().setScale(1f);
+        generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/DTM-Mono.otf"));
+        param = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        param.size = 26;
+        param.borderWidth = 2f;
+        param.borderColor = Color.BLACK;
+        smallFont = generator.generateFont(param);
+        generator.dispose();
 
         layout = new GlyphLayout(bigFont, "");
 	}
@@ -214,10 +234,10 @@ public class Main extends ApplicationAdapter {
         // Our camera needs to be created with new aspect ratio
         // Our visible gameworld width is still 20m but we need to
         // calculate what height keeps the AR correct.
-        camera = new OrthographicCamera(56, (28 * 2) /screenAR);
+        camera = new OrthographicCamera(world_width, (world_height * 2) /screenAR);
         // Finally set camera position so that (0,0) is at bottom left
         //camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
-        camera.position.set(0, 0, 0);
+        camera.position.set(0, camera_y, 0);
         camera.update();
 
         // If we use spritebatch to draw lets update it here for new camera
@@ -257,23 +277,34 @@ public class Main extends ApplicationAdapter {
         for (Body b : e.getBodies()) {
             addFriction(b);
         }
-        entitiesAdd.add(e);
+        addDrawable(e);
     }
 
     public void spawnEntity(float friction, Entity e) {
         for (Body b : e.getBodies()) {
             addFriction(b, friction);
         }
-        entitiesAdd.add(e);
+        addDrawable(e);
     }
 
     public void removeEntity(Entity e) {
-        entitiesRemove.add(e);
+        removeDrawable(e);
+    }
+
+    public void addDrawable(Drawable d) {
+        drawablesAdd.add(d);
+    }
+
+    public void removeDrawable(Drawable d) {
+        drawablesRemove.add(d);
     }
 
     boolean didWhoop = false;
 
     boolean resetField = false;
+
+    public int redSpinning = 0;
+    public int blueSpinning = 0;
 
 	@Override
 	public void render () {
@@ -309,10 +340,10 @@ public class Main extends ApplicationAdapter {
 
         batch.begin();
         field.draw(batch);
-        for (Entity e : entities) {
-            e.draw(batch);
+        for (Drawable e : drawables) {
+            if (e.isDrawScaled()) e.draw(batch);
         }
-        int redSpinning = 0;
+        redSpinning = 0;
         if (redGears > 12) redSpinning = 3;
         else if (redGears > 6) redSpinning = 2;
         else if (redGears > 2) redSpinning = 1;
@@ -325,7 +356,7 @@ public class Main extends ApplicationAdapter {
             red++;
         }
 
-        int blueSpinning = 0;
+        blueSpinning = 0;
         if (blueGears > 12) blueSpinning = 3;
         else if (blueGears > 6) blueSpinning = 2;
         else if (blueGears > 2) blueSpinning = 1;
@@ -340,6 +371,9 @@ public class Main extends ApplicationAdapter {
         batch.end();
 
         nonScaled.begin();
+        for (Drawable e : drawables) {
+            if (!e.isDrawScaled()) e.draw(nonScaled);
+        }
         if (matchPlay) {
             bigFont.draw(nonScaled, minutes +  ":" + (seconds < 10 ? "0" : "") + seconds, -90, 300);
 
@@ -349,8 +383,8 @@ public class Main extends ApplicationAdapter {
             */
 
             float same = 55;
-            drawGearDisplay(-287.5f, -25, redGears, redGears > 12 ? Color.YELLOW : Color.WHITE, nonScaled);
-            drawGearDisplay(232.5f, -25, blueGears, blueGears > 12 ? Color.YELLOW : Color.WHITE, nonScaled);
+            drawGearDisplay(-287.5f, 45, redGears, redGears > 12 ? Color.YELLOW : Color.WHITE, nonScaled);
+            drawGearDisplay(232.5f, 45, blueGears, blueGears > 12 ? Color.YELLOW : Color.WHITE, nonScaled);
         }
         nonScaled.end();
 
@@ -378,16 +412,18 @@ public class Main extends ApplicationAdapter {
     }
 
     private void tick() {
-        entities.addAll(entitiesAdd);
-        entitiesAdd.clear();
-        for (Entity e : entitiesRemove) {
-            for (Body b : e.getBodies()) {
-                world.destroyBody(b);
+        drawables.addAll(drawablesAdd);
+        drawablesAdd.clear();
+        for (Drawable e : drawablesRemove) {
+            if (e instanceof Entity) {
+                for (Body b : ((Entity)e).getBodies()) {
+                    world.destroyBody(b);
+                }
             }
-            entities.remove(e);
+            drawables.remove(e);
         }
-        entitiesRemove.clear();
-        for (Entity e : entities) {
+        drawablesRemove.clear();
+        for (Drawable e : drawables) {
             e.tick();
         }
         for (CollisionListener.Collision c : collisions) {
@@ -421,18 +457,26 @@ public class Main extends ApplicationAdapter {
             if (playMusic && music.isPlaying()) music.stop();
         }
         if (Gdx.input.isKeyPressed(Input.Keys.R) || resetField) {
-            for (Entity e : new ArrayList<Entity>(entities)) {
+            for (Entity e : getEntities()) {
                 if (e.getName().equalsIgnoreCase("fuel") || e.getName().equalsIgnoreCase("gear")) {
                     for (Body b : e.getBodies()) {
                         world.destroyBody(b);
                     }
-                    entities.remove(e);
+                    drawables.remove(e);
                 } else if (e instanceof Hopper) {
                     ((Hopper)e).reset();
                 }
             }
             resetField = false;
         }
+    }
+
+    public List<Entity> getEntities() {
+        List<Entity> ents = new ArrayList<Entity>();
+        for (Drawable d : drawables) {
+            if (d instanceof Entity) ents.add((Entity)d);
+        }
+        return ents;
     }
 	
 	@Override

@@ -9,16 +9,16 @@ import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Constants;
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.render.Drawable;
 
 import javax.xml.soap.Text;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Entity {
+public class Entity extends Drawable {
 
     private String name = "entity";
     private float width = -1, height = -1;
-    private float x = 0, y = 0;
     private float angle = 0;
     private List<Body> bodies = new ArrayList<Body>();
     private Body primary = null;
@@ -28,6 +28,7 @@ public class Entity {
     private static final Texture fuelTex = new Texture("core/assets/fuel.png");
 
     protected Entity(Body... b) {
+        super(-999, -999);
         for (Body body : b) {
             addBody(body);
         }
@@ -71,15 +72,17 @@ public class Entity {
     Vector2 previousPos = null;
     protected Vector2 speed = new Vector2(0, 0);
 
+    @Override
     public void tick() {
+        super.tick();
         Vector2 pos = getPhysicsPosition();
         if (previousPos != null) {
             speed = new Vector2(pos.x, pos.y).sub(previousPos);
             speed.scl(1000f * Constants.TIME_STEP);
         }
         angle = getPhysicsAngle();
-        x = pos.x;
-        y = pos.y;
+        setX(pos.x);
+        setY(pos.y);
         if (s != null) {
             s.setBounds(pos.x - s.getWidth()/2, pos.y - s.getHeight()/2, width * 2, height * 2);
             // Set origin center for the sprite to guarantee proper rotation with physicsBody.
@@ -119,14 +122,6 @@ public class Entity {
 
     public void onCollide(Entity e, Body self, Body other) {}
 
-    public float getX() {
-        return x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
     public float getAngle() {
         float smartAngle = angle;
         while (smartAngle < 0) smartAngle = 360 + smartAngle;
@@ -134,6 +129,7 @@ public class Entity {
         return smartAngle;
     }
 
+    @Override
     public void draw(SpriteBatch b) {
         if (s != null) s.draw(b);
     }

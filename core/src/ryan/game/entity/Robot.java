@@ -158,12 +158,11 @@ public class Robot extends Entity {
         } else {
             Gamepad g = ControllerManager.getGamepad(id);
 
-            for (Button b : g.getButtons()) {
+            /*for (Button b : g.getButtons()) {
                 if (b.get()) {
-                    Utils.log(b.id + "|");
+                    Utils.log(b.id + "");
                 }
-            }
-
+            }*/
 
             boolean val = changeControls.get();
             if (val && !changeControlsWasTrue) {
