@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Gamepad {
 
-    private int id;
+    public final int id;
     private Controller c;
     private Component xAxis = null, yAxis = null, xAxis2 = null, yAxis2 = null;
     private List<Button> buttons = new ArrayList<Button>();
@@ -98,7 +98,7 @@ public class Gamepad {
     }
 
     public void setReverseSticks(boolean rev) {
-        if (rev == true && hasSecondJoystick())
+        if (hasSecondJoystick())
         reverseSticks = rev;
     }
 
@@ -107,6 +107,14 @@ public class Gamepad {
     }
 
     public Button getButton(int id) {
+        if (c.getName().equalsIgnoreCase("Rock Candy Wireless Gamepad for PS3")) {
+            if (id == 1) return buttons.get(2);
+            if (id == 2) return buttons.get(0);
+            if (id == 0) return buttons.get(1);
+            if (id == 6) return buttons.get(8);
+            if (id == 7) return buttons.get(9);
+            if (id == 9) return buttons.get(11);
+        }
         return buttons.get(id);
     }
 

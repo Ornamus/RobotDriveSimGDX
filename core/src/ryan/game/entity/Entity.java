@@ -29,7 +29,7 @@ public class Entity {
 
     protected Entity(Body... b) {
         for (Body body : b) {
-            bodies.add(body);
+            addBody(body);
         }
         primary = bodies.get(0);
     }
@@ -47,6 +47,11 @@ public class Entity {
         this.width = width;
         this.height = height;
         setSprite(t);
+    }
+
+    public void addBody(Body b) {
+        bodies.add(b);
+        b.setUserData(this);
     }
 
     public void setSprite(Texture t) {
@@ -112,7 +117,7 @@ public class Entity {
         return 0;
     }
 
-    public void onCollide(Entity e) {}
+    public void onCollide(Entity e, Body self, Body other) {}
 
     public float getX() {
         return x;
@@ -123,7 +128,10 @@ public class Entity {
     }
 
     public float getAngle() {
-        return angle;
+        float smartAngle = angle;
+        while (smartAngle < 0) smartAngle = 360 + smartAngle;
+        while (smartAngle >= 360) smartAngle -=360;
+        return smartAngle;
     }
 
     public void draw(SpriteBatch b) {
@@ -156,7 +164,10 @@ public class Entity {
     }
 
     public static Entity peg(float x, float y, float angle) {
-        Entity e = Entity.rectangleEntity(x, y, .8f, .12f, Main.getInstance().world).setName("peg");
+        Body b = Entity.rectangleStaticBody(x, y, .8f, .12f, Main.getInstance().world);
+        Entity e = new Entity(.8f, .12f, b).setName("peg");
+
+        //Entity e = Entity.rectangleEntity(x, y, .8f, .12f, Main.getInstance().world).setName("peg");
         e.setAngle(angle);
         e.setSprite(new Texture("core/assets/peg.png"));
         return e;
@@ -232,7 +243,7 @@ public class Entity {
     }
 
     public static Entity generateFuelBall(float x, float y, World w) {
-        Entity e = Entity.circleEntity(x, y, 0.2f, .4f, w);
+        Entity e = Entity.circleEntity(x, y, 0.2f, .2f, w);
         e.setSprite(fuelTex);
         e.setName("fuel");
         return e;

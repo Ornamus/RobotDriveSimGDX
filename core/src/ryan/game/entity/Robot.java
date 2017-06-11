@@ -19,7 +19,7 @@ import ryan.game.drive.*;
 public class Robot extends Entity {
 
     public final int id;
-    public Body left, right;
+    public Body left, right, intake = null;
     private int controllerIndex;
     private DriveController[] scrollOptions = {new Arcade(false), new Arcade(true), new Tank(), new CheesyDrive()};
     private FieldCentricStrafe fieldCentric;
@@ -36,9 +36,10 @@ public class Robot extends Entity {
     private Long dozerHoldStart = null;
 
     private float maxTurn = 1.5f;
-    private boolean blue;
-    private boolean hasGear = false;
-    public boolean onPeg = false;
+    public boolean blue;
+    public boolean hasGear = false;
+    public Entity peg = null;
+    public Entity intakeableGear = null;
 
     static final float maxMps = 16 / 3.28084f; //5
 
@@ -51,24 +52,26 @@ public class Robot extends Entity {
     private static final Texture tankTex = new Texture(Gdx.files.internal("core/assets/tank.png"));
     private static final Texture cheeseTex = new Texture(Gdx.files.internal("core/assets/cheese.png"));
 
+    private Sprite intakeSprite;
     private Sprite icon;
 
     private static int robots = 0;
 
     private Robot(Body left, Body right) {
         super(robot_size, robot_size, left, right);
+        setName("Robot");
         id = robots++;
         this.left = left;
         this.right = right;
         controllerIndex = 0;
-        //setPrimary(null);
+
         blue = !Utils.hasDecimal(id / 2.0);
-        //setSprite(blue ? blueTex : redTex);
+        updateSprite();
+
         gear = new Sprite(gearTex);
         gear.setBounds(-999, -999, 1f, 1f);
+
         fieldCentric = new FieldCentricStrafe(this);
-        //setSprite(Utils.colorImage("core/assets/robot_recolor.png", Utils.toColor(63, 72, 204)));
-        updateSprite();
 
         Gamepad g = ControllerManager.getGamepad(id);
         changeAlliance = g.getButton(7);
@@ -78,36 +81,46 @@ public class Robot extends Entity {
         reverseToggle = g.getButton(9);
     }
 
+    public void setIntake(Body b) {
+        intake = b;
+        addBody(b);
+    }
+
     public void updateSprite() {
         Color c;
-        if (blue) c = Utils.toColor(63, 72, 204);
-        else c = Utils.toColor(237, 28, 36);
+        if (blue) c = Main.BLUE;
+        else c = Main.RED;
         String tex;
         if (dozer) tex = "core/assets/dozer_recolor.png";
         else tex = "core/assets/robot_recolor.png";
         setSprite(Utils.colorImage(tex, c));
+
+        intakeSprite = new Sprite(Utils.colorImage("core//assets/robot_intake.png", c));
+        intakeSprite.setPosition(-999, -999);
     }
 
     @Override
     public Vector2 getPhysicsPosition() {
         float xAvg = 0, yAvg = 0;
-        for (Body b : getBodies()) {
+        Body[] important = new Body[]{left, right};
+        for (Body b : important) {
             Vector2 pos = b.getPosition();
             xAvg += pos.x;
             yAvg += pos.y;
         }
-        xAvg /= getBodies().size();
-        yAvg /= getBodies().size();
+        xAvg /= important.length;
+        yAvg /= important.length;
         return new Vector2(xAvg, yAvg);
     }
 
     @Override
     public float getPhysicsAngle() {
         float angle = 0;
-        for (Body b : getBodies()) {
+        Body[] important = new Body[]{left, right};
+        for (Body b : important) {
             angle += b.getAngle();
         }
-        angle /= getBodies().size();
+        angle /= important.length;
         return (float) Math.toDegrees(angle);
     }
 
@@ -131,6 +144,12 @@ public class Robot extends Entity {
             iconAlpha -= 0.01;
             if (iconAlpha <= 0) icon = null;
         }
+        if (intakeSprite != null) {
+            Vector2 pos = intake.getPosition();
+            intakeSprite.setBounds(pos.x - intakeSprite.getWidth()/2, pos.y - intakeSprite.getHeight()/2, robot_size * 2, robot_size / 2);
+            intakeSprite.setOriginCenter();
+            intakeSprite.setRotation((float)Math.toDegrees(intake.getAngle()));
+        }
         float leftMotor, rightMotor;
         Float middleMotor = null;
         if (ControllerManager.getGamepads().isEmpty()) {
@@ -139,10 +158,9 @@ public class Robot extends Entity {
         } else {
             Gamepad g = ControllerManager.getGamepad(id);
 
-
             for (Button b : g.getButtons()) {
                 if (b.get()) {
-                    //Utils.log(b.id + "|");
+                    Utils.log(b.id + "|");
                 }
             }
 
@@ -200,20 +218,37 @@ public class Robot extends Entity {
 
             val = gearToggle.get();
             if (val && !gearToggleWasTrue) {
-                if (hasGear && !onPeg) {
-                    //drop gear
-
-                    /*
-                    float xChange = -1.75f * (float) Math.sin(Math.toRadians(getAngle()));
-                    float yChange = 1.75f * (float) Math.cos(Math.toRadians(getAngle()));
-
-                    Entity e = Entity.circleEntity(getX() + xChange, getY() + yChange, .5f, .25f, Main.getInstance().world);
-                    e.setAngle(getAngle());
-                    e.setName("Gear");
-                    e.setSprite(gearTex);
-                    Main.getInstance().spawnEntity(e);*/
+                boolean canScore = false;
+                if (peg != null) {
+                    float diff = Math.abs(getAngle() - peg.getAngle());
+                    if (Math.abs(diff - 270) < 6 || Math.abs(diff - 90) < 6) canScore = true;
                 }
-                hasGear = !hasGear;
+                if (hasGear && !canScore) {
+                    //drop gear
+                    float distance = 1.25f; //1.75f
+                    float xChange = -distance * (float) Math.sin(Math.toRadians(getAngle()));
+                    float yChange = distance * (float) Math.cos(Math.toRadians(getAngle()));
+
+                    Entity e = Gear.create(getX() + xChange, getY() + yChange, getAngle(), false);
+
+                    Main.getInstance().spawnEntity(e);
+                    for (Body b : e.getBodies()) {
+                        float xPow = 50 * (float) Math.sin(Math.toRadians(-getAngle()));
+                        float yPow = 50 * (float) Math.cos(Math.toRadians(-getAngle()));
+                        b.applyForceToCenter(xPow, yPow, true);
+                    }
+                    hasGear = false;
+                } else if (hasGear && canScore) {
+                    hasGear = false;
+                    if (Main.matchPlay) {
+                        if (blue) Main.blueGears++;
+                        else Main.redGears++;
+                    }
+                } else if (!hasGear && intakeableGear != null) {
+                    Main.getInstance().removeEntity(intakeableGear);
+                    intakeableGear = null;
+                    hasGear = true;
+                }
             }
             gearToggleWasTrue = val;
 
@@ -240,6 +275,7 @@ public class Robot extends Entity {
         super.draw(b);
         if (hasGear) gear.draw(b);
         if (icon != null) icon.draw(b);
+        if (intakeSprite != null) intakeSprite.draw(b);
     }
 
     final float k = 10.0f; //2.25
@@ -293,18 +329,24 @@ public class Robot extends Entity {
         right.applyForceToCenter(Utils.cap(forceX, maxAccel * 2), Utils.cap(forceY, maxAccel * 2), true);*/
     }
 
+    private static void joint(Body a, Body b, World w) {
+        WeldJointDef jointDef = new WeldJointDef ();
+        jointDef.collideConnected = false;
+        jointDef.initialize(a, b, new Vector2(0, 0));
+        w.createJoint(jointDef);
+    }
+
     public static Robot create(float x, float y, World w) {
         Body left = createRobotPart(x - (robot_size * 1), y, w);
         Body right = createRobotPart(x, y, w);
+        Body intake = Entity.rectangleDynamicBody(x - (robot_size / 2), y + robot_size * 1.25f, robot_size, robot_size / 4, w);
 
-        WeldJointDef jointDef = new WeldJointDef ();
-        jointDef.collideConnected = false;
-        jointDef.initialize(left, right, new Vector2(0, 0));
-        w.createJoint(jointDef);
+        joint(left, right, w);
+        joint(left, intake, w);
+        joint(right, intake, w);
 
         Robot r = new Robot(left, right);
-        left.setUserData(r);
-        right.setUserData(r);
+        r.setIntake(intake);
 
         return r;
     }

@@ -44,7 +44,7 @@ public class Hopper extends Entity {
                 for (int i=0; 2>i; i++) {
                     Entity e = Entity.generateFuelBall(x + (i == 0 ? 2 : -2), y + (dropDown ? -1 : 1), Main.getInstance().world);
                     for (Body b : e.getBodies()) {
-                        b.applyForceToCenter((Utils.randomInt(200, 1500) / 100f) * (Utils.randomInt(0, 1) == 0 ? -1 : 1), (Utils.randomInt(1000, 1500) / 100f) * (Utils.randomInt(0, 1) == 0 ? -1 : 1), true);
+                        b.applyForceToCenter((Utils.randomInt(500, 900) / 100f) * (Utils.randomInt(0, 1) == 0 ? -1 : 1), (Utils.randomInt(500, 900) / 100f) * (Utils.randomInt(0, 1) == 0 ? -1 : 1), true);
                     }
                     Main.getInstance().spawnEntity(.2f, e);
                     if (fuelInHopper > 0) {
@@ -64,7 +64,7 @@ public class Hopper extends Entity {
     }
 
     @Override
-    public void onCollide(Entity e) {
+    public void onCollide(Entity e, Body self, Body other) {
         if (e instanceof Robot && !dumped) {
             dumping = true;
             timeOfLastDump = System.currentTimeMillis();
