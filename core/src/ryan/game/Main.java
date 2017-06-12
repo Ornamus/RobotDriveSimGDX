@@ -58,7 +58,7 @@ public class Main extends ApplicationAdapter {
     Music music = null;
 
     public static boolean matchPlay = false;
-    long matchStart = 0;
+    public static long matchStart = 0;
     Sound matchStartSound;
     Sound ropeDropSound;
     Sound matchEndSound;
@@ -195,7 +195,7 @@ public class Main extends ApplicationAdapter {
         nonScaled = new SpriteBatch();
         nonScaled.setProjectionMatrix(nonScaledCamera.combined);
 
-        field = new Sprite(new Texture(Gdx.files.internal("core/assets/steamworks_pegs.png")));
+        field = new Sprite(new Texture(Gdx.files.internal("core/assets/steamworks_norotors.png")));
         field.setBounds(-27.5f, -15, 54, 30);
 
         matchStartSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/charge_3.wav"));
@@ -303,8 +303,8 @@ public class Main extends ApplicationAdapter {
 
     boolean resetField = false;
 
-    public int redSpinning = 0;
-    public int blueSpinning = 0;
+    int redSpinning = 0;
+    int blueSpinning = 0;
 
 	@Override
 	public void render () {
@@ -375,14 +375,6 @@ public class Main extends ApplicationAdapter {
             if (!e.isDrawScaled()) e.draw(nonScaled);
         }
         if (matchPlay) {
-            bigFont.draw(nonScaled, minutes +  ":" + (seconds < 10 ? "0" : "") + seconds, -90, 300);
-
-            /*
-            smallFont.setColor(Color.RED);
-            smallFont.draw(nonScaled, "12", -290, 35);
-            */
-
-            float same = 55;
             drawGearDisplay(-287.5f, 45, redGears, redGears > 12 ? Color.YELLOW : Color.WHITE, nonScaled);
             drawGearDisplay(232.5f, 45, blueGears, blueGears > 12 ? Color.YELLOW : Color.WHITE, nonScaled);
         }

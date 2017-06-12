@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import ryan.game.Main;
+import ryan.game.Utils;
 
 public class ScoreDisplay extends Drawable {
 
@@ -16,6 +17,8 @@ public class ScoreDisplay extends Drawable {
     BitmapFont bigWhite;
     BitmapFont blackNormal;
     Sprite display;
+    Sprite timerBacking;
+    Sprite timerBar;
 
     public ScoreDisplay() {
         display = new Sprite(new Texture("core/assets/score_display.png"));
@@ -26,19 +29,27 @@ public class ScoreDisplay extends Drawable {
         setX(display.getX());
         setY(display.getY());
 
+        timerBacking = new Sprite(new Texture("core/assets/timer_backing.png"));
+        timerBacking.setSize(timerBacking.getWidth() * .75f, timerBacking.getHeight() * .75f);
+        timerBacking.setAlpha(.75f);
+        timerBacking.setPosition(0 - (timerBacking.getWidth() / 2), getY() + 72);
+
+        timerBar = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Utils.toColor(39, 124, 28)));
+        timerBar.setAlpha(1f);
+
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/Kozuka.otf"));
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
         param.size = 52;
         param.borderColor = Color.BLACK;
         param.color = Color.WHITE;
         param.borderWidth = 2f;
-        param.shadowColor = Color.BLACK;
-        param.shadowOffsetX = 1;
-        param.shadowOffsetY = 1;
+        //param.shadowColor = Color.BLACK;
+        //param.shadowOffsetX = 1;
+        //param.shadowOffsetY = 1;
         bigWhite = generator.generateFont(param);
 
         param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 19;
+        param.size = 20;
         param.color = Color.BLACK;
         param.shadowColor = Color.BLACK;
         param.borderWidth = .25f;
@@ -57,18 +68,81 @@ public class ScoreDisplay extends Drawable {
     @Override
     public void draw(SpriteBatch batch) {
         display.draw(batch);
+
+        int seconds = 135;
+        if (Main.matchPlay) {
+            long timeIn = System.currentTimeMillis() - Main.matchStart;
+            long timeLeft = (((2 * 60) + 15) * 1000) - timeIn;
+            seconds = Math.round(timeLeft / 1000f);
+        }
+        timerBar.setBounds(-127, getY() + 72, ((135f-seconds)/135f) * 254, 29);
+        timerBar.draw(batch);
+        if (seconds <= 30) timerBar.setTexture(Utils.colorImage("core/assets/whitepixel.png", Color.YELLOW));
+
+        timerBacking.draw(batch);
+
         int blueScore = 0;
         int redScore = 0;
+        int blueRots = 0, redRots = 0;
         if (Main.matchPlay) {
-            blueScore += Main.getInstance().blueSpinning * 40;
-            if (Main.getInstance().blueSpinning > 3)
+            if (Main.blueGears > 0) {
+                blueScore += 40;
+                blueRots++;
+            }
+            if (Main.blueGears > 2) {
+                blueScore += 40;
+                blueRots++;
+            }
+            if (Main.blueGears > 6) {
+                blueScore += 40;
+                blueRots++;
+            }
+            if (Main.blueGears > 12) {
+                blueScore += 140;
+                blueRots++;
+            }
+
+            if (Main.redGears > 0) {
+                redScore += 40;
+                redRots++;
+            }
+            if (Main.redGears > 2) {
+                redScore += 40;
+                redRots++;
+            }
+            if (Main.redGears > 6) {
+                redScore += 40;
+                redRots++;
+            }
+            if (Main.redGears > 12) {
+                redScore += 140;
+                redRots++;
+            }
         }
         drawCentered(blueScore + "", 65, getY()+61.5f, bigWhite, batch);
         drawCentered(redScore + "", -65, getY()+61.5f, bigWhite, batch);
 
-        drawCentered("Quarterfinal 1 of 8", -205, getY() + 130f, blackNormal, batch);
+        drawCentered(Main.matchPlay ? "Semifinal 3 of 4" : "Practice Match 1", -205, getY() + 130f, blackNormal, batch);
+        drawCentered(Main.matchPlay ? "FIRST Championship" : "Breakfast of Champions", 205, getY() + 130f, blackNormal, batch);
 
-        drawCentered("0", -257.5f, getY() + 35f, blackNormal, batch);
+        drawCentered("0", 257.5f, getY() + 35f, blackNormal, batch); //blue kpa
+        drawCentered("0", -257.5f, getY() + 35f, blackNormal, batch); //red kpa
+
+        drawCentered(blueRots + "", 360.5f, getY() + 36f, blackNormal, batch); //blue rotors
+        drawCentered(redRots + "", -360.5f, getY() + 36f, blackNormal, batch); //red rotors
+
+        drawCentered("0", 455, getY() + 36f, blackNormal, batch); //blue climbs
+        drawCentered("0", -455, getY() + 36f, blackNormal, batch); //red climbs
+
+        drawCentered(Main.matchPlay ? seconds + "" : "Infinite", 0, getY() + 93f, blackNormal, batch);
+
+        drawCentered("1902", -166, getY() + 92f, blackNormal, batch);
+        drawCentered("254", -166, getY() + 71f, blackNormal, batch);
+        drawCentered("987", -166, getY() + 71f - 21f, blackNormal, batch);
+
+        drawCentered("118", 166, getY() + 92f, blackNormal, batch);
+        drawCentered("1986", 166, getY() + 71f, blackNormal, batch);
+        drawCentered("180", 166, getY() + 71f - 21f, blackNormal, batch);
     }
 
     public void drawCentered(String s, float x, float y, BitmapFont f, SpriteBatch b) {
