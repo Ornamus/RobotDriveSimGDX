@@ -98,8 +98,7 @@ public class Gamepad {
     }
 
     public void setReverseSticks(boolean rev) {
-        if (hasSecondJoystick())
-        reverseSticks = rev;
+        if (hasSecondJoystick()) reverseSticks = rev;
     }
 
     public List<Button> getButtons() {
@@ -107,13 +106,19 @@ public class Gamepad {
     }
 
     public Button getButton(int id) {
-        if (c.getName().equalsIgnoreCase("Rock Candy Wireless Gamepad for PS3")) {
+        if (c.getName().equalsIgnoreCase("Rock Candy Wireless Gamepad for PS3") || c.getName().equalsIgnoreCase("Logitech Dual Action")) {
             if (id == 1) return buttons.get(2);
             if (id == 2) return buttons.get(0);
             if (id == 0) return buttons.get(1);
             if (id == 6) return buttons.get(8);
             if (id == 7) return buttons.get(9);
             if (id == 9) return buttons.get(11);
+        } else if (c.getName().equalsIgnoreCase("Logitech Attack 3")) {
+            if (id == 0) return buttons.get(1);
+            if (id == 2) return buttons.get(3);
+            if (id == 3) return buttons.get(4);
+            if (id == 5) return buttons.get(0);
+            //TODO
         }
         return buttons.get(id);
     }

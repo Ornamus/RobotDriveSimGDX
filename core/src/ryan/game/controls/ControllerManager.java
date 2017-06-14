@@ -3,7 +3,6 @@ package ryan.game.controls;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
 import ryan.game.Utils;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,7 +17,8 @@ public class ControllerManager {
     public static void init() {
         Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
         for (Controller c : controllers) {
-            if (c.getType() == Controller.Type.GAMEPAD) {
+            //Utils.log(c.getName() + ": " + c.getType().toString());
+            if (c.getType() == Controller.Type.GAMEPAD || c.getType() == Controller.Type.STICK) {
                 gamepads.add(new Gamepad(c));
                 Utils.log("Detected Gamepad: " + c.getName());
             }

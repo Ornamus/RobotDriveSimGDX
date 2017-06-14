@@ -77,7 +77,7 @@ public class ScoreDisplay extends Drawable {
         }
         timerBar.setBounds(-127, getY() + 72, ((135f-seconds)/135f) * 254, 29);
         timerBar.draw(batch);
-        if (seconds <= 30) timerBar.setTexture(Utils.colorImage("core/assets/whitepixel.png", Color.YELLOW));
+        timerBar.setTexture(Utils.colorImage("core/assets/whitepixel.png", (seconds <= 30 ? Color.YELLOW : Utils.toColor(39, 124, 28))));
 
         timerBacking.draw(batch);
 

@@ -22,7 +22,7 @@ public class Gear extends Entity {
 
     @Override
     public void onCollide(Entity e, Body self, Body other) {
-        if (loadingStation && e instanceof Robot && System.currentTimeMillis() - creation <= 750) {
+        if (loadingStation && e instanceof Robot && System.currentTimeMillis() - creation <= 250) {
             Robot r = (Robot) e;
             if (r.intake == other && !r.hasGear) {
                 r.hasGear = true;
@@ -52,11 +52,5 @@ public class Gear extends Entity {
         Gear g = (Gear) new Gear(loadingStation, right).setName("Gear").setAngle(angle);
         g.setSprite(TEXTURE);
         return g;
-
-        /*
-        Entity e = Entity.circleEntity(getX() + xChange, getY() + yChange, .5f, .25f, Main.getInstance().world);
-        e.setAngle(getAngle());
-        e.setName("Gear");
-        e.setSprite(TEXTURE);*/
     }
 }
