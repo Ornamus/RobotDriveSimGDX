@@ -3,6 +3,7 @@ package ryan.game;
 import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
+import ryan.game.entity.Rope;
 
 public class CollisionListener implements ContactListener {
 
@@ -16,13 +17,14 @@ public class CollisionListener implements ContactListener {
         Entity[] both = new Entity[]{a, b};
 
         if (a != null || b != null) {
-            for (int i=0; i<both.length; i++) {
+            for (int i = 0; i < both.length; i++) {
                 int otherI = i == 0 ? 1 : 0;
                 Entity e = both[i];
                 Entity other = both[otherI];
                 Body bE = bothBodies[i];
                 Body bOther = bothBodies[otherI];
                 if (e != null) {
+                    if (e instanceof Rope) contact.setEnabled(false);
                     if (other != null) {
                         if (e instanceof Robot) {
                             Robot r = (Robot) e;
@@ -42,42 +44,14 @@ public class CollisionListener implements ContactListener {
                                     //r.intakeableFuel = other;
                                     contact.setEnabled(false);
                                 }
+                            } else if (other instanceof Rope) {
+                                if (r.onRope == null && r.blue == ((Rope)other).blue) r.onRope = System.currentTimeMillis();
                             }
                         }
                     }
                 }
             }
         }
-
-        /*
-        if (a != null || b != null) {
-            if ((a != null && a.getName().equalsIgnoreCase("peg")) || (b != null && b.getName().equalsIgnoreCase("peg"))) {
-                contact.setEnabled(false);
-                if (a != null && a instanceof Robot) {
-                    ((Robot) a).onPeg = true;
-                } else if (b != null && b instanceof Robot) {
-                    ((Robot) b).onPeg = true;
-                }
-            } else {
-                for (int i=0; i<both.length; i++) {
-                    Entity e = both[i];
-                    if (e != null && (e.getName().equalsIgnoreCase("gear")) || e.getName().equalsIgnoreCase("fuel")) {
-                        Entity other = i == 0 ? both[1] : both[0];
-                        if (other != null && other instanceof Robot) {
-                            Body robotPart = bothBodies[i == 0 ? 1 : 0];
-                            if (robotPart == ((Robot) other).intake) {
-                                if (e.getName().equalsIgnoreCase("gear")) {
-                                    ((Robot) other).intakeableGear = e;
-                                } else {
-                                    //TODO: intakeable fuel
-                                }
-                                contact.setEnabled(false);
-                            }
-                        }
-                    }
-                }
-            }
-        }*/
     }
 
     @Override
@@ -114,27 +88,34 @@ public class CollisionListener implements ContactListener {
         Entity a = (Entity) bA.getUserData();
         Entity b = (Entity) bB.getUserData();
         Entity[] both = new Entity[]{a, b};
+
         if (a != null || b != null) {
-            if ((a != null && a.getName().equalsIgnoreCase("peg")) || (b != null && b.getName().equalsIgnoreCase("peg"))) {
-                contact.setEnabled(false);
-                if (a != null && a instanceof Robot) {
-                    ((Robot) a).peg = null;
-                } else if (b != null && b instanceof Robot) {
-                    ((Robot) b).peg = null;
-                }
-            } else {
-                for (int i=0; i<both.length; i++) {
-                    Entity e = both[i];
-                    if (e != null && (e.getName().equalsIgnoreCase("gear")) || e.getName().equalsIgnoreCase("fuel")) {
-                        Entity other = i == 0 ? both[1] : both[0];
-                        if (other != null && other instanceof Robot) {
-                            Body robotPart = bothBodies[i == 0 ? 1 : 0];
-                            if (robotPart == ((Robot) other).intake) {
-                                if (e.getName().equalsIgnoreCase("gear")) {
-                                    ((Robot) other).intakeableGear = null;
-                                } else {
-                                    //TODO: fuel intakeable
+            for (int i = 0; i < both.length; i++) {
+                int otherI = i == 0 ? 1 : 0;
+                Entity e = both[i];
+                Entity other = both[otherI];
+                Body bE = bothBodies[i];
+                Body bOther = bothBodies[otherI];
+                if (e != null) {
+                    if (e instanceof Rope) contact.setEnabled(false);
+                    if (other != null) {
+                        if (e instanceof Robot) {
+                            Robot r = (Robot) e;
+                            boolean intakeCollision = bE == r.intake;
+                            if (other.getName().equalsIgnoreCase("peg")) {
+                                if (intakeCollision) {
+                                    r.peg = null;
                                 }
+                            } else if (other.getName().equalsIgnoreCase("gear")) {
+                                if (intakeCollision) {
+                                    r.intakeableGear = null;
+                                }
+                            } else if (other.getName().equalsIgnoreCase("fuel")) {
+                                if (intakeCollision) {
+                                    //r.intakeableFuel = null;
+                                }
+                            } else if (other instanceof Rope) {
+                                r.onRope = null;
                             }
                         }
                     }

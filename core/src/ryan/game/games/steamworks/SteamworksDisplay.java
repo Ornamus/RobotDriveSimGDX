@@ -1,4 +1,4 @@
-package ryan.game.render;
+package ryan.game.games.steamworks;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -10,8 +10,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.entity.Gear;
+import ryan.game.entity.Robot;
+import ryan.game.render.Drawable;
 
-public class ScoreDisplay extends Drawable {
+public class SteamworksDisplay extends Drawable {
 
     GlyphLayout layout;
     BitmapFont bigWhite;
@@ -20,7 +23,7 @@ public class ScoreDisplay extends Drawable {
     Sprite timerBacking;
     Sprite timerBar;
 
-    public ScoreDisplay() {
+    public SteamworksDisplay() {
         display = new Sprite(new Texture("core/assets/score_display.png"));
         display.setBounds(0, 0, 1100, 145);
         display.setPosition(0 - (display.getWidth() / 2), -320);
@@ -84,6 +87,7 @@ public class ScoreDisplay extends Drawable {
         int blueScore = 0;
         int redScore = 0;
         int blueRots = 0, redRots = 0;
+        int blueClimbs = 0, redClimbs = 0;
         if (Main.matchPlay) {
             if (Main.blueGears > 0) {
                 blueScore += 40;
@@ -118,6 +122,16 @@ public class ScoreDisplay extends Drawable {
                 redScore += 140;
                 redRots++;
             }
+            if (seconds <= 30) {
+                for (Robot r : Main.robots) {
+                    if (r.onRope != null && System.currentTimeMillis() - r.onRope > 1000) {
+                        if (r.blue) blueClimbs++;
+                        else redClimbs++;
+                    }
+                }
+                blueScore += blueClimbs * 50;
+                redScore += redClimbs * 50;
+            }
         }
         drawCentered(blueScore + "", 65, getY()+61.5f, bigWhite, batch);
         drawCentered(redScore + "", -65, getY()+61.5f, bigWhite, batch);
@@ -131,8 +145,8 @@ public class ScoreDisplay extends Drawable {
         drawCentered(blueRots + "", 360.5f, getY() + 36f, blackNormal, batch); //blue rotors
         drawCentered(redRots + "", -360.5f, getY() + 36f, blackNormal, batch); //red rotors
 
-        drawCentered("0", 455, getY() + 36f, blackNormal, batch); //blue climbs
-        drawCentered("0", -455, getY() + 36f, blackNormal, batch); //red climbs
+        drawCentered(blueClimbs + "", 455, getY() + 36f, blackNormal, batch); //blue climbs
+        drawCentered(redClimbs + "", -455, getY() + 36f, blackNormal, batch); //red climbs
 
         drawCentered(Main.matchPlay ? seconds + "" : "Infinite", 0, getY() + 93f, blackNormal, batch);
 
@@ -143,6 +157,11 @@ public class ScoreDisplay extends Drawable {
         drawCentered("118", 166, getY() + 92f, blackNormal, batch);
         drawCentered("1986", 166, getY() + 71f, blackNormal, batch);
         drawCentered("180", 166, getY() + 71f - 21f, blackNormal, batch);
+
+        if (Main.matchPlay) {
+            drawGearDisplay(232.5f, 45, Main.blueGears, Main.blueGears > 12 ? Color.YELLOW : Color.WHITE, batch);
+            drawGearDisplay(-287.5f, 45, Main.redGears, Main.redGears > 12 ? Color.YELLOW : Color.WHITE, batch);
+        }
     }
 
     public void drawCentered(String s, float x, float y, BitmapFont f, SpriteBatch b) {
@@ -152,5 +171,12 @@ public class ScoreDisplay extends Drawable {
     private float getWidth(String s, BitmapFont f) {
         layout.setText(f, s);
         return layout.width;
+    }
+
+    public void drawGearDisplay(float x, float y, int gears, Color c, SpriteBatch b) {
+        b.draw(Gear.TEXTURE, x, y, 30f, 30f);
+        Main.smallFont.setColor(c);
+        layout.setText(Main.smallFont, gears + "");
+        Main.smallFont.draw(b, gears + "", x + 15 - (layout.width / 2), y + 55);
     }
 }

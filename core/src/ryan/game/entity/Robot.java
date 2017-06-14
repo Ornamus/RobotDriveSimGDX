@@ -40,6 +40,7 @@ public class Robot extends Entity {
     public boolean hasGear = false;
     public Entity peg = null;
     public Entity intakeableGear = null;
+    public Long onRope = null;
 
     static final float maxMps = 16 / 3.28084f; //5
 
@@ -95,7 +96,7 @@ public class Robot extends Entity {
         else tex = "core/assets/robot_recolor.png";
         setSprite(Utils.colorImage(tex, c));
 
-        intakeSprite = new Sprite(Utils.colorImage("core//assets/robot_intake.png", c));
+        intakeSprite = new Sprite(Utils.colorImage("core/assets/robot_intake.png", c));
         intakeSprite.setPosition(-999, -999);
     }
 
@@ -131,6 +132,11 @@ public class Robot extends Entity {
     boolean reverseToggleWasTrue = false;
 
     float iconAlpha;
+
+    @Override
+    public void onCollide(Entity e, Body self, Body other) {
+        //if (e instanceof Rope) Utils.log("rope");
+    }
 
     @Override
     public void tick() {

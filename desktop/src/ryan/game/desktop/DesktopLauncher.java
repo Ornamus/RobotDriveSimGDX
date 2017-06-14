@@ -19,6 +19,9 @@ public class DesktopLauncher {
 			if (s.equalsIgnoreCase("no_music")) {
 				Main.playMusic = false;
 			}
+			if (s.equalsIgnoreCase("software_gl")) {
+				System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true");
+			}
 		}
 		new LwjglApplication(new Main(), config);
 	}
