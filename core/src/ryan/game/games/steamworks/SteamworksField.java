@@ -9,10 +9,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import ryan.game.Main;
 import ryan.game.Utils;
-import ryan.game.entity.Entity;
-import ryan.game.entity.Hopper;
-import ryan.game.entity.LoadingStation;
-import ryan.game.entity.Rope;
+import ryan.game.entity.*;
 import ryan.game.games.Field;
 import ryan.game.render.Drawable;
 
@@ -93,7 +90,8 @@ public class SteamworksField extends Field {
         drawables.add(new Rope(-18.35f, -.5f, 0, false)); //red middle
         drawables.add(new Rope(-11.6f, -4.45f, 300, false)); //red bottom
 
-
+        drawables.add(new Boiler(-24.6f, -12.25f, false)); //red boiler
+        drawables.add(new Boiler(23.4f, -12.25f, true));
 
 
         float sideSpace = 1f;

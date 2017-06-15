@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
@@ -30,6 +31,7 @@ public class Robot extends Entity {
     private Button gearToggle;
     private Button dozerToggle;
     private Button reverseToggle;
+    private Button shoot;
 
     private boolean dozer = false;
     private boolean dozerUnlocked = false;
@@ -38,8 +40,12 @@ public class Robot extends Entity {
     private float maxTurn = 1.5f;
     public boolean blue;
     public boolean hasGear = false;
+    public boolean gearIntake = true;
     public Entity peg = null;
     public Entity intakeableGear = null;
+    public Entity intakeableFuel = null;
+    public int fuel = 0;
+    private long timeOfLastFire = 0;
     public Long onRope = null;
 
     static final float maxMps = 16 / 3.28084f; //5
@@ -80,6 +86,7 @@ public class Robot extends Entity {
         gearToggle = g.getButton(5);
         dozerToggle = g.getButton(1);
         reverseToggle = g.getButton(9);
+        shoot = g.getButton(4);
     }
 
     public void setIntake(Body b) {
@@ -130,6 +137,7 @@ public class Robot extends Entity {
     boolean gearToggleWasTrue = false;
     boolean dozerToggleWasTrue = false;
     boolean reverseToggleWasTrue = false;
+    boolean startedIntakingWithGear = false;
 
     float iconAlpha;
 
@@ -201,7 +209,7 @@ public class Robot extends Entity {
             val = dozerToggle.get();
             if (val && !dozerUnlocked) {
                 if (dozerHoldStart == null) dozerHoldStart = System.currentTimeMillis();
-                if (System.currentTimeMillis() - dozerHoldStart >= 5000) {
+                if (System.currentTimeMillis() - dozerHoldStart >= 2500) {
                     dozerUnlocked = true;
                     Utils.log("Robot " + id + " unlocked Dozer!");
                 }
@@ -210,6 +218,7 @@ public class Robot extends Entity {
             }
             if (val && !dozerToggleWasTrue && dozerUnlocked) {
                 dozer = !dozer;
+                gearIntake = !dozer;
                 updateSprite();
             }
             dozerToggleWasTrue = val;
@@ -220,15 +229,19 @@ public class Robot extends Entity {
                 updateSprite();
             }
             changeAllianceWasTrue = val;
-
             val = gearToggle.get();
+
             if (val && !gearToggleWasTrue) {
+                startedIntakingWithGear = hasGear;
+            }
+
+            if (val) {
                 boolean canScore = false;
                 if (peg != null) {
                     float diff = Math.abs(getAngle() - peg.getAngle());
                     if (Math.abs(diff - 270) < 6 || Math.abs(diff - 90) < 6) canScore = true;
                 }
-                if (hasGear && !canScore) {
+                if (hasGear && !canScore && startedIntakingWithGear) {
                     //drop gear
                     float distance = 1.25f; //1.75f
                     float xChange = -distance * (float) Math.sin(Math.toRadians(getAngle()));
@@ -243,19 +256,44 @@ public class Robot extends Entity {
                         b.applyForceToCenter(xPow, yPow, true);
                     }
                     hasGear = false;
-                } else if (hasGear && canScore) {
+                } else if (hasGear && canScore && startedIntakingWithGear) {
                     hasGear = false;
                     if (Main.matchPlay) {
                         if (blue) Main.blueGears++;
                         else Main.redGears++;
                     }
-                } else if (!hasGear && intakeableGear != null) {
+                } else if (!hasGear && intakeableGear != null && !startedIntakingWithGear && gearIntake) {
                     Main.getInstance().removeEntity(intakeableGear);
                     intakeableGear = null;
                     hasGear = true;
                 }
+
+                if (intakeableFuel != null && fuel < 50 && !gearIntake) {
+                    Main.getInstance().removeEntity(intakeableFuel);
+                    intakeableFuel = null;
+                    fuel++;
+                }
+
             }
             gearToggleWasTrue = val;
+
+            if (shoot.get() && fuel > 0 && System.currentTimeMillis() - timeOfLastFire > 150) {
+                float distance = 1.25f; //1.75f
+                float xChange = -distance * (float) Math.sin(Math.toRadians(getAngle()));
+                float yChange = distance * (float) Math.cos(Math.toRadians(getAngle()));
+                //Utils.log("angle: " + getAngle());
+
+                Entity f = Fuel.create(getX() + xChange, getY() + yChange, false);//shootFuel(getX() + xChange, getY() + yChange, 1);
+                f.setAirMomentum(1);
+                Main.getInstance().spawnEntity(.2f, f);
+                for (Body b : f.getBodies()) {
+                    float xPow = 25 * (float) Math.sin(Math.toRadians(-getAngle()));
+                    float yPow = 25 * (float) Math.cos(Math.toRadians(-getAngle()));
+                    b.applyForceToCenter(xPow, yPow, true);
+                }
+                fuel--;
+                timeOfLastFire = System.currentTimeMillis();
+            }
 
             val = reverseToggle.get();
             if (val && !reverseToggleWasTrue) {
@@ -278,9 +316,13 @@ public class Robot extends Entity {
     @Override
     public void draw(SpriteBatch b) {
         super.draw(b);
-        if (hasGear) gear.draw(b);
         if (icon != null) icon.draw(b);
         if (intakeSprite != null) intakeSprite.draw(b);
+        if (fuel > 0) {
+            float size = 1 * (fuel / 50f);
+            b.draw(fuel == 50 ? Fuel.TEXTURE_MAX : Fuel.TEXTURE, getX() - (size / 2), getY() - (size / 2), size, size);
+        }
+        if (hasGear) gear.draw(b);
     }
 
     final float k = 10.0f; //2.25
@@ -327,8 +369,8 @@ public class Robot extends Entity {
         Utils.log("Bot angle: " + Utils.roundToPlace(getAngle() + 90, 2));
 
         /*
-        float forceX = ((maxSpeed * 2) * (m * 2)) * (float) Math.sin(-getAngle() + 90);
-        float forceY = ((maxSpeed * 2) * (m * 2)) * (float) Math.cos(-getAngle() + 90);
+        float forceX = ((maxSpeed * 2) * (m * 2)) * (float) Math.sin(getAngle() + 90);
+        float forceY = ((maxSpeed * 2) * (m * 2)) * (float) Math.cos(getAngle() + 90);
 
         left.applyForceToCenter(Utils.cap(forceX, maxAccel * 2), Utils.cap(forceY, maxAccel * 2), true);
         right.applyForceToCenter(Utils.cap(forceX, maxAccel * 2), Utils.cap(forceY, maxAccel * 2), true);*/

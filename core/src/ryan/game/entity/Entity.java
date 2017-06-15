@@ -20,6 +20,9 @@ public class Entity extends Drawable {
     private String name = "entity";
     private float width = -1, height = -1;
     private float angle = 0;
+    private float airDistance = 1;
+    private float airMomentum = 0;
+    public float friction = 8f;
     private List<Body> bodies = new ArrayList<Body>();
     private Body primary = null;
     private Sprite s = null;
@@ -29,10 +32,12 @@ public class Entity extends Drawable {
 
     protected Entity(Body... b) {
         super(-999, -999);
-        for (Body body : b) {
-            addBody(body);
+        if (b != null) {
+            for (Body body : b) {
+                addBody(body);
+            }
         }
-        primary = bodies.get(0);
+        if (!bodies.isEmpty()) primary = bodies.get(0);
     }
 
     protected Entity(float width, float height, Body... b) {
@@ -83,8 +88,14 @@ public class Entity extends Drawable {
         angle = getPhysicsAngle();
         setX(pos.x);
         setY(pos.y);
+
+        airDistance += airMomentum;
+        if (airMomentum > -1f) airMomentum -=.1f;
+        if (airDistance < 1) airDistance = 1;
+        float sizeChanger = airDistance / 3f; //2,5
+        if (sizeChanger < 1) sizeChanger = 1;
         if (s != null) {
-            s.setBounds(pos.x - s.getWidth()/2, pos.y - s.getHeight()/2, width * 2, height * 2);
+            s.setBounds(pos.x - s.getWidth()/2, pos.y - s.getHeight()/2, width * 2 * sizeChanger, height * 2 * sizeChanger);
             // Set origin center for the sprite to guarantee proper rotation with physicsBody.
             s.setOriginCenter();
             s.setRotation(angle);
@@ -123,7 +134,7 @@ public class Entity extends Drawable {
     public void onCollide(Entity e, Body self, Body other) {}
 
     public float getAngle() {
-        float smartAngle = angle;
+        float smartAngle = getPhysicsAngle();
         while (smartAngle < 0) smartAngle = 360 + smartAngle;
         while (smartAngle >= 360) smartAngle -=360;
         return smartAngle;
@@ -230,20 +241,13 @@ public class Entity extends Drawable {
         return e;
     }
 
-    public static List<Entity> generateFuelStack(float x, float y, World w) {
-        List<Entity> fuel = new ArrayList<Entity>();
-        for (int i=0; i<100;i++) {
-            fuel.add(generateFuelBall(x, y, w));
-        }
-        return fuel;
-    }
-
+    /*
     public static Entity generateFuelBall(float x, float y, World w) {
         Entity e = Entity.circleEntity(x, y, 0.2f, .2f, w);
         e.setSprite(fuelTex);
         e.setName("fuel");
         return e;
-    }
+    }*/
 
     public Entity setAngle(float angle) {
         this.angle = angle;
@@ -251,5 +255,17 @@ public class Entity extends Drawable {
             body.setTransform(body.getPosition(), (float) Math.toRadians(angle));
         }
         return this;
+    }
+
+    public float getAirDistance() {
+        return airDistance;
+    }
+
+    public float getAirMomentum() {
+        return airMomentum;
+    }
+
+    public void setAirMomentum(float airMomentum) {
+        this.airMomentum = airMomentum;
     }
 }

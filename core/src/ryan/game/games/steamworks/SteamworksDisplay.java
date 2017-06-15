@@ -87,6 +87,7 @@ public class SteamworksDisplay extends Drawable {
         int blueScore = 0;
         int redScore = 0;
         int blueRots = 0, redRots = 0;
+        int blueKPA = 0, redKPA = 0;
         int blueClimbs = 0, redClimbs = 0;
         if (Main.matchPlay) {
             if (Main.blueGears > 0) {
@@ -122,6 +123,12 @@ public class SteamworksDisplay extends Drawable {
                 redScore += 140;
                 redRots++;
             }
+            blueKPA = (int)Math.round(Math.floor(Main.blueFuel / 3.0));
+            redKPA = (int)Math.round(Math.floor(Main.redFuel / 3.0));
+            blueScore += blueKPA;
+            redScore += redKPA;
+            if (blueKPA >= 40) blueScore += 20;
+            if (redKPA >= 40) redScore += 20;
             if (seconds <= 30) {
                 for (Robot r : Main.robots) {
                     if (r.onRope != null && System.currentTimeMillis() - r.onRope > 1000) {
@@ -139,8 +146,8 @@ public class SteamworksDisplay extends Drawable {
         drawCentered(Main.matchPlay ? "Semifinal 3 of 4" : "Practice Match 1", -205, getY() + 130f, blackNormal, batch);
         drawCentered(Main.matchPlay ? "FIRST Championship" : "Breakfast of Champions", 205, getY() + 130f, blackNormal, batch);
 
-        drawCentered("0", 257.5f, getY() + 35f, blackNormal, batch); //blue kpa
-        drawCentered("0", -257.5f, getY() + 35f, blackNormal, batch); //red kpa
+        drawCentered(blueKPA + "", 257.5f, getY() + 35f, blackNormal, batch); //blue kpa
+        drawCentered(redKPA + "", -257.5f, getY() + 35f, blackNormal, batch); //red kpa
 
         drawCentered(blueRots + "", 360.5f, getY() + 36f, blackNormal, batch); //blue rotors
         drawCentered(redRots + "", -360.5f, getY() + 36f, blackNormal, batch); //red rotors

@@ -42,7 +42,7 @@ public class Hopper extends Entity {
         if (dumping) {
             if (System.currentTimeMillis() - timeOfLastDump > dumpRate) {
                 for (int i=0; 2>i; i++) {
-                    Entity e = Entity.generateFuelBall(x + (i == 0 ? 2 : -2), y + (dropDown ? -1 : 1), Main.getInstance().world);
+                    Entity e = Fuel.create(x + (i == 0 ? 2 : -2), y + (dropDown ? -1 : 1), true);
                     for (Body b : e.getBodies()) {
                         b.applyForceToCenter((Utils.randomInt(500, 900) / 100f) * (Utils.randomInt(0, 1) == 0 ? -1 : 1), (Utils.randomInt(500, 900) / 100f) * (Utils.randomInt(0, 1) == 0 ? -1 : 1), true);
                     }

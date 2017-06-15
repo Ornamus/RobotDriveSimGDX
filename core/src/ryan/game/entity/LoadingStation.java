@@ -37,8 +37,8 @@ public class LoadingStation extends Entity {
                     float yChange = -distance * (float) Math.cos(Math.toRadians(getAngle()));
 
                     Gear gear = Gear.create(getX() + xChange, getY() + yChange, 0, true);
-                    gear.getPrimary().applyForceToCenter(xChange * 50, yChange * 50, true);
                     Main.getInstance().spawnEntity(gear);
+                    gear.getPrimary().applyForceToCenter(xChange * 50, yChange * 50, true);
                 }
                 wasHeld.put(g.id, val);
             }

@@ -62,6 +62,8 @@ public class Main extends ApplicationAdapter {
 
     public static int blueGears = 0;
     public static int redGears = 0;
+    public static int blueFuel = 0;
+    public static int redFuel = 0;
 
     private static Main self = null;
 
@@ -183,21 +185,21 @@ public class Main extends ApplicationAdapter {
     }
 
     public void spawnEntity(Entity e) {
-        for (Body b : e.getBodies()) {
-            addFriction(b);
-        }
         addDrawable(e);
     }
 
     public void spawnEntity(float friction, Entity e) {
-        for (Body b : e.getBodies()) {
-            addFriction(b, friction);
-        }
+        e.friction = friction;
         addDrawable(e);
     }
 
     public void removeEntity(Entity e) {
         removeDrawable(e);
+        for (Body b : e.getBodies()) {
+            b.setActive(false);
+            b.setAwake(false);
+            b.setUserData(null);
+        }
     }
 
     public void addDrawable(Drawable d) {
@@ -250,14 +252,14 @@ public class Main extends ApplicationAdapter {
         batch.begin();
         field.draw(batch);
         for (Drawable e : drawables) {
-            if (e.isDrawScaled()) e.draw(batch);
+            if (e.isDrawScaled() && !drawablesRemove.contains(e)) e.draw(batch);
         }
         gameField.draw(batch);
         batch.end();
 
         nonScaled.begin();
         for (Drawable e : drawables) {
-            if (!e.isDrawScaled()) e.draw(nonScaled);
+            if (!e.isDrawScaled() && !drawablesRemove.contains(e)) e.draw(nonScaled);
         }
         nonScaled.end();
 
@@ -278,17 +280,19 @@ public class Main extends ApplicationAdapter {
     }
 
     private void tick() {
-        drawables.addAll(drawablesAdd);
-        drawablesAdd.clear();
-        for (Drawable e : drawablesRemove) {
-            if (e instanceof Entity) {
-                for (Body b : ((Entity)e).getBodies()) {
-                    world.destroyBody(b);
-                }
-            }
+        for (Drawable e : new ArrayList<>(drawablesRemove)) {
             drawables.remove(e);
         }
-        drawablesRemove.clear();
+        for (Drawable d : drawablesAdd) {
+            if (d instanceof Entity) {
+                Entity e = (Entity) d;
+                for (Body b : e.getBodies()) {
+                    addFriction(b, e.friction);
+                }
+            }
+            drawables.add(d);
+        }
+        drawablesAdd.clear();
         for (CollisionListener.Collision c : collisions) {
             c.a.onCollide(c.b, c.bA, c.bB);
             c.b.onCollide(c.a, c.bB, c.bA);
@@ -309,6 +313,8 @@ public class Main extends ApplicationAdapter {
         if ((aPressed || Gdx.input.isKeyPressed(Input.Keys.P)) && !matchPlay) {
             blueGears = 0;
             redGears = 0;
+            blueFuel = 0;
+            redFuel = 0;
             resetField = true;
             matchPlay = true;
             matchStart = System.currentTimeMillis();
