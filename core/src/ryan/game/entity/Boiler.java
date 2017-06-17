@@ -3,6 +3,7 @@ package ryan.game.entity;
 import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.games.steamworks.SteamworksField;
 
 /**
  * Created by Ryan Shavell on 6/14/2017.
@@ -38,13 +39,13 @@ public class Boiler extends Entity {
     }
 
     @Override
-    public void onCollide(Entity e, Body self, Body other) {
+    public void onCollide(Entity e, Body self, Body other, Contact c) {
         //if (e.getName().equalsIgnoreCase("fuel")) Utils.log("air: " + e.getAirDistance());
         if (e.getName().equalsIgnoreCase("fuel") && e.getAirDistance() <= 5.5) {
             Main.getInstance().removeEntity(e);
             if (Main.matchPlay) {
-                if (blue) Main.blueFuel++;
-                else Main.redFuel++;
+                if (blue) SteamworksField.blueFuel++;
+                else SteamworksField.redFuel++;
             }
         }
     }

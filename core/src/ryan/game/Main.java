@@ -9,10 +9,8 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
@@ -50,7 +48,6 @@ public class Main extends ApplicationAdapter {
 
     public static BitmapFont bigFont, smallFont;
     GlyphLayout layout;
-    Sprite field;
     FileHandle[] musicChoices;
     Music music = null;
 
@@ -59,11 +56,6 @@ public class Main extends ApplicationAdapter {
     Sound matchStartSound;
     Sound ropeDropSound;
     Sound matchEndSound;
-
-    public static int blueGears = 0;
-    public static int redGears = 0;
-    public static int blueFuel = 0;
-    public static int redFuel = 0;
 
     private static Main self = null;
 
@@ -91,23 +83,21 @@ public class Main extends ApplicationAdapter {
             index++;
         }
 
+        gameField = new SteamworksField();
+        gameField.affectRobots();
+        drawables.addAll(gameField.generateField());
+
         for (Robot r : robots) {
             addFriction(r.left);
             addFriction(r.right);
             drawables.add(r);
         }
 
-        gameField = new SteamworksField();
-        drawables.addAll(gameField.generateField());
-
 		batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
 
         nonScaled = new SpriteBatch();
         nonScaled.setProjectionMatrix(nonScaledCamera.combined);
-
-        field = new Sprite(new Texture(Gdx.files.internal("core/assets/steamworks_norotors.png")));
-        field.setBounds(-27.5f, -15, 54, 30);
 
         matchStartSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/charge_3.wav"));
         ropeDropSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/whoop.wav"));
@@ -214,9 +204,6 @@ public class Main extends ApplicationAdapter {
 
     boolean resetField = false;
 
-    int redSpinning = 0;
-    int blueSpinning = 0;
-
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
@@ -250,7 +237,6 @@ public class Main extends ApplicationAdapter {
         }
 
         batch.begin();
-        field.draw(batch);
         for (Drawable e : drawables) {
             if (e.isDrawScaled() && !drawablesRemove.contains(e)) e.draw(batch);
         }
@@ -294,8 +280,8 @@ public class Main extends ApplicationAdapter {
         }
         drawablesAdd.clear();
         for (CollisionListener.Collision c : collisions) {
-            c.a.onCollide(c.b, c.bA, c.bB);
-            c.b.onCollide(c.a, c.bB, c.bA);
+            c.a.onCollide(c.b, c.bA, c.bB, c.c);
+            c.b.onCollide(c.a, c.bB, c.bA, c.c);
         }
         collisions.clear();
         for (Drawable e : drawables) {
@@ -311,10 +297,7 @@ public class Main extends ApplicationAdapter {
             }
         }
         if ((aPressed || Gdx.input.isKeyPressed(Input.Keys.P)) && !matchPlay) {
-            blueGears = 0;
-            redGears = 0;
-            blueFuel = 0;
-            redFuel = 0;
+            gameField.matchStart();
             resetField = true;
             matchPlay = true;
             matchStart = System.currentTimeMillis();

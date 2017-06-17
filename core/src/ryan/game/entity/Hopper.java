@@ -2,6 +2,7 @@ package ryan.game.entity;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.World;
 import ryan.game.Main;
 import ryan.game.Utils;
@@ -64,7 +65,7 @@ public class Hopper extends Entity {
     }
 
     @Override
-    public void onCollide(Entity e, Body self, Body other) {
+    public void onCollide(Entity e, Body self, Body other, Contact contact) {
         if (e instanceof Robot && !dumped) {
             dumping = true;
             timeOfLastDump = System.currentTimeMillis();

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Main;
+import ryan.game.games.steamworks.SteamworksMetadata;
 
 public class Fuel extends Entity {
 
@@ -22,11 +23,12 @@ public class Fuel extends Entity {
     }
 
     @Override
-    public void onCollide(Entity e, Body self, Body other) {
+    public void onCollide(Entity e, Body self, Body other, Contact contact) {
         if (loadingStation && e instanceof Robot && System.currentTimeMillis() - creation <= 175) {
             Robot r = (Robot) e;
-            if (r.fuel < 50) {
-                r.fuel++;
+            SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
+            if (meta.fuel < 50) {
+                meta.fuel++;
                 Main.getInstance().removeEntity(this);
             }
         }

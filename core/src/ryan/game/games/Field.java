@@ -7,6 +7,10 @@ public abstract class Field extends Drawable {
 
     public abstract List<Drawable> generateField();
 
+    public abstract void affectRobots();
+
+    public abstract void matchStart();
+
     public abstract void resetField(List<Drawable> field);
 
     public abstract void tick();

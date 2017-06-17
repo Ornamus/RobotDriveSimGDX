@@ -16,6 +16,7 @@ import ryan.game.controls.Button;
 import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
 import ryan.game.drive.*;
+import ryan.game.games.RobotMetadata;
 
 public class Robot extends Entity {
 
@@ -24,29 +25,20 @@ public class Robot extends Entity {
     private int controllerIndex;
     private DriveController[] scrollOptions = {new Arcade(false), new Arcade(true), new Tank(), new CheesyDrive()};
     private FieldCentricStrafe fieldCentric;
-    private Sprite gear;
+
+    public RobotMetadata metadata = null;
 
     private Button changeAlliance;
     private Button changeControls;
-    private Button gearToggle;
     private Button dozerToggle;
     private Button reverseToggle;
-    private Button shoot;
 
-    private boolean dozer = false;
+    public boolean dozer = false;
     private boolean dozerUnlocked = false;
     private Long dozerHoldStart = null;
 
     private float maxTurn = 1.5f;
     public boolean blue;
-    public boolean hasGear = false;
-    public boolean gearIntake = true;
-    public Entity peg = null;
-    public Entity intakeableGear = null;
-    public Entity intakeableFuel = null;
-    public int fuel = 0;
-    private long timeOfLastFire = 0;
-    public Long onRope = null;
 
     static final float maxMps = 16 / 3.28084f; //5
 
@@ -75,18 +67,13 @@ public class Robot extends Entity {
         blue = !Utils.hasDecimal(id / 2.0);
         updateSprite();
 
-        gear = new Sprite(gearTex);
-        gear.setBounds(-999, -999, 1f, 1f);
-
         fieldCentric = new FieldCentricStrafe(this);
 
         Gamepad g = ControllerManager.getGamepad(id);
         changeAlliance = g.getButton(7);
         changeControls = g.getButton(6);
-        gearToggle = g.getButton(5);
         dozerToggle = g.getButton(1);
         reverseToggle = g.getButton(9);
-        shoot = g.getButton(4);
     }
 
     public void setIntake(Body b) {
@@ -134,24 +121,30 @@ public class Robot extends Entity {
 
     boolean changeAllianceWasTrue = false;
     boolean changeControlsWasTrue = false;
-    boolean gearToggleWasTrue = false;
     boolean dozerToggleWasTrue = false;
     boolean reverseToggleWasTrue = false;
-    boolean startedIntakingWithGear = false;
 
     float iconAlpha;
 
     @Override
-    public void onCollide(Entity e, Body self, Body other) {
-        //if (e instanceof Rope) Utils.log("rope");
+    public void collideStart(Entity e, Body self, Body other, Contact c) {
+        if (metadata != null) metadata.collideStart(this, e, self, other, c);
+    }
+
+    @Override
+    public void onCollide(Entity e, Body self, Body other, Contact c) {
+        if (metadata != null) metadata.onCollide(this, e, self, other, c);
+    }
+
+    @Override
+    public void collideEnd(Entity e, Body self, Body other, Contact c) {
+        if (metadata != null) metadata.collideEnd(this, e, self, other, c);
     }
 
     @Override
     public void tick() {
         super.tick();
-        gear.setPosition(getX() - gear.getWidth()/2, getY() - gear.getHeight()/2);
-        gear.setOriginCenter();
-        gear.setRotation(getAngle());
+
         if (icon != null) {
             icon.setPosition(getX() - icon.getWidth() / 2, getY() + 1f);
             icon.setAlpha(iconAlpha);
@@ -171,7 +164,6 @@ public class Robot extends Entity {
             rightMotor = Gdx.input.isKeyPressed(Input.Keys.D) ? 1 : 0;
         } else {
             Gamepad g = ControllerManager.getGamepad(id);
-
             /*for (Button b : g.getButtons()) {
                 if (b.get()) {
                     Utils.log(b.id + "");
@@ -218,7 +210,6 @@ public class Robot extends Entity {
             }
             if (val && !dozerToggleWasTrue && dozerUnlocked) {
                 dozer = !dozer;
-                gearIntake = !dozer;
                 updateSprite();
             }
             dozerToggleWasTrue = val;
@@ -229,71 +220,6 @@ public class Robot extends Entity {
                 updateSprite();
             }
             changeAllianceWasTrue = val;
-            val = gearToggle.get();
-
-            if (val && !gearToggleWasTrue) {
-                startedIntakingWithGear = hasGear;
-            }
-
-            if (val) {
-                boolean canScore = false;
-                if (peg != null) {
-                    float diff = Math.abs(getAngle() - peg.getAngle());
-                    if (Math.abs(diff - 270) < 6 || Math.abs(diff - 90) < 6) canScore = true;
-                }
-                if (hasGear && !canScore && startedIntakingWithGear) {
-                    //drop gear
-                    float distance = 1.25f; //1.75f
-                    float xChange = -distance * (float) Math.sin(Math.toRadians(getAngle()));
-                    float yChange = distance * (float) Math.cos(Math.toRadians(getAngle()));
-
-                    Entity e = Gear.create(getX() + xChange, getY() + yChange, getAngle(), false);
-
-                    Main.getInstance().spawnEntity(e);
-                    for (Body b : e.getBodies()) {
-                        float xPow = 50 * (float) Math.sin(Math.toRadians(-getAngle()));
-                        float yPow = 50 * (float) Math.cos(Math.toRadians(-getAngle()));
-                        b.applyForceToCenter(xPow, yPow, true);
-                    }
-                    hasGear = false;
-                } else if (hasGear && canScore && startedIntakingWithGear) {
-                    hasGear = false;
-                    if (Main.matchPlay) {
-                        if (blue) Main.blueGears++;
-                        else Main.redGears++;
-                    }
-                } else if (!hasGear && intakeableGear != null && !startedIntakingWithGear && gearIntake) {
-                    Main.getInstance().removeEntity(intakeableGear);
-                    intakeableGear = null;
-                    hasGear = true;
-                }
-
-                if (intakeableFuel != null && fuel < 50 && !gearIntake) {
-                    Main.getInstance().removeEntity(intakeableFuel);
-                    intakeableFuel = null;
-                    fuel++;
-                }
-
-            }
-            gearToggleWasTrue = val;
-
-            if (shoot.get() && fuel > 0 && System.currentTimeMillis() - timeOfLastFire > 150) {
-                float distance = 1.25f; //1.75f
-                float xChange = -distance * (float) Math.sin(Math.toRadians(getAngle()));
-                float yChange = distance * (float) Math.cos(Math.toRadians(getAngle()));
-                //Utils.log("angle: " + getAngle());
-
-                Entity f = Fuel.create(getX() + xChange, getY() + yChange, false);//shootFuel(getX() + xChange, getY() + yChange, 1);
-                f.setAirMomentum(1);
-                Main.getInstance().spawnEntity(.2f, f);
-                for (Body b : f.getBodies()) {
-                    float xPow = 25 * (float) Math.sin(Math.toRadians(-getAngle()));
-                    float yPow = 25 * (float) Math.cos(Math.toRadians(-getAngle()));
-                    b.applyForceToCenter(xPow, yPow, true);
-                }
-                fuel--;
-                timeOfLastFire = System.currentTimeMillis();
-            }
 
             val = reverseToggle.get();
             if (val && !reverseToggleWasTrue) {
@@ -301,6 +227,7 @@ public class Robot extends Entity {
             }
             reverseToggleWasTrue = val;
         }
+
         leftMotor = Utils.cap(leftMotor, 1);
         rightMotor = Utils.cap(rightMotor, 1);
         if (middleMotor != null) Utils.cap(middleMotor, 1);
@@ -311,6 +238,7 @@ public class Robot extends Entity {
             doFriction(left);
             doFriction(right);
         }
+        if (metadata != null) metadata.tick(this);
     }
 
     @Override
@@ -318,17 +246,12 @@ public class Robot extends Entity {
         super.draw(b);
         if (icon != null) icon.draw(b);
         if (intakeSprite != null) intakeSprite.draw(b);
-        if (fuel > 0) {
-            float size = 1 * (fuel / 50f);
-            b.draw(fuel == 50 ? Fuel.TEXTURE_MAX : Fuel.TEXTURE, getX() - (size / 2), getY() - (size / 2), size, size);
-        }
-        if (hasGear) gear.draw(b);
+        if (metadata != null) metadata.draw(b, this);;
     }
 
     final float k = 10.0f; //2.25
 
     public void updateMotors(float l, float r) {
-        //if (l != 0 || r != 0) Utils.log(l + " / " + r);
         float lAngle = -left.getAngle();
         float rAngle = -right.getAngle();
 

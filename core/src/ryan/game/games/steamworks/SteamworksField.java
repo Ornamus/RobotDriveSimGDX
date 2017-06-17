@@ -12,6 +12,7 @@ import ryan.game.Utils;
 import ryan.game.entity.*;
 import ryan.game.games.Field;
 import ryan.game.render.Drawable;
+import ryan.game.render.ImageDrawer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +22,17 @@ public class SteamworksField extends Field {
     List<Sprite> blueRotors = new ArrayList<Sprite>();
     List<Sprite> redRotors = new ArrayList<Sprite>();
 
+    public static int blueGears = 0;
+    public static int redGears = 0;
+    public static int blueFuel = 0;
+    public static int redFuel = 0;
+
     @Override
     public List<Drawable> generateField() {
         List<Drawable> drawables = new ArrayList<>();
         World world = Main.getInstance().world;
+
+        drawables.add(new ImageDrawer(-27.5f, -15, 54, 30, "core/assets/steamworks_norotors.png"));
 
         drawables.add(Hopper.create(-9.5f, 12.25f, true, world)); //left top hopper
         drawables.add(Hopper.create(8.35f, 12.25f, true, world)); //right top hopper
@@ -110,7 +118,6 @@ public class SteamworksField extends Field {
                 float y = r == 0 ? startY : (r == 1 ? startY : startY + (6f * (i == 0 ? 1 : -1)));
                 sprite.setBounds(x, y, 2f, 2f);
                 sprite.setOrigin(.7f, 1f);
-                //sprite.setOriginCenter();
                 if (i == 1) sprite.setRotation(180);
                 rotors.add(sprite);
             }
@@ -119,6 +126,21 @@ public class SteamworksField extends Field {
         drawables.add(new SteamworksDisplay());
 
         return drawables;
+    }
+
+    @Override
+    public void affectRobots() {
+        for (Robot r : Main.robots) {
+            r.metadata = new SteamworksMetadata();
+        }
+    }
+
+    @Override
+    public void matchStart() {
+        blueGears = 0;
+        redGears = 0;
+        blueFuel = 0;
+        redFuel = 0;
     }
 
     @Override
@@ -143,14 +165,14 @@ public class SteamworksField extends Field {
     @Override
     public void tick() {
         blueSpinning = 0;
-        if (Main.blueGears > 12) blueSpinning = 3;
-        else if (Main.blueGears > 6) blueSpinning = 2;
-        else if (Main.blueGears > 2) blueSpinning = 1;
+        if (blueGears > 12) blueSpinning = 3;
+        else if (blueGears > 6) blueSpinning = 2;
+        else if (blueGears > 2) blueSpinning = 1;
 
         redSpinning = 0;
-        if (Main.redGears > 12) redSpinning = 3;
-        else if (Main.redGears > 6) redSpinning = 2;
-        else if (Main.redGears > 2) redSpinning = 1;
+        if (redGears > 12) redSpinning = 3;
+        else if (redGears > 6) redSpinning = 2;
+        else if (redGears > 2) redSpinning = 1;
     }
 
     @Override

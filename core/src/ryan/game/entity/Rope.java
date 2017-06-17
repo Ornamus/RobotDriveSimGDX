@@ -1,5 +1,7 @@
 package ryan.game.entity;
 
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Contact;
 import ryan.game.Main;
 
 public class Rope extends Entity {
@@ -11,5 +13,10 @@ public class Rope extends Entity {
         super(Entity.rectangleStaticBody(x, y, side, side, Main.getInstance().world));
         setAngle(angle);
         this.blue = blue;
+    }
+
+    @Override
+    public void collideStart(Entity e, Body self, Body other, Contact contact) {
+        contact.setEnabled(false);
     }
 }

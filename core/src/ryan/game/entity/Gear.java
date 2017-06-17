@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Main;
+import ryan.game.games.steamworks.SteamworksMetadata;
 
 public class Gear extends Entity {
 
@@ -21,11 +22,12 @@ public class Gear extends Entity {
     }
 
     @Override
-    public void onCollide(Entity e, Body self, Body other) {
+    public void onCollide(Entity e, Body self, Body other, Contact contact) {
         if (loadingStation && e instanceof Robot && System.currentTimeMillis() - creation <= 250) {
             Robot r = (Robot) e;
-            if (r.intake == other && !r.hasGear) {
-                r.hasGear = true;
+            SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
+            if (r.intake == other && !meta.hasGear) {
+                meta.hasGear = true;
                 Main.getInstance().removeEntity(this);
             }
         }

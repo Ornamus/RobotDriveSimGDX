@@ -22,10 +22,10 @@ public class CollisionListener implements ContactListener {
     public void preSolve(Contact contact, Manifold oldManifold) {
         Body bA = contact.getFixtureA().getBody();
         Body bB = contact.getFixtureB().getBody();
-        Body[] bothBodies = new Body[]{bA, bB};
+
         Entity a = (Entity) bA.getUserData();
         Entity b = (Entity) bB.getUserData();
-        Entity[] both = new Entity[]{a, b};
+
         if (!colliding.contains(bA)) colliding.add(bA);
         if (!colliding.contains(bB)) colliding.add(bB);
         if (Main.drawablesRemove.contains(a) || Main.drawablesRemove.contains(b)) {
@@ -33,45 +33,14 @@ public class CollisionListener implements ContactListener {
             return;
         }
 
-        if (a != null  || b != null) {
-            for (int i = 0; i < both.length; i++) {
-                int otherI = i == 0 ? 1 : 0;
-                Entity e = both[i];
-                Entity other = both[otherI];
-                Body bE = bothBodies[i];
-                Body bOther = bothBodies[otherI];
-                if (e != null) {
-                    if (e instanceof Rope) contact.setEnabled(false);
-                    if (other != null) {
-                        if (Math.abs(e.getAirDistance() - other.getAirDistance()) >= 1) {
-                            contact.setEnabled(false);
-                            break;
-                        }
-                        if (e instanceof Robot) {
-                            Robot r = (Robot) e;
-                            boolean intakeCollision = bE == r.intake;
-                            if (other.getName().equalsIgnoreCase("peg")) {
-                                if (intakeCollision) {
-                                    r.peg = other;
-                                    contact.setEnabled(false);
-                                }
-                            } else if (other.getName().equalsIgnoreCase("gear")) {
-                                if (intakeCollision) {
-                                    r.intakeableGear = other;
-                                    contact.setEnabled(false);
-                                }
-                            } else if (other.getName().equalsIgnoreCase("fuel")) {
-                                if (intakeCollision) {
-                                    r.intakeableFuel = other;
-                                    contact.setEnabled(false);
-                                }
-                            } else if (other instanceof Rope) {
-                                if (r.onRope == null && r.blue == ((Rope)other).blue) r.onRope = System.currentTimeMillis();
-                            }
-                        }
-                    }
-                }
-            }
+        if (Math.abs(a.getAirDistance() - b.getAirDistance()) >= 1) {
+            contact.setEnabled(false);
+            return;
+        }
+
+        if (a != null && b != null) {
+            a.collideStart(b, bA, bB, contact);
+            b.collideStart(a, bB, bA, contact);
         }
     }
 
@@ -79,73 +48,42 @@ public class CollisionListener implements ContactListener {
     public void postSolve(Contact contact, ContactImpulse impulse) {
         Body bA = contact.getFixtureA().getBody();
         Body bB = contact.getFixtureB().getBody();
+        Entity a = (Entity) bA.getUserData();
+        Entity b = (Entity) bB.getUserData();;
         colliding.remove(bA);
         colliding.remove(bB);
+        if (a != null && b != null) {
+            a.collideEnd(b, bA, bB, contact);
+            b.collideEnd(a, bB, bA, contact);
+        }
     }
 
     @Override
     public void beginContact(Contact contact) {
-        Entity a = (Entity) contact.getFixtureA().getBody().getUserData();
-        Entity b = (Entity) contact.getFixtureB().getBody().getUserData();
+        Body bA = contact.getFixtureA().getBody();
+        Body bB = contact.getFixtureB().getBody();
+        Entity a = (Entity) bA.getUserData();
+        Entity b = (Entity) bB.getUserData();
 
         if (a != null && b != null) {
-            Main.collisions.add(new Collision(a, b, contact.getFixtureA().getBody(), contact.getFixtureB().getBody()));
-        }
-    }
-
-    class Collision {
-        Entity a, b;
-        Body bA, bB;
-
-        public Collision(Entity a, Entity b, Body bA, Body bB) {
-            this.a = a;
-            this.b = b;
-            this.bA = bA;
-            this.bB = bB;
+            Main.collisions.add(new Collision(a, b, contact.getFixtureA().getBody(), contact.getFixtureB().getBody(), contact));
         }
     }
 
     @Override
-    public void endContact(Contact contact) {
-        Body bA = contact.getFixtureA().getBody();
-        Body bB = contact.getFixtureB().getBody();
-        Body[] bothBodies = new Body[]{bA, bB};
-        Entity a = (Entity) bA.getUserData();
-        Entity b = (Entity) bB.getUserData();
-        Entity[] both = new Entity[]{a, b};
+    public void endContact(Contact contact) {}
 
-        if ((a != null && Main.drawables.contains(a)) || (b != null && Main.drawables.contains(b))) {
-            for (int i = 0; i < both.length; i++) {
-                int otherI = i == 0 ? 1 : 0;
-                Entity e = both[i];
-                Entity other = both[otherI];
-                Body bE = bothBodies[i];
-                Body bOther = bothBodies[otherI];
-                if (e != null) {
-                    if (e instanceof Rope) contact.setEnabled(false);
-                    if (other != null) {
-                        if (e instanceof Robot) {
-                            Robot r = (Robot) e;
-                            boolean intakeCollision = bE == r.intake;
-                            if (other.getName().equalsIgnoreCase("peg")) {
-                                if (intakeCollision) {
-                                    r.peg = null;
-                                }
-                            } else if (other.getName().equalsIgnoreCase("gear")) {
-                                if (intakeCollision) {
-                                    r.intakeableGear = null;
-                                }
-                            } else if (other.getName().equalsIgnoreCase("fuel")) {
-                                if (intakeCollision) {
-                                    r.intakeableFuel = null;
-                                }
-                            } else if (other instanceof Rope) {
-                                r.onRope = null;
-                            }
-                        }
-                    }
-                }
-            }
+    class Collision {
+        Entity a, b;
+        Body bA, bB;
+        Contact c;
+
+        public Collision(Entity a, Entity b, Body bA, Body bB, Contact c) {
+            this.a = a;
+            this.b = b;
+            this.bA = bA;
+            this.bB = bB;
+            this.c = c;
         }
     }
 }

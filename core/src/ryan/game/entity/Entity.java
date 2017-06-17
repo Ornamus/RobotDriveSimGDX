@@ -131,7 +131,9 @@ public class Entity extends Drawable {
         return 0;
     }
 
-    public void onCollide(Entity e, Body self, Body other) {}
+    public void collideStart(Entity e, Body self, Body other, Contact contact) {}
+    public void onCollide(Entity e, Body self, Body other, Contact contact) {}
+    public void collideEnd(Entity e, Body self, Body other, Contact contact) {}
 
     public float getAngle() {
         float smartAngle = getPhysicsAngle();
@@ -142,7 +144,9 @@ public class Entity extends Drawable {
 
     @Override
     public void draw(SpriteBatch b) {
-        if (s != null) s.draw(b);
+        if (s != null) {
+            s.draw(b);
+        }
     }
 
     public List<Body> getBodies() {

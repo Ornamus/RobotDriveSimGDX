@@ -90,48 +90,49 @@ public class SteamworksDisplay extends Drawable {
         int blueKPA = 0, redKPA = 0;
         int blueClimbs = 0, redClimbs = 0;
         if (Main.matchPlay) {
-            if (Main.blueGears > 0) {
+            if (SteamworksField.blueGears > 0) {
                 blueScore += 40;
                 blueRots++;
             }
-            if (Main.blueGears > 2) {
+            if (SteamworksField.blueGears > 2) {
                 blueScore += 40;
                 blueRots++;
             }
-            if (Main.blueGears > 6) {
+            if (SteamworksField.blueGears > 6) {
                 blueScore += 40;
                 blueRots++;
             }
-            if (Main.blueGears > 12) {
+            if (SteamworksField.blueGears > 12) {
                 blueScore += 140;
                 blueRots++;
             }
 
-            if (Main.redGears > 0) {
+            if (SteamworksField.redGears > 0) {
                 redScore += 40;
                 redRots++;
             }
-            if (Main.redGears > 2) {
+            if (SteamworksField.redGears > 2) {
                 redScore += 40;
                 redRots++;
             }
-            if (Main.redGears > 6) {
+            if (SteamworksField.redGears > 6) {
                 redScore += 40;
                 redRots++;
             }
-            if (Main.redGears > 12) {
+            if (SteamworksField.redGears > 12) {
                 redScore += 140;
                 redRots++;
             }
-            blueKPA = (int)Math.round(Math.floor(Main.blueFuel / 3.0));
-            redKPA = (int)Math.round(Math.floor(Main.redFuel / 3.0));
+            blueKPA = (int)Math.round(Math.floor(SteamworksField.blueFuel / 3.0));
+            redKPA = (int)Math.round(Math.floor(SteamworksField.redFuel / 3.0));
             blueScore += blueKPA;
             redScore += redKPA;
             if (blueKPA >= 40) blueScore += 20;
             if (redKPA >= 40) redScore += 20;
             if (seconds <= 30) {
                 for (Robot r : Main.robots) {
-                    if (r.onRope != null && System.currentTimeMillis() - r.onRope > 1000) {
+                    SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
+                    if (meta.onRope != null && System.currentTimeMillis() - meta.onRope > 1000) {
                         if (r.blue) blueClimbs++;
                         else redClimbs++;
                     }
@@ -166,8 +167,8 @@ public class SteamworksDisplay extends Drawable {
         drawCentered("180", 166, getY() + 71f - 21f, blackNormal, batch);
 
         if (Main.matchPlay) {
-            drawGearDisplay(232.5f, 45, Main.blueGears, Main.blueGears > 12 ? Color.YELLOW : Color.WHITE, batch);
-            drawGearDisplay(-287.5f, 45, Main.redGears, Main.redGears > 12 ? Color.YELLOW : Color.WHITE, batch);
+            drawGearDisplay(232.5f, 45, SteamworksField.blueGears, SteamworksField.blueGears > 12 ? Color.YELLOW : Color.WHITE, batch);
+            drawGearDisplay(-287.5f, 45, SteamworksField.redGears, SteamworksField.redGears > 12 ? Color.YELLOW : Color.WHITE, batch);
         }
     }
 
