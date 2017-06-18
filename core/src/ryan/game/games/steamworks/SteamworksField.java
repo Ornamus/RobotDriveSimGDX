@@ -10,6 +10,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.entity.*;
+import ryan.game.entity.steamworks.Boiler;
+import ryan.game.entity.steamworks.Hopper;
+import ryan.game.entity.steamworks.LoadingStation;
+import ryan.game.entity.steamworks.Rope;
 import ryan.game.games.Field;
 import ryan.game.render.Drawable;
 import ryan.game.render.ImageDrawer;
@@ -34,19 +38,19 @@ public class SteamworksField extends Field {
 
         drawables.add(new ImageDrawer(-27.5f, -15, 54, 30, "core/assets/steamworks_norotors.png"));
 
-        drawables.add(Hopper.create(-9.5f, 12.25f, true, world)); //left top hopper
-        drawables.add(Hopper.create(8.35f, 12.25f, true, world)); //right top hopper
+        drawables.add(Hopper.create(-9.5f, 12.25f, true)); //left top hopper
+        drawables.add(Hopper.create(8.35f, 12.25f, true)); //right top hopper
 
 
-        drawables.add(Hopper.create(-16f, -13.45f, false, world)); //left bottom hopper
-        drawables.add(Hopper.create(-0.6f, -13.45f, false, world)); //middle bottom hopper
-        drawables.add(Hopper.create(16f - 1.15f, -13.45f, false, world)); //right bottom hopper
+        drawables.add(Hopper.create(-16f, -13.45f, false)); //left bottom hopper
+        drawables.add(Hopper.create(-0.6f, -13.45f, false)); //middle bottom hopper
+        drawables.add(Hopper.create(16f - 1.15f, -13.45f, false)); //right bottom hopper
 
 
-        drawables.add(Entity.barrier(0, 12, 28f, .5f, world)); //top wall
-        drawables.add(Entity.barrier(0, -13.2f, 28f, .5f, world)); //bottom wall
-        drawables.add(Entity.barrier(-25.5f, 0, .5f, 10f, world)); //left wall
-        drawables.add(Entity.barrier(24.5f, 0, .5f, 10f, world)); //right wall
+        drawables.add(Entity.barrier(0, 12, 28f, .5f)); //top wall
+        drawables.add(Entity.barrier(0, -13.2f, 28f, .5f)); //bottom wall
+        drawables.add(Entity.barrier(-25.5f, 0, .5f, 10f)); //left wall
+        drawables.add(Entity.barrier(24.5f, 0, .5f, 10f)); //right wall
 
         drawables.add(LoadingStation.create(true, true, -24.8f, 11, 26)); //blue load left
         drawables.add(LoadingStation.create(true, false, -21.6f, 12.65f, 26)); //blue load right
@@ -54,11 +58,11 @@ public class SteamworksField extends Field {
         drawables.add(LoadingStation.create(false, true, 20.4f, 12.65f, -26)); //red load left
         drawables.add(LoadingStation.create(false, false, 23.6f, 11, -26)); //red load right
 
-        drawables.add(Entity.barrier(-23, 12, 3f, 2f, world).setAngle(26)); //Blue load barrier
-        drawables.add(Entity.barrier(22, 12, 3f, 2f, world).setAngle(-26)); //Red load barrier
+        drawables.add(Entity.barrier(-23, 12, 3f, 2f).setAngle(26)); //Blue load barrier
+        drawables.add(Entity.barrier(22, 12, 3f, 2f).setAngle(-26)); //Red load barrier
 
-        drawables.add(Entity.barrier(-24.8f, -12.9f, 2f, 2f, world).setAngle(46)); //Red boiler
-        drawables.add(Entity.barrier(23.8f, -12.9f, 2f, 2f, world).setAngle(-46)); //Blue boiler
+        drawables.add(Entity.barrier(-24.8f, -12.9f, 2f, 2f).setAngle(46)); //Red boiler
+        drawables.add(Entity.barrier(23.8f, -12.9f, 2f, 2f).setAngle(-46)); //Blue boiler
 
         PolygonShape s = new PolygonShape();
 
@@ -76,8 +80,8 @@ public class SteamworksField extends Field {
         };
         s.set(vertices);
 
-        drawables.add(Entity.barrier(8.9f, -2.75f, s, world)); //blue airship
-        drawables.add(Entity.barrier(-17.65f, -2.75f, s, world)); //red airship
+        drawables.add(Entity.barrier(8.9f, -2.75f, s)); //blue airship
+        drawables.add(Entity.barrier(-17.65f, -2.75f, s)); //red airship
 
         drawables.add(Entity.peg(-18.7f, -.57f, 0));
         drawables.add(Entity.peg(-16.25f, 3.25f, 360-60));

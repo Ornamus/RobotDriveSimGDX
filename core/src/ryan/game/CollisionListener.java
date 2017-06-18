@@ -2,8 +2,6 @@ package ryan.game;
 
 import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.entity.Entity;
-import ryan.game.entity.Robot;
-import ryan.game.entity.Rope;
 
 import java.util.ArrayList;
 import java.util.List;

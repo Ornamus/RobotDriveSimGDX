@@ -1,9 +1,11 @@
-package ryan.game.entity;
+package ryan.game.entity.steamworks;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import ryan.game.Main;
 import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
+import ryan.game.entity.Entity;
+import ryan.game.entity.Robot;
 
 import java.util.HashMap;
 
@@ -46,7 +48,7 @@ public class LoadingStation extends Entity {
     }
 
     public static LoadingStation create(boolean blue, boolean left, float x, float y, float angle) {
-        Body b = Entity.rectangleStaticBody(x, y, width, height, Main.getInstance().world);
+        Body b = Entity.rectangleStaticBody(x, y, width, height);
         LoadingStation l = new LoadingStation(blue, left, b);
         l.setAngle(angle);
         return l;

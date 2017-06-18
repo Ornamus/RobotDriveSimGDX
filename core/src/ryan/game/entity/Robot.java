@@ -299,21 +299,21 @@ public class Robot extends Entity {
         right.applyForceToCenter(Utils.cap(forceX, maxAccel * 2), Utils.cap(forceY, maxAccel * 2), true);*/
     }
 
-    private static void joint(Body a, Body b, World w) {
+    private static void joint(Body a, Body b) {
         WeldJointDef jointDef = new WeldJointDef ();
         jointDef.collideConnected = false;
         jointDef.initialize(a, b, new Vector2(0, 0));
-        w.createJoint(jointDef);
+        Main.getInstance().world.createJoint(jointDef);
     }
 
-    public static Robot create(float x, float y, World w) {
-        Body left = createRobotPart(x - (robot_size * 1), y, w);
-        Body right = createRobotPart(x, y, w);
-        Body intake = Entity.rectangleDynamicBody(x - (robot_size / 2), y + robot_size * 1.25f, robot_size, robot_size / 4, w);
+    public static Robot create(float x, float y) {
+        Body left = createRobotPart(x - (robot_size * 1), y);
+        Body right = createRobotPart(x, y);
+        Body intake = Entity.rectangleDynamicBody(x - (robot_size / 2), y + robot_size * 1.25f, robot_size, robot_size / 4);
 
-        joint(left, right, w);
-        joint(left, intake, w);
-        joint(right, intake, w);
+        joint(left, right);
+        joint(left, intake);
+        joint(right, intake);
 
         Robot r = new Robot(left, right);
         r.setIntake(intake);
@@ -321,12 +321,12 @@ public class Robot extends Entity {
         return r;
     }
 
-    private static Body createRobotPart(float x, float y, World w) {
+    private static Body createRobotPart(float x, float y) {
         BodyDef rightDef = new BodyDef();
         rightDef.type = BodyDef.BodyType.DynamicBody;
         rightDef.position.set(x, y);
 
-        Body right = w.createBody(rightDef);
+        Body right = Main.getInstance().world.createBody(rightDef);
         PolygonShape rightShape = new PolygonShape();
         rightShape.setAsBox(robot_size / 2, robot_size);
 

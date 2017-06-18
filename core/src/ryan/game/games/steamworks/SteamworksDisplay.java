@@ -1,94 +1,55 @@
 package ryan.game.games.steamworks;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import ryan.game.Main;
-import ryan.game.Utils;
-import ryan.game.entity.Gear;
+import ryan.game.entity.steamworks.Gear;
 import ryan.game.entity.Robot;
-import ryan.game.render.Drawable;
+import ryan.game.games.ScoreDisplay;
 
-public class SteamworksDisplay extends Drawable {
+public class SteamworksDisplay extends ScoreDisplay {
 
-    GlyphLayout layout;
-    BitmapFont bigWhite;
-    BitmapFont blackNormal;
-    Sprite display;
-    Sprite timerBacking;
-    Sprite timerBar;
+    int blueRots = 0, redRots = 0;
+    int blueKPA = 0, redKPA = 0;
+    int blueClimbs = 0, redClimbs = 0;
 
     public SteamworksDisplay() {
-        display = new Sprite(new Texture("core/assets/score_display.png"));
-        display.setBounds(0, 0, 1100, 145);
-        display.setPosition(0 - (display.getWidth() / 2), -320);
-
-        setDrawScaled(false);
-        setX(display.getX());
-        setY(display.getY());
-
-        timerBacking = new Sprite(new Texture("core/assets/timer_backing.png"));
-        timerBacking.setSize(timerBacking.getWidth() * .75f, timerBacking.getHeight() * .75f);
-        timerBacking.setAlpha(.75f);
-        timerBacking.setPosition(0 - (timerBacking.getWidth() / 2), getY() + 72);
-
-        timerBar = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Utils.toColor(39, 124, 28)));
-        timerBar.setAlpha(1f);
-
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/Kozuka.otf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 52;
-        param.borderColor = Color.BLACK;
-        param.color = Color.WHITE;
-        param.borderWidth = 2f;
-        //param.shadowColor = Color.BLACK;
-        //param.shadowOffsetX = 1;
-        //param.shadowOffsetY = 1;
-        bigWhite = generator.generateFont(param);
-
-        param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 20;
-        param.color = Color.BLACK;
-        param.shadowColor = Color.BLACK;
-        param.borderWidth = .25f;
-        param.borderColor = Color.BLACK;
-        blackNormal = generator.generateFont(param);
-        generator.dispose();
-
-        layout = new GlyphLayout(bigWhite, "");
+        super("core/assets/score_display.png");
     }
 
     @Override
-    public void tick() {
-
-    }
+    public void tick() {}
 
     @Override
     public void draw(SpriteBatch batch) {
-        display.draw(batch);
+        super.draw(batch);
 
-        int seconds = 135;
+        blueRots = 0;
+        redRots = 0;
+        blueKPA = 0;
+        redKPA = 0;
+        blueClimbs = 0;
+        redClimbs = 0;
+
+        drawCentered(blueKPA + "", 257.5f, getY() + 35f, blackNormal, batch); //blue kpa
+        drawCentered(redKPA + "", -257.5f, getY() + 35f, blackNormal, batch); //red kpa
+
+        drawCentered(blueRots + "", 360.5f, getY() + 36f, blackNormal, batch); //blue rotors
+        drawCentered(redRots + "", -360.5f, getY() + 36f, blackNormal, batch); //red rotors
+
+        drawCentered(blueClimbs + "", 455, getY() + 36f, blackNormal, batch); //blue climbs
+        drawCentered(redClimbs + "", -455, getY() + 36f, blackNormal, batch); //red climbs
+
         if (Main.matchPlay) {
-            long timeIn = System.currentTimeMillis() - Main.matchStart;
-            long timeLeft = (((2 * 60) + 15) * 1000) - timeIn;
-            seconds = Math.round(timeLeft / 1000f);
+            drawGearDisplay(232.5f, 45, SteamworksField.blueGears, SteamworksField.blueGears > 12 ? Color.YELLOW : Color.WHITE, batch);
+            drawGearDisplay(-287.5f, 45, SteamworksField.redGears, SteamworksField.redGears > 12 ? Color.YELLOW : Color.WHITE, batch);
         }
-        timerBar.setBounds(-127, getY() + 72, ((135f-seconds)/135f) * 254, 29);
-        timerBar.draw(batch);
-        timerBar.setTexture(Utils.colorImage("core/assets/whitepixel.png", (seconds <= 30 ? Color.YELLOW : Utils.toColor(39, 124, 28))));
+    }
 
-        timerBacking.draw(batch);
-
+    @Override
+    public int[] calculateScores() {
         int blueScore = 0;
         int redScore = 0;
-        int blueRots = 0, redRots = 0;
-        int blueKPA = 0, redKPA = 0;
-        int blueClimbs = 0, redClimbs = 0;
         if (Main.matchPlay) {
             if (SteamworksField.blueGears > 0) {
                 blueScore += 40;
@@ -141,50 +102,12 @@ public class SteamworksDisplay extends Drawable {
                 redScore += redClimbs * 50;
             }
         }
-        drawCentered(blueScore + "", 65, getY()+61.5f, bigWhite, batch);
-        drawCentered(redScore + "", -65, getY()+61.5f, bigWhite, batch);
-
-        drawCentered(Main.matchPlay ? "Semifinal 3 of 4" : "Practice Match 1", -205, getY() + 130f, blackNormal, batch);
-        drawCentered(Main.matchPlay ? "FIRST Championship" : "Breakfast of Champions", 205, getY() + 130f, blackNormal, batch);
-
-        drawCentered(blueKPA + "", 257.5f, getY() + 35f, blackNormal, batch); //blue kpa
-        drawCentered(redKPA + "", -257.5f, getY() + 35f, blackNormal, batch); //red kpa
-
-        drawCentered(blueRots + "", 360.5f, getY() + 36f, blackNormal, batch); //blue rotors
-        drawCentered(redRots + "", -360.5f, getY() + 36f, blackNormal, batch); //red rotors
-
-        drawCentered(blueClimbs + "", 455, getY() + 36f, blackNormal, batch); //blue climbs
-        drawCentered(redClimbs + "", -455, getY() + 36f, blackNormal, batch); //red climbs
-
-        drawCentered(Main.matchPlay ? seconds + "" : "Infinite", 0, getY() + 93f, blackNormal, batch);
-
-        drawCentered("1902", -166, getY() + 92f, blackNormal, batch);
-        drawCentered("254", -166, getY() + 71f, blackNormal, batch);
-        drawCentered("987", -166, getY() + 71f - 21f, blackNormal, batch);
-
-        drawCentered("118", 166, getY() + 92f, blackNormal, batch);
-        drawCentered("1986", 166, getY() + 71f, blackNormal, batch);
-        drawCentered("180", 166, getY() + 71f - 21f, blackNormal, batch);
-
-        if (Main.matchPlay) {
-            drawGearDisplay(232.5f, 45, SteamworksField.blueGears, SteamworksField.blueGears > 12 ? Color.YELLOW : Color.WHITE, batch);
-            drawGearDisplay(-287.5f, 45, SteamworksField.redGears, SteamworksField.redGears > 12 ? Color.YELLOW : Color.WHITE, batch);
-        }
-    }
-
-    public void drawCentered(String s, float x, float y, BitmapFont f, SpriteBatch b) {
-        f.draw(b, s, x - (getWidth(s, f) / 2), y);
-    }
-
-    private float getWidth(String s, BitmapFont f) {
-        layout.setText(f, s);
-        return layout.width;
+        return new int[]{blueScore, redScore};
     }
 
     public void drawGearDisplay(float x, float y, int gears, Color c, SpriteBatch b) {
         b.draw(Gear.TEXTURE, x, y, 30f, 30f);
         Main.smallFont.setColor(c);
-        layout.setText(Main.smallFont, gears + "");
-        Main.smallFont.draw(b, gears + "", x + 15 - (layout.width / 2), y + 55);
+        Main.smallFont.draw(b, gears + "", x + 15 - (getWidth(gears + "", Main.smallFont) / 2), y + 55);
     }
 }

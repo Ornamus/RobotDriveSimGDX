@@ -175,7 +175,7 @@ public class Entity extends Drawable {
     }
 
     public static Entity peg(float x, float y, float angle) {
-        Body b = Entity.rectangleStaticBody(x, y, .8f, .12f, Main.getInstance().world);
+        Body b = Entity.rectangleStaticBody(x, y, .8f, .12f);
         Entity e = new Entity(.8f, .12f, b).setName("peg");
 
         //Entity e = Entity.rectangleEntity(x, y, .8f, .12f, Main.getInstance().world).setName("peg");
@@ -184,27 +184,27 @@ public class Entity extends Drawable {
         return e;
     }
 
-    public static Entity rectangleEntity(float x, float y, float width, float height, World w) {
-        Body body = rectangleDynamicBody(x, y, width, height, w);
+    public static Entity rectangleEntity(float x, float y, float width, float height) {
+        Body body = rectangleDynamicBody(x, y, width, height);
         Entity e = new Entity(width, height, body);
         body.setUserData(e);
         return e;
     }
 
-    protected static Body rectangleDynamicBody(float x, float y, float width, float height, World w) {
-        return rectangleBody(x, y, width, height, BodyDef.BodyType.DynamicBody, w);
+    protected static Body rectangleDynamicBody(float x, float y, float width, float height) {
+        return rectangleBody(x, y, width, height, BodyDef.BodyType.DynamicBody);
     }
 
-    protected static Body rectangleStaticBody(float x, float y, float width, float height, World w) {
-        return rectangleBody(x, y, width, height, BodyDef.BodyType.StaticBody, w);
+    protected static Body rectangleStaticBody(float x, float y, float width, float height) {
+        return rectangleBody(x, y, width, height, BodyDef.BodyType.StaticBody);
     }
 
-    protected static Body rectangleBody(float x, float y, float width, float height, BodyDef.BodyType type, World w) {
+    protected static Body rectangleBody(float x, float y, float width, float height, BodyDef.BodyType type) {
         BodyDef rightDef = new BodyDef();
         rightDef.type = type;
         rightDef.position.set(x, y);
 
-        Body right = w.createBody(rightDef);
+        Body right = Main.getInstance().world.createBody(rightDef);
         PolygonShape rightShape = new PolygonShape();
         rightShape.setAsBox(width, height);
 
@@ -218,21 +218,40 @@ public class Entity extends Drawable {
         return right;
     }
 
-    public static Entity barrier(float x, float y, float width, float height, World w) {
+    protected static Body rectangleBody(float x, float y, float width, float height, float density, BodyDef.BodyType type) {
+        BodyDef rightDef = new BodyDef();
+        rightDef.type = type;
+        rightDef.position.set(x, y);
+
+        Body right = Main.getInstance().world.createBody(rightDef);
         PolygonShape rightShape = new PolygonShape();
         rightShape.setAsBox(width, height);
-        Entity e = barrier(x, y, rightShape, w);
+
+        FixtureDef rightFix = new FixtureDef();
+        rightFix.shape = rightShape;
+        rightFix.density = density;
+        rightFix.restitution = 0f;
+
+        Fixture fixture = right.createFixture(rightFix);
+        rightShape.dispose();
+        return right;
+    }
+
+    public static Entity barrier(float x, float y, float width, float height) {
+        PolygonShape rightShape = new PolygonShape();
+        rightShape.setAsBox(width, height);
+        Entity e = barrier(x, y, rightShape);
         //e.initVisuals(width, height);
         rightShape.dispose();
         return e;
     }
 
-    public static Entity barrier(float x, float y, Shape s, World w) {
+    public static Entity barrier(float x, float y, Shape s) {
         BodyDef rightDef = new BodyDef();
         rightDef.type = BodyDef.BodyType.StaticBody;
         rightDef.position.set(x, y);
 
-        Body right = w.createBody(rightDef);
+        Body right = Main.getInstance().world.createBody(rightDef);
 
         FixtureDef rightFix = new FixtureDef();
         rightFix.shape = s;

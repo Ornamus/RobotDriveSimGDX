@@ -1,6 +1,5 @@
 package ryan.game.games.steamworks;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -9,6 +8,9 @@ import ryan.game.Main;
 import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
+import ryan.game.entity.steamworks.Fuel;
+import ryan.game.entity.steamworks.Gear;
+import ryan.game.entity.steamworks.Rope;
 import ryan.game.games.RobotMetadata;
 
 public class SteamworksMetadata extends RobotMetadata {

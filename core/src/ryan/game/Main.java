@@ -20,6 +20,7 @@ import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
 import ryan.game.games.Field;
+import ryan.game.games.pirate.PirateField;
 import ryan.game.games.steamworks.SteamworksField;
 import ryan.game.render.Drawable;
 import java.util.ArrayList;
@@ -79,11 +80,11 @@ public class Main extends ApplicationAdapter {
         nonScaledCamera.update();
         int index = 0;
         for (Gamepad g : ControllerManager.getGamepads()) {
-            robots.add(Robot.create(0 + (index * 3), 0, world));
+            robots.add(Robot.create(0 + (index * 3), 0));
             index++;
         }
 
-        gameField = new SteamworksField();
+        gameField = new PirateField();
         gameField.affectRobots();
         drawables.addAll(gameField.generateField());
 

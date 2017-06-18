@@ -1,4 +1,4 @@
-package ryan.game.entity;
+package ryan.game.entity.steamworks;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -6,6 +6,8 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.World;
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.entity.Entity;
+import ryan.game.entity.Robot;
 
 public class Hopper extends Entity {
 
@@ -72,8 +74,8 @@ public class Hopper extends Entity {
         }
     }
 
-    public static Hopper create(float x, float y, boolean down, World w) {
-        Body b = Entity.rectangleStaticBody(x, y, .9f, .9f, w);
+    public static Hopper create(float x, float y, boolean down) {
+        Body b = Entity.rectangleStaticBody(x, y, .9f, .9f);
         Hopper h = new Hopper(x, y, down, b);
         b.setUserData(h);
         return h;

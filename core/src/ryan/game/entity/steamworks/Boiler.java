@@ -1,8 +1,9 @@
-package ryan.game.entity;
+package ryan.game.entity.steamworks;
 
 import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.entity.Entity;
 import ryan.game.games.steamworks.SteamworksField;
 
 /**
