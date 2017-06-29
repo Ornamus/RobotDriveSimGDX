@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.entity.Entity;
+import ryan.game.entity.Robot;
 import ryan.game.entity.overboard.Chest;
 import ryan.game.games.Field;
 import ryan.game.games.ScoreDisplay;
@@ -22,7 +23,7 @@ public class PirateField extends Field {
     public List<Drawable> generateField() {
         List<Drawable> drawables = new ArrayList<>();
 
-        drawables.add(new ImageDrawer(-27, -14f, 54, 27, "core/assets/overboard.png")); //8.2296f
+        drawables.add(new ImageDrawer(-27, -14f, 54, 27, "core/assets/overboard.png"));
 
         drawables.addAll(generateChests());
 
@@ -58,7 +59,9 @@ public class PirateField extends Field {
 
     @Override
     public void affectRobots() {
-
+        for (Robot r : Main.robots) {
+            r.metadata = new PirateMetadata();
+        }
     }
 
     @Override
@@ -80,12 +83,8 @@ public class PirateField extends Field {
     }
 
     @Override
-    public void tick() {
-
-    }
+    public void tick() {}
 
     @Override
-    public void draw(SpriteBatch batch) {
-
-    }
+    public void draw(SpriteBatch batch) {}
 }

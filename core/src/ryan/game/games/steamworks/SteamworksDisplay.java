@@ -18,18 +18,20 @@ public class SteamworksDisplay extends ScoreDisplay {
     }
 
     @Override
-    public void tick() {}
+    public void tick() {
+
+    }
 
     @Override
     public void draw(SpriteBatch batch) {
-        super.draw(batch);
-
         blueRots = 0;
         redRots = 0;
         blueKPA = 0;
         redKPA = 0;
         blueClimbs = 0;
         redClimbs = 0;
+
+        super.draw(batch);
 
         drawCentered(blueKPA + "", 257.5f, getY() + 35f, blackNormal, batch); //blue kpa
         drawCentered(redKPA + "", -257.5f, getY() + 35f, blackNormal, batch); //red kpa

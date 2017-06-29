@@ -6,17 +6,20 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.competition.RobotStats;
 import ryan.game.controls.Button;
 import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
 import ryan.game.drive.*;
 import ryan.game.games.RobotMetadata;
+import ryan.game.games.steamworks.robots.SteamDefault;
+import ryan.game.games.steamworks.robots.SteamDozer;
+import ryan.game.games.steamworks.robots.SteamGearGod;
 
 public class Robot extends Entity {
 
@@ -26,26 +29,24 @@ public class Robot extends Entity {
     private DriveController[] scrollOptions = {new Arcade(false), new Arcade(true), new Tank(), new CheesyDrive()};
     private FieldCentricStrafe fieldCentric;
 
+    private int statsIndex = 0;
+    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod()};
+    public RobotStats stats = statsOptions[statsIndex];
+
     public RobotMetadata metadata = null;
 
     private Button changeAlliance;
     private Button changeControls;
-    private Button dozerToggle;
+    private Button robotStatToggle;
     private Button reverseToggle;
 
-    public boolean dozer = false;
-    private boolean dozerUnlocked = false;
     private Long dozerHoldStart = null;
 
     private float maxTurn = 1.5f;
     public boolean blue;
 
-    static final float maxMps = 16 / 3.28084f; //5
+    //private static final float robot_size = 0.9144f;
 
-    private static final float maxAccel = 4.572f * 3.4f;
-    private static final float robot_size = 0.9144f;
-
-    private static final Texture gearTex = new Texture(Gdx.files.internal("core/assets/gear.png"));
     private static final Texture joyTex = new Texture(Gdx.files.internal("core/assets/joystick.png"));
     private static final Texture joysTex = new Texture(Gdx.files.internal("core/assets/joysticks.png"));
     private static final Texture tankTex = new Texture(Gdx.files.internal("core/assets/tank.png"));
@@ -56,8 +57,9 @@ public class Robot extends Entity {
 
     private static int robots = 0;
 
-    private Robot(Body left, Body right) {
-        super(robot_size, robot_size, left, right);
+    private Robot(RobotStats stats, Body left, Body right) {
+        super(stats.robotWidth, stats.robotHeight, left, right);
+        this.stats = stats;
         setName("Robot");
         id = robots++;
         this.left = left;
@@ -72,7 +74,7 @@ public class Robot extends Entity {
         Gamepad g = ControllerManager.getGamepad(id);
         changeAlliance = g.getButton(7);
         changeControls = g.getButton(6);
-        dozerToggle = g.getButton(1);
+        robotStatToggle = g.getButton(1);
         reverseToggle = g.getButton(9);
     }
 
@@ -86,8 +88,9 @@ public class Robot extends Entity {
         if (blue) c = Main.BLUE;
         else c = Main.RED;
         String tex;
-        if (dozer) tex = "core/assets/dozer_recolor.png";
-        else tex = "core/assets/robot_recolor.png";
+        tex = stats.texture;
+        //if (dozer) tex = "core/assets/dozer_recolor.png";
+        //else tex = "core/assets/robot_recolor.png";
         setSprite(Utils.colorImage(tex, c));
 
         intakeSprite = new Sprite(Utils.colorImage("core/assets/robot_intake.png", c));
@@ -153,7 +156,7 @@ public class Robot extends Entity {
         }
         if (intakeSprite != null) {
             Vector2 pos = intake.getPosition();
-            intakeSprite.setBounds(pos.x - intakeSprite.getWidth()/2, pos.y - intakeSprite.getHeight()/2, robot_size * 2, robot_size / 2);
+            intakeSprite.setBounds(pos.x - intakeSprite.getWidth()/2, pos.y - intakeSprite.getHeight()/2, stats.robotWidth * 2, stats.robotHeight / 2);
             intakeSprite.setOriginCenter();
             intakeSprite.setRotation((float)Math.toDegrees(intake.getAngle()));
         }
@@ -198,18 +201,13 @@ public class Robot extends Entity {
             if (o.hasMiddle()) middleMotor = o.middle;
 
 
-            val = dozerToggle.get();
-            if (val && !dozerUnlocked) {
-                if (dozerHoldStart == null) dozerHoldStart = System.currentTimeMillis();
-                if (System.currentTimeMillis() - dozerHoldStart >= 2500) {
-                    dozerUnlocked = true;
-                    Utils.log("Robot " + id + " unlocked Dozer!");
+            val = robotStatToggle.get();
+            if (val && !dozerToggleWasTrue) {
+                statsIndex++;
+                if (statsIndex >= statsOptions.length) {
+                    statsIndex = 0;
                 }
-            } else {
-                dozerHoldStart = null;
-            }
-            if (val && !dozerToggleWasTrue && dozerUnlocked) {
-                dozer = !dozer;
+                stats = statsOptions[statsIndex];
                 updateSprite();
             }
             dozerToggleWasTrue = val;
@@ -256,16 +254,16 @@ public class Robot extends Entity {
         float rAngle = -right.getAngle();
 
 
-        float leftX = (maxMps * l) * (float) Math.sin(lAngle);
-        float leftY = (maxMps * l) * (float) Math.cos(lAngle);
+        float leftX = (stats.maxMPS * l) * (float) Math.sin(lAngle);
+        float leftY = (stats.maxMPS * l) * (float) Math.cos(lAngle);
 
-        left.applyForceToCenter(Utils.cap(k * (leftX - speed.x), maxAccel), Utils.cap(k * (leftY - speed.y), maxAccel), true);
+        left.applyForceToCenter(Utils.cap(k * (leftX - speed.x), stats.maxAccel), Utils.cap(k * (leftY - speed.y), stats.maxAccel), true);
 
 
-        float rightX = (maxMps * r) * (float) Math.sin(rAngle);
-        float rightY = (maxMps * r) * (float) Math.cos(rAngle);
+        float rightX = (stats.maxMPS * r) * (float) Math.sin(rAngle);
+        float rightY = (stats.maxMPS * r) * (float) Math.cos(rAngle);
 
-        right.applyForceToCenter(Utils.cap(k * (rightX - speed.x), maxAccel), Utils.cap(k * (rightY - speed.y), maxAccel), true);
+        right.applyForceToCenter(Utils.cap(k * (rightX - speed.x), stats.maxAccel), Utils.cap(k * (rightY - speed.y), stats.maxAccel), true);
 
         float turnMult = Math.abs(l - r);
 
@@ -306,29 +304,29 @@ public class Robot extends Entity {
         Main.getInstance().world.createJoint(jointDef);
     }
 
-    public static Robot create(float x, float y) {
-        Body left = createRobotPart(x - (robot_size * 1), y);
-        Body right = createRobotPart(x, y);
-        Body intake = Entity.rectangleDynamicBody(x - (robot_size / 2), y + robot_size * 1.25f, robot_size, robot_size / 4);
+    public static Robot create(RobotStats stats, float x, float y) {
+        Body left = createRobotPart(stats, x - (stats.robotWidth * 1), y);
+        Body right = createRobotPart(stats, x, y);
+        Body intake = Entity.rectangleDynamicBody(x - (stats.robotWidth / 2), y + stats.robotHeight * 1.25f, stats.robotWidth, stats.robotHeight / 4);
 
         joint(left, right);
         joint(left, intake);
         joint(right, intake);
 
-        Robot r = new Robot(left, right);
+        Robot r = new Robot(stats, left, right);
         r.setIntake(intake);
 
         return r;
     }
 
-    private static Body createRobotPart(float x, float y) {
+    private static Body createRobotPart(RobotStats stats, float x, float y) {
         BodyDef rightDef = new BodyDef();
         rightDef.type = BodyDef.BodyType.DynamicBody;
         rightDef.position.set(x, y);
 
         Body right = Main.getInstance().world.createBody(rightDef);
         PolygonShape rightShape = new PolygonShape();
-        rightShape.setAsBox(robot_size / 2, robot_size);
+        rightShape.setAsBox(stats.robotWidth / 2, stats.robotHeight);
 
         FixtureDef rightFix = new FixtureDef();
         rightFix.shape = rightShape;

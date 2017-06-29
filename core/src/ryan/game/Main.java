@@ -16,12 +16,14 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.FrictionJointDef;
+import ryan.game.competition.Schedule;
+import ryan.game.competition.Team;
 import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
 import ryan.game.games.Field;
-import ryan.game.games.pirate.PirateField;
 import ryan.game.games.steamworks.SteamworksField;
+import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.render.Drawable;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +60,9 @@ public class Main extends ApplicationAdapter {
     Sound ropeDropSound;
     Sound matchEndSound;
 
+    List<Team> allTeams = new ArrayList<>();
+    public static Schedule schedule;
+
     private static Main self = null;
 
     private static final int world_width = 56, world_height = 30; //56, 29
@@ -67,6 +72,15 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+        List<Integer> taken = new ArrayList<>();
+        for (int i=0; i<62; i++) {
+            int num;
+            while (taken.contains((num = Utils.randomInt(1, 6499)))) {}
+            taken.add(num);
+            allTeams.add(new Team(num, "null"));
+        }
+        schedule = new Schedule();
+        schedule.generate(allTeams, 8);
         self = this;
         ControllerManager.init();
         Box2D.init();
@@ -80,11 +94,11 @@ public class Main extends ApplicationAdapter {
         nonScaledCamera.update();
         int index = 0;
         for (Gamepad g : ControllerManager.getGamepads()) {
-            robots.add(Robot.create(0 + (index * 3), 0));
+            robots.add(Robot.create(new SteamDefault(), 0 + (index * 3), 0));
             index++;
         }
 
-        gameField = new PirateField();
+        gameField = new SteamworksField();//new PirateField();
         gameField.affectRobots();
         drawables.addAll(gameField.generateField());
 

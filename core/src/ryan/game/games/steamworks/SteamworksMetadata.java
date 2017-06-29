@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import ryan.game.Main;
+import ryan.game.Utils;
 import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
@@ -12,6 +13,7 @@ import ryan.game.entity.steamworks.Fuel;
 import ryan.game.entity.steamworks.Gear;
 import ryan.game.entity.steamworks.Rope;
 import ryan.game.games.RobotMetadata;
+import ryan.game.games.steamworks.robots.SteamRobotStats;
 
 public class SteamworksMetadata extends RobotMetadata {
 
@@ -39,8 +41,11 @@ public class SteamworksMetadata extends RobotMetadata {
     @Override
     public void tick(Robot r) {
         Gamepad gamepad = ControllerManager.getGamepad(r.id);
+        SteamRobotStats stats = (SteamRobotStats) r.stats;
 
-        boolean gearIntake = !r.dozer;
+        boolean gearIntake = stats.gearIntake;
+        boolean fuelIntake = stats.fuelIntake;
+        boolean hasShooter = stats.shooter;
 
         gear.setPosition(r.getX() - gear.getWidth()/2, r.getY() - gear.getHeight()/2);
         gear.setOriginCenter();
@@ -85,7 +90,7 @@ public class SteamworksMetadata extends RobotMetadata {
                 hasGear = true;
             }
 
-            if (intakeableFuel != null && fuel < 50 && !gearIntake) {
+            if (intakeableFuel != null && fuel < 50 && fuelIntake) {
                 Main.getInstance().removeEntity(intakeableFuel);
                 intakeableFuel = null;
                 fuel++;
@@ -94,7 +99,7 @@ public class SteamworksMetadata extends RobotMetadata {
         }
         gearToggleWasTrue = val;
 
-        if (gamepad.getButton(shoot).get() && fuel > 0 && System.currentTimeMillis() - timeOfLastFire > 150) {
+        if (gamepad.getButton(shoot).get() && fuel > 0 && System.currentTimeMillis() - timeOfLastFire > 150 && hasShooter) {
             float distance = 1.25f; //1.75f
             float xChange = -distance * (float) Math.sin(Math.toRadians(r.getAngle()));
             float yChange = distance * (float) Math.cos(Math.toRadians(r.getAngle()));
@@ -142,6 +147,7 @@ public class SteamworksMetadata extends RobotMetadata {
         if (self == r.intake) {
             if (e == peg) {
                 peg = null;
+                Utils.log("off peg");
             } else if (e == intakeableFuel) {
                 intakeableGear = null;
             } else if (e == intakeableFuel) {

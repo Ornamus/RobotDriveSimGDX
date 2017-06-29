@@ -9,12 +9,15 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.competition.Schedule;
+import ryan.game.competition.Team;
 import ryan.game.entity.*;
 import ryan.game.entity.steamworks.Boiler;
 import ryan.game.entity.steamworks.Hopper;
 import ryan.game.entity.steamworks.LoadingStation;
 import ryan.game.entity.steamworks.Rope;
 import ryan.game.games.Field;
+import ryan.game.games.steamworks.robots.SteamRobotStats;
 import ryan.game.render.Drawable;
 import ryan.game.render.ImageDrawer;
 
@@ -25,6 +28,8 @@ public class SteamworksField extends Field {
 
     List<Sprite> blueRotors = new ArrayList<Sprite>();
     List<Sprite> redRotors = new ArrayList<Sprite>();
+
+    SteamworksDisplay display;
 
     public static int blueGears = 0;
     public static int redGears = 0;
@@ -127,7 +132,8 @@ public class SteamworksField extends Field {
             }
         }
 
-        drawables.add(new SteamworksDisplay());
+        display = new SteamworksDisplay();
+        drawables.add(display);
 
         return drawables;
     }
@@ -145,7 +151,11 @@ public class SteamworksField extends Field {
         redGears = 0;
         blueFuel = 0;
         redFuel = 0;
-    }
+        Schedule.Match m = Main.schedule.matches.get(Utils.randomInt(0, Main.schedule.matches.size()-1));
+        display.setBlueTeams(m.blue[0].number, m.blue[1].number, m.blue[2].number);
+        display.setRedTeams(m.red[0].number, m.red[1].number, m.red[2].number);
+        display.setMatchName("Qualification " + m.number + " of " + Main.schedule.matches.size());
+    } //Stuanobor
 
     @Override
     public void resetField(List<Drawable> field) {
@@ -159,6 +169,10 @@ public class SteamworksField extends Field {
                     field.remove(e);
                 } else if (e instanceof Hopper) {
                     ((Hopper) e).reset();
+                } else if (e instanceof Robot) {
+                    SteamworksMetadata meta = (SteamworksMetadata) ((Robot)e).metadata;
+                    meta.fuel = 0;
+                    //meta.hasGear = false;
                 }
             }
         }
@@ -198,5 +212,22 @@ public class SteamworksField extends Field {
             s.draw(b);
             blue++;
         }
+    }
+
+    public static int[] predictScore(Schedule.Match m) {
+        return new int[]{predictScore(m.blue), predictScore(m.red)};
+    }
+
+    private static int predictScore(Team[] alliance) {
+        int gears = 0;
+        int climbs = 0;
+        int fuel = 0;
+        for (Team t : alliance) {
+            if (t.stats != null && t.stats instanceof SteamRobotStats) {
+                SteamRobotStats stats = (SteamRobotStats) t.stats;
+                //TODO
+            }
+        }
+        return 0; //TODO
     }
 }
