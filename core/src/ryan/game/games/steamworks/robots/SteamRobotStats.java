@@ -1,6 +1,8 @@
 package ryan.game.games.steamworks.robots;
 
+import ryan.game.bcnlib_pieces.Command;
 import ryan.game.competition.RobotStats;
+import ryan.game.entity.Robot;
 import ryan.game.games.Game;
 
 public abstract class SteamRobotStats extends RobotStats {

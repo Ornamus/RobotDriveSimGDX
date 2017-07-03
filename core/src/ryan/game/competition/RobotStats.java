@@ -1,5 +1,7 @@
 package ryan.game.competition;
 
+import ryan.game.bcnlib_pieces.Command;
+import ryan.game.entity.Robot;
 import ryan.game.games.Game;
 
 public abstract class RobotStats {
@@ -14,4 +16,6 @@ public abstract class RobotStats {
     public RobotStats(Game g) {
         game = g;
     }
+
+    public abstract Command getAutonomous(Robot r);
 }

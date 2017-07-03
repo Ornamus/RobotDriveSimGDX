@@ -13,12 +13,14 @@ import ryan.game.entity.steamworks.Fuel;
 import ryan.game.entity.steamworks.Gear;
 import ryan.game.entity.steamworks.Rope;
 import ryan.game.games.RobotMetadata;
+import ryan.game.games.ScoreDisplay;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
 
 public class SteamworksMetadata extends RobotMetadata {
 
     Sprite gear;
 
+    public boolean crossedBaseline = false;
     public boolean hasGear = false;
     public Long onRope = null;
     public int fuel = 0;
@@ -40,81 +42,52 @@ public class SteamworksMetadata extends RobotMetadata {
 
     @Override
     public void tick(Robot r) {
-        Gamepad gamepad = ControllerManager.getGamepad(r.id);
-        SteamRobotStats stats = (SteamRobotStats) r.stats;
+        Gamepad gamepad = r.getController();
+            SteamRobotStats stats = (SteamRobotStats) r.stats;
 
-        boolean gearIntake = stats.gearIntake;
-        boolean fuelIntake = stats.fuelIntake;
-        boolean hasShooter = stats.shooter;
+            boolean gearIntake = stats.gearIntake;
+            boolean fuelIntake = stats.fuelIntake;
+            boolean hasShooter = stats.shooter;
 
-        gear.setPosition(r.getX() - gear.getWidth()/2, r.getY() - gear.getHeight()/2);
+        gear.setPosition(r.getX() - gear.getWidth() / 2, r.getY() - gear.getHeight() / 2);
         gear.setOriginCenter();
         gear.setRotation(r.getAngle());
 
-        boolean val = gamepad.getButton(gearToggle).get();
+        if (gamepad != null) {
+            boolean val = gamepad.getButton(gearToggle).get();
 
-        if (val && !gearToggleWasTrue) {
-            startedIntakingWithGear = hasGear;
-        }
-
-        if (val) {
-            boolean canScore = false;
-            if (peg != null) {
-                float diff = Math.abs(r.getAngle() - peg.getAngle());
-                if (Math.abs(diff - 270) < 6 || Math.abs(diff - 90) < 6) canScore = true;
+            if (val && !gearToggleWasTrue) {
+                startedIntakingWithGear = hasGear;
             }
-            if (hasGear && !canScore && startedIntakingWithGear) {
-                //drop gear
-                float distance = 1.25f; //1.75f
-                float xChange = -distance * (float) Math.sin(Math.toRadians(r.getAngle()));
-                float yChange = distance * (float) Math.cos(Math.toRadians(r.getAngle()));
 
-                Entity e = Gear.create(r.getX() + xChange, r.getY() + yChange, r.getAngle(), false);
-
-                Main.getInstance().spawnEntity(e);
-                for (Body b : e.getBodies()) {
-                    float xPow = 50 * (float) Math.sin(Math.toRadians(-r.getAngle()));
-                    float yPow = 50 * (float) Math.cos(Math.toRadians(-r.getAngle()));
-                    b.applyForceToCenter(xPow, yPow, true);
+            if (val) {
+                boolean canScore = false;
+                if (peg != null) {
+                    float diff = Math.abs(r.getAngle() - peg.getAngle());
+                    if (Math.abs(diff - 270) < 6 || Math.abs(diff - 90) < 6) canScore = true;
                 }
-                hasGear = false;
-            } else if (hasGear && canScore && startedIntakingWithGear) {
-                hasGear = false;
-                if (Main.matchPlay) {
-                    if (r.blue) SteamworksField.blueGears++;
-                    else SteamworksField.redGears++;
+                if (hasGear && startedIntakingWithGear) {
+                    ejectGear(r);
                 }
-            } else if (!hasGear && intakeableGear != null && !startedIntakingWithGear && gearIntake) {
-                Main.getInstance().removeEntity(intakeableGear);
-                intakeableGear = null;
-                hasGear = true;
+
+                if (!hasGear && intakeableGear != null && !startedIntakingWithGear && gearIntake) {
+                    Main.getInstance().removeEntity(intakeableGear);
+                    intakeableGear = null;
+                    hasGear = true;
+                }
+
+                if (intakeableFuel != null && fuel < 50 && fuelIntake) {
+                    Main.getInstance().removeEntity(intakeableFuel);
+                    intakeableFuel = null;
+                    fuel++;
+                }
+
             }
+            gearToggleWasTrue = val;
 
-            if (intakeableFuel != null && fuel < 50 && fuelIntake) {
-                Main.getInstance().removeEntity(intakeableFuel);
-                intakeableFuel = null;
-                fuel++;
+            if (gamepad.getButton(shoot).get()) {
+                shootFuel(r);
             }
-
-        }
-        gearToggleWasTrue = val;
-
-        if (gamepad.getButton(shoot).get() && fuel > 0 && System.currentTimeMillis() - timeOfLastFire > 150 && hasShooter) {
-            float distance = 1.25f; //1.75f
-            float xChange = -distance * (float) Math.sin(Math.toRadians(r.getAngle()));
-            float yChange = distance * (float) Math.cos(Math.toRadians(r.getAngle()));
-            //Utils.log("angle: " + getAngle());
-
-            Entity f = Fuel.create(r.getX() + xChange, r.getY() + yChange, false);//shootFuel(getX() + xChange, getY() + yChange, 1);
-            f.setAirMomentum(1);
-            Main.getInstance().spawnEntity(.2f, f);
-            for (Body b : f.getBodies()) {
-                float xPow = 25 * (float) Math.sin(Math.toRadians(-r.getAngle()));
-                float yPow = 25 * (float) Math.cos(Math.toRadians(-r.getAngle()));
-                b.applyForceToCenter(xPow, yPow, true);
-            }
-            fuel--;
-            timeOfLastFire = System.currentTimeMillis();
         }
     }
 
@@ -147,8 +120,8 @@ public class SteamworksMetadata extends RobotMetadata {
         if (self == r.intake) {
             if (e == peg) {
                 peg = null;
-                Utils.log("off peg");
-            } else if (e == intakeableFuel) {
+                //Utils.log("off peg");
+            } else if (e == intakeableGear) {
                 intakeableGear = null;
             } else if (e == intakeableFuel) {
                 intakeableFuel = null;
@@ -166,5 +139,61 @@ public class SteamworksMetadata extends RobotMetadata {
             batch.draw(fuel == 50 ? Fuel.TEXTURE_MAX : Fuel.TEXTURE, r.getX() - (size / 2), r.getY() - (size / 2), size, size);
         }
         if (hasGear) gear.draw(batch);
+    }
+
+    public void ejectGear(Robot r) {
+        boolean canScore = false;
+        if (peg != null) {
+            float diff = Math.abs(r.getAngle() - peg.getAngle());
+            if (Math.abs(diff - 270) < 6 || Math.abs(diff - 90) < 6) canScore = true;
+        }
+        if (hasGear) {
+            if (!canScore) {
+                //drop gear
+                float distance = 1.25f; //1.75f
+                float xChange = -distance * (float) Math.sin(Math.toRadians(r.getAngle()));
+                float yChange = distance * (float) Math.cos(Math.toRadians(r.getAngle()));
+
+                Entity e = Gear.create(r.getX() + xChange, r.getY() + yChange, r.getAngle(), false);
+
+                Main.getInstance().spawnEntity(e);
+                for (Body b : e.getBodies()) {
+                    float xPow = 50 * (float) Math.sin(Math.toRadians(-r.getAngle()));
+                    float yPow = 50 * (float) Math.cos(Math.toRadians(-r.getAngle()));
+                    b.applyForceToCenter(xPow, yPow, true);
+                }
+                hasGear = false;
+            } else {
+                hasGear = false;
+                if (Main.matchPlay) {
+                    if (r.blue) SteamworksField.blueGears++;
+                    else SteamworksField.redGears++;
+                    if (ScoreDisplay.getMatchTime() > 135) {
+                        if (r.blue) SteamworksField.blueGearsInAuto++;
+                        else SteamworksField.redGearsInAuto++;
+                    }
+                }
+            }
+        }
+    }
+
+    public void shootFuel(Robot r) {
+        if (fuel > 0 && System.currentTimeMillis() - timeOfLastFire >= 166 && ((SteamRobotStats)r.stats).shooter) {
+            float distance = 1.25f; //1.75f
+            float xChange = -distance * (float) Math.sin(Math.toRadians(r.getAngle()));
+            float yChange = distance * (float) Math.cos(Math.toRadians(r.getAngle()));
+            //Utils.log("angle: " + getAngle());
+
+            Entity f = Fuel.create(r.getX() + xChange, r.getY() + yChange, false);//shootFuel(getX() + xChange, getY() + yChange, 1);
+            f.setAirMomentum(1);
+            Main.getInstance().spawnEntity(.2f, f);
+            for (Body b : f.getBodies()) {
+                float xPow = 25 * (float) Math.sin(Math.toRadians(-r.getAngle()));
+                float yPow = 25 * (float) Math.cos(Math.toRadians(-r.getAngle()));
+                b.applyForceToCenter(xPow, yPow, true);
+            }
+            fuel--;
+            timeOfLastFire = System.currentTimeMillis();
+        }
     }
 }

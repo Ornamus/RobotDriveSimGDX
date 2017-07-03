@@ -13,18 +13,24 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.FrictionJointDef;
+import org.xguzm.pathfinding.grid.GridCell;
+import ryan.game.ai.Pathfinding;
 import ryan.game.competition.Schedule;
 import ryan.game.competition.Team;
 import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
 import ryan.game.games.Field;
+import ryan.game.games.ScoreDisplay;
 import ryan.game.games.steamworks.SteamworksField;
 import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.render.Drawable;
+
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +43,7 @@ public class Main extends ApplicationAdapter {
 
 	SpriteBatch batch;
     SpriteBatch nonScaled;
+    ShapeRenderer shape;
     public World world;
     Box2DDebugRenderer debugRenderer;
     OrthographicCamera camera;
@@ -56,19 +63,25 @@ public class Main extends ApplicationAdapter {
 
     public static boolean matchPlay = false;
     public static long matchStart = 0;
+
     Sound matchStartSound;
+    public Sound teleopStartSound;
     Sound ropeDropSound;
     Sound matchEndSound;
+    Pathfinding pathfinding;
+    List<Point2D.Float> points;
 
     List<Team> allTeams = new ArrayList<>();
     public static Schedule schedule;
 
     private static Main self = null;
 
-    private static final int world_width = 56, world_height = 30; //56, 29
+    public static final int world_width = 56, world_height = 30; //56, 29
     private static final int camera_y = -4;
 
     private Field gameField;
+
+    public static int currentRobot = -1;
 
 	@Override
 	public void create () {
@@ -93,7 +106,11 @@ public class Main extends ApplicationAdapter {
         nonScaledCamera = new OrthographicCamera(1100, 630);
         nonScaledCamera.update();
         int index = 0;
-        for (Gamepad g : ControllerManager.getGamepads()) {
+
+        int extraRobots = 0;
+        if (extraRobots > 0) currentRobot = 0;
+
+        for (int i=0; i<ControllerManager.getGamepads().size() + extraRobots; i++) {
             robots.add(Robot.create(new SteamDefault(), 0 + (index * 3), 0));
             index++;
         }
@@ -115,6 +132,7 @@ public class Main extends ApplicationAdapter {
         nonScaled.setProjectionMatrix(nonScaledCamera.combined);
 
         matchStartSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/charge_3.wav"));
+        teleopStartSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/teleop.wav"));
         ropeDropSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/whoop.wav"));
         matchEndSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/end.wav"));
 
@@ -141,6 +159,12 @@ public class Main extends ApplicationAdapter {
         generator.dispose();
 
         layout = new GlyphLayout(bigFont, "");
+
+        shape = new ShapeRenderer();
+        shape.setAutoShapeType(true);
+        shape.setProjectionMatrix(camera.combined);
+
+        Utils.log("Making pathfinder");
 	}
 
     @Override
@@ -219,15 +243,15 @@ public class Main extends ApplicationAdapter {
 
     boolean resetField = false;
 
+    int ticksWaitedCuzDum = 0;
 	@Override
 	public void render () {
+        ticksWaitedCuzDum++;
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         doPhysicsStep(Gdx.graphics.getDeltaTime());
 
-        long timeIn = System.currentTimeMillis() - matchStart;
-        long timeLeft = (((2 * 60) + 15) * 1000) - timeIn;
-        int seconds = Math.round(timeLeft / 1000f);
+        int seconds = ScoreDisplay.getMatchTime();
         int minutes = 0;
         while (seconds >= 60) {
             seconds-=60;
@@ -264,6 +288,52 @@ public class Main extends ApplicationAdapter {
         }
         nonScaled.end();
 
+        /*if (points == null && ticksWaitedCuzDum > 4) {
+            pathfinding = new Pathfinding();
+            points = pathfinding.findPath(2, 0, -4, 0);
+            points.add(new Point2D.Float(2, 0));
+        }*/
+        shape.begin();
+        if (points != null) {
+            shape.setColor(Color.GREEN);
+            for (GridCell[] array : pathfinding.cells) {
+                for (GridCell c : array) {
+                    if (c.isWalkable()) {
+                        Point2D.Float loc = pathfinding.toWorldCoords(c.getX(), c.getY());
+                        shape.rect(loc.x, loc.y, pathfinding.resolutionInMeters, pathfinding.resolutionInMeters);
+                    }
+                }
+            }
+
+            shape.setColor(Color.RED);
+            for (GridCell[] array : pathfinding.cells) {
+                for (GridCell c : array) {
+                    if (!c.isWalkable()) {
+                        Point2D.Float loc = pathfinding.toWorldCoords(c.getX(), c.getY());
+                        shape.rect(loc.x, loc.y, pathfinding.resolutionInMeters, pathfinding.resolutionInMeters);
+                    }
+                }
+            }
+
+            shape.setColor(Color.BLUE);
+            for (GridCell[] array : pathfinding.cells) {
+                for (GridCell c : array) {
+                    Point2D.Float loc = pathfinding.toWorldCoords(c.getX(), c.getY());
+                    boolean isOnPath = false;
+                    for (Point2D.Float p : points) {
+                        if (p.x == loc.x && p.y == loc.y) {
+                            isOnPath = true;
+                            break;
+                        }
+                    }
+                    if (isOnPath) {
+                        shape.rect(loc.x, loc.y, pathfinding.resolutionInMeters, pathfinding.resolutionInMeters);
+                    }
+                }
+            }
+        }
+        shape.end();
+
         if (DEBUG_RENDER) debugRenderer.render(world, camera.combined);
 	}
 
@@ -275,7 +345,9 @@ public class Main extends ApplicationAdapter {
         accumulator += frameTime;
         while (accumulator >= Constants.TIME_STEP) {
             tick();
-            world.step(Constants.TIME_STEP, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
+            synchronized (world) {
+                world.step(Constants.TIME_STEP, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
+            }
             accumulator -= Constants.TIME_STEP;
         }
     }
@@ -319,7 +391,7 @@ public class Main extends ApplicationAdapter {
             matchStartSound.play(.45f);
             if (playMusic) {
                 music = Gdx.audio.newMusic(musicChoices[Utils.randomInt(0, musicChoices.length - 1)]);
-                music.setVolume(.25f);
+                music.setVolume(.2f);
                 music.play();
             }
         }
@@ -332,6 +404,15 @@ public class Main extends ApplicationAdapter {
         if (Gdx.input.isKeyPressed(Input.Keys.R) || resetField) {
             gameField.resetField(drawables);
             resetField = false;
+        }
+        if (ControllerManager.getGamepads().size() != robots.size() && ControllerManager.getGamepads().size() == 1) {
+            Gamepad one = ControllerManager.getGamepad(0);
+            if (one.getButton(8).get()) {
+                currentRobot++;
+                if (currentRobot == robots.size()) {
+                    currentRobot = 0;
+                }
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.entity.Entity;
+import ryan.game.games.ScoreDisplay;
 import ryan.game.games.steamworks.SteamworksField;
 
 /**
@@ -41,12 +42,16 @@ public class Boiler extends Entity {
 
     @Override
     public void onCollide(Entity e, Body self, Body other, Contact c) {
-        //if (e.getName().equalsIgnoreCase("fuel")) Utils.log("air: " + e.getAirDistance());
         if (e.getName().equalsIgnoreCase("fuel") && e.getAirDistance() <= 5.5) {
             Main.getInstance().removeEntity(e);
             if (Main.matchPlay) {
-                if (blue) SteamworksField.blueFuel++;
-                else SteamworksField.redFuel++;
+                if (ScoreDisplay.getMatchTime() > 135) {
+                    if (blue) SteamworksField.blueFuelInAuto++;
+                    else SteamworksField.redFuelInAuto++;
+                } else {
+                    if (blue) SteamworksField.blueFuel++;
+                    else SteamworksField.redFuel++;
+                }
             }
         }
     }

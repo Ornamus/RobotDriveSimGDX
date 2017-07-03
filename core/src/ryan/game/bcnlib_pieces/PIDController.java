@@ -332,7 +332,7 @@ public class PIDController implements Runnable {
                         //Log.i("Sign of I isn't equal to P. Compensating by setting I to 0.");
                     }
 
-                    m.setPower(power);
+                    m.setPower((float)power);
 
                     try {
                         if (extraCode != null) {

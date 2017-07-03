@@ -29,20 +29,22 @@ public class LoadingStation extends Entity {
         super.tick();
         for (Robot r : Main.getInstance().robots) {
             if (blue == r.blue) {
-                Gamepad g = ControllerManager.getGamepad(r.id);
-                boolean val = g.getButton(left ? 2 : 3).get();
-                if (wasHeld.get(g.id) == null) wasHeld.put(g.id, false);
-                if (val && !wasHeld.get(g.id)) {
+                Gamepad g = r.getController();
+                if (g != null) {
+                    boolean val = g.getButton(left ? 2 : 3).get();
+                    if (wasHeld.get(g.id) == null) wasHeld.put(g.id, false);
+                    if (val && !wasHeld.get(g.id)) {
 
-                    float distance = 1.85f;
-                    float xChange = distance * (float) Math.sin(Math.toRadians(getAngle()));
-                    float yChange = -distance * (float) Math.cos(Math.toRadians(getAngle()));
+                        float distance = 1.85f;
+                        float xChange = distance * (float) Math.sin(Math.toRadians(getAngle()));
+                        float yChange = -distance * (float) Math.cos(Math.toRadians(getAngle()));
 
-                    Gear gear = Gear.create(getX() + xChange, getY() + yChange, 0, true);
-                    Main.getInstance().spawnEntity(gear);
-                    gear.getPrimary().applyForceToCenter(xChange * 50, yChange * 50, true);
+                        Gear gear = Gear.create(getX() + xChange, getY() + yChange, 0, true);
+                        Main.getInstance().spawnEntity(gear);
+                        gear.getPrimary().applyForceToCenter(xChange * 50, yChange * 50, true);
+                    }
+                    wasHeld.put(g.id, val);
                 }
-                wasHeld.put(g.id, val);
             }
         }
     }

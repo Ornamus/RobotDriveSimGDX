@@ -13,6 +13,4 @@ public abstract class Field extends Drawable {
 
     public abstract void resetField(List<Drawable> field);
 
-    public abstract void tick();
-
 }

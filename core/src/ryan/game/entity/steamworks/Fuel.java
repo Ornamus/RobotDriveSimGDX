@@ -41,7 +41,10 @@ public class Fuel extends Entity {
         rightDef.type = BodyDef.BodyType.DynamicBody;
         rightDef.position.set(x, y);
 
-        Body right = Main.getInstance().world.createBody(rightDef);
+        Body right = null;
+        synchronized (Main.getInstance().world) {
+            right = Main.getInstance().world.createBody(rightDef);
+        }
         CircleShape shape = new CircleShape();
         shape.setRadius(radius);
 

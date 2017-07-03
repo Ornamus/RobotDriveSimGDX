@@ -1,7 +1,6 @@
 package ryan.game.entity;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -11,12 +10,18 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.autonomous.AutoBaseline;
+import ryan.game.autonomous.AutoHopper;
+import ryan.game.autonomous.AutoSidegear;
+import ryan.game.bcnlib_pieces.Command;
 import ryan.game.competition.RobotStats;
 import ryan.game.controls.Button;
 import ryan.game.controls.ControllerManager;
+import ryan.game.controls.FakeButton;
 import ryan.game.controls.Gamepad;
 import ryan.game.drive.*;
 import ryan.game.games.RobotMetadata;
+import ryan.game.games.ScoreDisplay;
 import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.games.steamworks.robots.SteamDozer;
 import ryan.game.games.steamworks.robots.SteamGearGod;
@@ -29,9 +34,13 @@ public class Robot extends Entity {
     private DriveController[] scrollOptions = {new Arcade(false), new Arcade(true), new Tank(), new CheesyDrive()};
     private FieldCentricStrafe fieldCentric;
 
+    private float leftMotor = 0, rightMotor = 0;
+
     private int statsIndex = 0;
     private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod()};
     public RobotStats stats = statsOptions[statsIndex];
+
+    public Command auto = null;
 
     public RobotMetadata metadata = null;
 
@@ -71,11 +80,21 @@ public class Robot extends Entity {
 
         fieldCentric = new FieldCentricStrafe(this);
 
-        Gamepad g = ControllerManager.getGamepad(id);
-        changeAlliance = g.getButton(7);
-        changeControls = g.getButton(6);
-        robotStatToggle = g.getButton(1);
-        reverseToggle = g.getButton(9);
+        setupButtons(getController());
+    }
+
+    public void setupButtons(Gamepad g) {
+        if (g != null) {
+            changeAlliance = g.getButton(7);
+            changeControls = g.getButton(6);
+            robotStatToggle = g.getButton(1);
+            reverseToggle = g.getButton(9);
+        } else {
+            changeAlliance = new FakeButton();
+            changeControls = new FakeButton();
+            robotStatToggle = new FakeButton();
+            reverseToggle = new FakeButton();
+        }
     }
 
     public void setIntake(Body b) {
@@ -160,13 +179,13 @@ public class Robot extends Entity {
             intakeSprite.setOriginCenter();
             intakeSprite.setRotation((float)Math.toDegrees(intake.getAngle()));
         }
-        float leftMotor, rightMotor;
         Float middleMotor = null;
         if (ControllerManager.getGamepads().isEmpty()) {
-            leftMotor = Gdx.input.isKeyPressed(Input.Keys.A) ? 1 : 0;
-            rightMotor = Gdx.input.isKeyPressed(Input.Keys.D) ? 1 : 0;
+            //leftMotor = Gdx.input.isKeyPressed(Input.Keys.A) ? 1 : 0;
+            //rightMotor = Gdx.input.isKeyPressed(Input.Keys.D) ? 1 : 0;
         } else {
-            Gamepad g = ControllerManager.getGamepad(id);
+            Gamepad g = getController();
+            setupButtons(g);
             /*for (Button b : g.getButtons()) {
                 if (b.get()) {
                     Utils.log(b.id + "");
@@ -193,12 +212,23 @@ public class Robot extends Entity {
             }
             changeControlsWasTrue = val;
 
-            DriveOrder o = scrollOptions[controllerIndex].calculate(g);
-            //DriveOrder o = fieldCentric.calculate(g);
+            if ((!Main.matchPlay || ScoreDisplay.getMatchTime() <= 134) && g != null) {
+                DriveOrder o = scrollOptions[controllerIndex].calculate(g);
 
-            leftMotor = o.left;
-            rightMotor = o.right;
-            if (o.hasMiddle()) middleMotor = o.middle;
+                setMotors(o.left, o.right);
+                if (o.hasMiddle()) middleMotor = o.middle;
+
+                if (middleMotor != null) Utils.cap(middleMotor, 1);
+                if (middleMotor != null) {
+                    updateMiddleMotor(middleMotor);
+                } else {
+                    //doFriction(left);
+                    //doFriction(right);
+                }
+            }
+            updateMotors(leftMotor, rightMotor);
+            doFriction(left);
+            doFriction(right);
 
 
             val = robotStatToggle.get();
@@ -226,16 +256,6 @@ public class Robot extends Entity {
             reverseToggleWasTrue = val;
         }
 
-        leftMotor = Utils.cap(leftMotor, 1);
-        rightMotor = Utils.cap(rightMotor, 1);
-        if (middleMotor != null) Utils.cap(middleMotor, 1);
-        updateMotors(leftMotor, rightMotor);
-        if (middleMotor != null) {
-            updateMiddleMotor(middleMotor);
-        } else {
-            doFriction(left);
-            doFriction(right);
-        }
         if (metadata != null) metadata.tick(this);
     }
 
@@ -248,6 +268,11 @@ public class Robot extends Entity {
     }
 
     final float k = 10.0f; //2.25
+
+    public void setMotors(float l, float r) {
+        leftMotor = Utils.cap(l, 1);
+        rightMotor = Utils.cap(r, 1);
+    }
 
     public void updateMotors(float l, float r) {
         float lAngle = -left.getAngle();
@@ -349,5 +374,15 @@ public class Robot extends Entity {
         Vector2 currentRightNormal = b.getWorldVector(new Vector2(1, 0));
         float magic = currentRightNormal.dot(linear);
         return currentRightNormal.scl(magic, magic);
+    }
+
+    public Gamepad getController() {
+        if (Main.currentRobot == -1) {
+            return ControllerManager.getGamepad(id);
+        } else if (Main.currentRobot == id) {
+            return ControllerManager.getGamepad(0);
+        } else {
+            return null;
+        }
     }
 }

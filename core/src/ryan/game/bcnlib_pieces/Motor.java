@@ -2,13 +2,13 @@ package ryan.game.bcnlib_pieces;
 
 public class Motor {
 
-    double power;
+    float power;
 
-    public void setPower(double p) {
+    public void setPower(float p) {
         power = p;
     }
 
-    public double getPower() {
+    public float getPower() {
         return power;
     }
 }

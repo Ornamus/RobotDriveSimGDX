@@ -19,7 +19,7 @@ public class SteamworksDisplay extends ScoreDisplay {
 
     @Override
     public void tick() {
-
+        super.tick();
     }
 
     @Override
@@ -53,6 +53,12 @@ public class SteamworksDisplay extends ScoreDisplay {
         int blueScore = 0;
         int redScore = 0;
         if (Main.matchPlay) {
+            if (SteamworksField.blueGearsInAuto > 0) {
+                blueScore += 20;
+            }
+            if (SteamworksField.blueGearsInAuto > 2) {
+                blueScore += 20;
+            }
             if (SteamworksField.blueGears > 0) {
                 blueScore += 40;
                 blueRots++;
@@ -70,6 +76,12 @@ public class SteamworksDisplay extends ScoreDisplay {
                 blueRots++;
             }
 
+            if (SteamworksField.redGearsInAuto > 0) {
+                redScore += 20;
+            }
+            if (SteamworksField.redGearsInAuto > 2) {
+                redScore += 20;
+            }
             if (SteamworksField.redGears > 0) {
                 redScore += 40;
                 redRots++;
@@ -88,10 +100,19 @@ public class SteamworksDisplay extends ScoreDisplay {
             }
             blueKPA = (int)Math.round(Math.floor(SteamworksField.blueFuel / 3.0));
             redKPA = (int)Math.round(Math.floor(SteamworksField.redFuel / 3.0));
+            blueKPA += SteamworksField.blueFuelInAuto;
+            redKPA += SteamworksField.redFuelInAuto;
             blueScore += blueKPA;
             redScore += redKPA;
             if (blueKPA >= 40) blueScore += 20;
             if (redKPA >= 40) redScore += 20;
+            for (Robot r : Main.robots) {
+                SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
+                if (meta.crossedBaseline) {
+                    if (r.blue) blueScore += 5;
+                    else redScore += 5;
+                }
+            }
             if (seconds <= 30) {
                 for (Robot r : Main.robots) {
                     SteamworksMetadata meta = (SteamworksMetadata) r.metadata;

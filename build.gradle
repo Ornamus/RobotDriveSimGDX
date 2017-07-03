@@ -53,6 +53,7 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile "net.java.jinput:jinput:2.0.5"
+        compile "com.github.xaguzman:pathfinding:0.2.6"
     }
 }
 

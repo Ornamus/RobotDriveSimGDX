@@ -18,7 +18,7 @@ import java.util.List;
 public class Entity extends Drawable {
 
     private String name = "entity";
-    private float width = -1, height = -1;
+    public float width = -1, height = -1;
     private float angle = 0;
     private float airDistance = 1;
     private float airMomentum = 0;

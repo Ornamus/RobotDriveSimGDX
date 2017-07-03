@@ -9,13 +9,13 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.autonomous.AutoBaseline;
+import ryan.game.autonomous.AutoHopper;
+import ryan.game.autonomous.AutoSidegear;
 import ryan.game.competition.Schedule;
 import ryan.game.competition.Team;
 import ryan.game.entity.*;
-import ryan.game.entity.steamworks.Boiler;
-import ryan.game.entity.steamworks.Hopper;
-import ryan.game.entity.steamworks.LoadingStation;
-import ryan.game.entity.steamworks.Rope;
+import ryan.game.entity.steamworks.*;
 import ryan.game.games.Field;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
 import ryan.game.render.Drawable;
@@ -32,9 +32,13 @@ public class SteamworksField extends Field {
     SteamworksDisplay display;
 
     public static int blueGears = 0;
+    public static int blueGearsInAuto = 0;
     public static int redGears = 0;
+    public static int redGearsInAuto = 0;
     public static int blueFuel = 0;
+    public static int blueFuelInAuto = 0;
     public static int redFuel = 0;
+    public static int redFuelInAuto = 0;
 
     @Override
     public List<Drawable> generateField() {
@@ -110,6 +114,8 @@ public class SteamworksField extends Field {
         drawables.add(new Boiler(-24.6f, -12.25f, false)); //red boiler
         drawables.add(new Boiler(23.4f, -12.25f, true));
 
+        drawables.add(new Baseline(16.75f, 0, true)); //blue baseline
+        drawables.add(new Baseline(-18f, 0, false)); //blue baseline
 
         float sideSpace = 1f;
 
@@ -148,13 +154,25 @@ public class SteamworksField extends Field {
     @Override
     public void matchStart() {
         blueGears = 0;
+        blueGearsInAuto = 0;
         redGears = 0;
+        redGearsInAuto = 0;
         blueFuel = 0;
+        blueFuelInAuto = 0;
         redFuel = 0;
+        redFuelInAuto = 0;
+        for (Robot r : Main.robots) {
+            r.auto = r.stats.getAutonomous(r);
+            SteamworksMetadata m = (SteamworksMetadata) r.metadata;
+            m.hasGear = true;
+            m.fuel = 10;
+            m.crossedBaseline = false;
+        }
+        /*
         Schedule.Match m = Main.schedule.matches.get(Utils.randomInt(0, Main.schedule.matches.size()-1));
         display.setBlueTeams(m.blue[0].number, m.blue[1].number, m.blue[2].number);
         display.setRedTeams(m.red[0].number, m.red[1].number, m.red[2].number);
-        display.setMatchName("Qualification " + m.number + " of " + Main.schedule.matches.size());
+        display.setMatchName("Qualification " + m.number + " of " + Main.schedule.matches.size());*/
     } //Stuanobor
 
     @Override
@@ -171,7 +189,7 @@ public class SteamworksField extends Field {
                     ((Hopper) e).reset();
                 } else if (e instanceof Robot) {
                     SteamworksMetadata meta = (SteamworksMetadata) ((Robot)e).metadata;
-                    meta.fuel = 0;
+                    //meta.fuel = 0;
                     //meta.hasGear = false;
                 }
             }
