@@ -1,14 +1,11 @@
 package ryan.game.ai;
 
-import org.xguzm.pathfinding.Util;
 import org.xguzm.pathfinding.grid.GridCell;
 import org.xguzm.pathfinding.grid.NavigationGrid;
 import org.xguzm.pathfinding.grid.finders.AStarGridFinder;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.entity.Entity;
-
-import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;

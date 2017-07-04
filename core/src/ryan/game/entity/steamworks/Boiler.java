@@ -8,9 +8,6 @@ import ryan.game.games.Game;
 import ryan.game.games.ScoreDisplay;
 import ryan.game.games.steamworks.SteamworksField;
 
-/**
- * Created by Ryan Shavell on 6/14/2017.
- */
 public class Boiler extends Entity {
 
     static float radius = .75f;
@@ -18,7 +15,7 @@ public class Boiler extends Entity {
     public final boolean blue;
 
     public Boiler(float x, float y, boolean blue) {
-        super(null);
+        super(new Body[]{});
         this.blue = blue;
         BodyDef rightDef = new BodyDef();
         rightDef.type = BodyDef.BodyType.StaticBody;

@@ -1,6 +1,5 @@
 package ryan.game.autonomous.pathmagic;
 
-import com.sun.xml.internal.ws.api.FeatureListValidatorAnnotation;
 import ryan.game.Utils;
 import ryan.game.entity.Robot;
 import ryan.game.team254.utils.RigidTransform2d;
