@@ -41,7 +41,10 @@ public class Gear extends Entity {
         rightDef.type = BodyDef.BodyType.DynamicBody;
         rightDef.position.set(x, y);
 
-        Body right = w.createBody(rightDef);
+        Body right = null;
+        synchronized (w) {
+            right = w.createBody(rightDef);
+        }
         CircleShape shape = new CircleShape();
         shape.setRadius(radius);
 

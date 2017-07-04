@@ -40,24 +40,29 @@ public class Auto254 extends Command {
 
             PursuitControl c = new PursuitControl(robot);
 
+            int blue = robot.blue ? 1 : -1;
+
+            //Getting gear
             List<Path.Waypoint> path = new ArrayList<>();
             path.add(new Path.Waypoint(new Translation2d(0, 0), 120));
             path.add(new Path.Waypoint(new Translation2d(150, 0), 80));
-            path.add(new Path.Waypoint(new Translation2d(270, -120), 120));
+            path.add(new Path.Waypoint(new Translation2d(robot.blue ? 270 : 290, robot.blue ? -120 : 140), 120));
 
             followPath(c, new Path(path), false);
             meta.ejectGear(robot);
 
+            //Backing up to near hopper
             path.clear();
-            path.add(new Path.Waypoint(new Translation2d(270, -120), 120.0));
-            path.add(new Path.Waypoint(new Translation2d(240, -90), 120.0));
-            path.add(new Path.Waypoint(new Translation2d(435, 115), 120.0));
-            path.add(new Path.Waypoint(new Translation2d(465, 125), 120.0));
+            path.add(new Path.Waypoint(new Translation2d(270, -120 * blue), 120.0));
+            path.add(new Path.Waypoint(new Translation2d(240, -90 * blue), 120.0));
+            path.add(new Path.Waypoint(new Translation2d(435, robot.blue ? 115 : -70), 120.0));
+            path.add(new Path.Waypoint(new Translation2d(465, robot.blue ? 125 : -60), 120.0));
             followPath(c, new Path(path), true);
 
+            //Hitting the hopper
             path.clear();
-            path.add(new Path.Waypoint(new Translation2d(465, 125), 70));
-            path.add(new Path.Waypoint(new Translation2d(380, 129), 0)); //370, 130
+            path.add(new Path.Waypoint(new Translation2d(465, robot.blue ? 125 : -60), 70));
+            path.add(new Path.Waypoint(new Translation2d(robot.blue ? 380 : 380, robot.blue ? 129 : -70), 0)); //370, 130
 
             followPath(c, new Path(path), false);
             robot.setMotors(0, 0);
