@@ -12,6 +12,7 @@ import ryan.game.entity.*;
 import ryan.game.entity.steamworks.Fuel;
 import ryan.game.entity.steamworks.Gear;
 import ryan.game.entity.steamworks.Rope;
+import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
 import ryan.game.games.ScoreDisplay;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
@@ -145,7 +146,7 @@ public class SteamworksMetadata extends RobotMetadata {
         boolean canScore = false;
         if (peg != null) {
             float diff = Math.abs(r.getAngle() - peg.getAngle());
-            if (Math.abs(diff - 270) < 6 || Math.abs(diff - 90) < 6) canScore = true;
+            if (Math.abs(diff - 270) <= 15 || Math.abs(diff - 90) <= 15) canScore = true;
         }
         if (hasGear) {
             if (!canScore) {
@@ -168,7 +169,7 @@ public class SteamworksMetadata extends RobotMetadata {
                 if (Main.matchPlay) {
                     if (r.blue) SteamworksField.blueGears++;
                     else SteamworksField.redGears++;
-                    if (ScoreDisplay.getMatchTime() > 135) {
+                    if (Game.getMatchTime() > 135) {
                         if (r.blue) SteamworksField.blueGearsInAuto++;
                         else SteamworksField.redGearsInAuto++;
                     }

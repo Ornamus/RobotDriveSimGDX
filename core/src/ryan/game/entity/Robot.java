@@ -10,18 +10,19 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import ryan.game.Main;
 import ryan.game.Utils;
-import ryan.game.autonomous.AutoBaseline;
-import ryan.game.autonomous.AutoHopper;
-import ryan.game.autonomous.AutoSidegear;
+import ryan.game.autonomous.pathmagic.RobotState;
 import ryan.game.bcnlib_pieces.Command;
+import ryan.game.bcnlib_pieces.PIDSource;
 import ryan.game.competition.RobotStats;
 import ryan.game.controls.Button;
 import ryan.game.controls.ControllerManager;
 import ryan.game.controls.FakeButton;
 import ryan.game.controls.Gamepad;
 import ryan.game.drive.*;
+import ryan.game.autonomous.pathmagic.RobotStateGenerator;
+import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
-import ryan.game.games.ScoreDisplay;
+import ryan.game.games.steamworks.robots.Steam254;
 import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.games.steamworks.robots.SteamDozer;
 import ryan.game.games.steamworks.robots.SteamGearGod;
@@ -34,10 +35,16 @@ public class Robot extends Entity {
     private DriveController[] scrollOptions = {new Arcade(false), new Arcade(true), new Tank(), new CheesyDrive()};
     private FieldCentricStrafe fieldCentric;
 
+    private PIDSource gyro = null;
+    private PIDSource leftEncoder = null;
+    private PIDSource rightEncoder = null;
+    public RobotState state = null;
+    public RobotStateGenerator generator = null;
+
     private float leftMotor = 0, rightMotor = 0;
 
     private int statsIndex = 0;
-    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod()};
+    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254()};
     public RobotStats stats = statsOptions[statsIndex];
 
     public Command auto = null;
@@ -81,6 +88,58 @@ public class Robot extends Entity {
         fieldCentric = new FieldCentricStrafe(this);
 
         setupButtons(getController());
+
+        gyro = new PIDSource() {
+            double fakeReset = 0;
+            @Override
+            public double getForPID() {
+                double adjustAngle = -getAngle() + fakeReset;
+
+                if (adjustAngle < 0) {
+                    adjustAngle = 360 + adjustAngle;
+                }
+                while (adjustAngle > 360) {
+                    adjustAngle -= 360;
+                }
+                return adjustAngle;
+            }
+
+            @Override
+            public void reset() {
+                fakeReset = (double) getAngle();
+            }
+        };
+
+        leftEncoder = new PIDSource() {
+            double fakeReset = 0;
+            @Override
+            public double getForPID() {
+                return leftDistance - fakeReset;
+            }
+
+            @Override
+            public void reset() {
+                fakeReset = leftDistance;
+            }
+        };
+
+        rightEncoder = new PIDSource() {
+            double fakeReset = 0;
+            @Override
+            public double getForPID() {
+                return rightDistance - fakeReset;
+            }
+
+            @Override
+            public void reset() {
+                fakeReset = rightDistance;
+            }
+        };
+
+        //scrollOptions = new DriveController[]{new Pursuit(this)};
+        state = new RobotState();
+        generator = new RobotStateGenerator(state, this);
+        generator.start();
     }
 
     public void setupButtons(Gamepad g) {
@@ -110,7 +169,11 @@ public class Robot extends Entity {
         tex = stats.texture;
         //if (dozer) tex = "core/assets/dozer_recolor.png";
         //else tex = "core/assets/robot_recolor.png";
-        setSprite(Utils.colorImage(tex, c));
+        if (tex.contains("254")) {
+            setSprite(Utils.colorImage(tex, null, c));
+        } else {
+            setSprite(Utils.colorImage(tex, c));
+        }
 
         intakeSprite = new Sprite(Utils.colorImage("core/assets/robot_intake.png", c));
         intakeSprite.setPosition(-999, -999);
@@ -141,6 +204,16 @@ public class Robot extends Entity {
         return (float) Math.toDegrees(angle);
     }
 
+    public float getAngularVelocity() {
+        float vel = 0;
+        Body[] important = new Body[]{left, right};
+        for (Body b : important) {
+            vel += b.getAngularVelocity();
+        }
+        vel /= important.length;
+        return vel;
+    }
+
     boolean changeAllianceWasTrue = false;
     boolean changeControlsWasTrue = false;
     boolean dozerToggleWasTrue = false;
@@ -163,9 +236,43 @@ public class Robot extends Entity {
         if (metadata != null) metadata.collideEnd(this, e, self, other, c);
     }
 
+    float leftDistance = 0, rightDistance = 0;
+    Vector2 leftPosOld = null, rightPosOld = null;
+    float angleOld = 0;
+
     @Override
     public void tick() {
         super.tick();
+
+        float angle = (float) Math.toRadians(getPhysicsAngle());
+
+        Vector2 leftPos = left.getPosition();
+        if (leftPosOld != null) {
+            Vector2 diff = new Vector2(leftPos.x, leftPos.y).sub(leftPosOld);
+            diff = diff.rotateRad(-left.getAngle());
+            diff = diff.scl(1000);
+            float angleDiff = angle - angleOld;
+            leftDistance += diff.y;
+            leftDistance += (angleDiff * (stats.robotWidth / 2)) * 1000;
+            //Utils.log(Utils.roundToPlace(rightDistance, 0) + "");
+        }
+        leftPosOld = new Vector2(leftPos.x, leftPos.y);
+
+        Vector2 rightPos = right.getPosition();
+        if (rightPosOld != null) {
+            Vector2 diff = new Vector2(rightPos.x, rightPos.y).sub(rightPosOld);
+            diff = diff.rotateRad(-right.getAngle());
+            diff = diff.scl(1000);
+            float angleDiff = angle - angleOld;
+            rightDistance += diff.y;
+            rightDistance += (angleDiff * (stats.robotWidth / 2)) * 1000;
+            //Utils.log(Utils.roundToPlace(rightDistance, 0) + "");
+        }
+        rightPosOld = new Vector2(rightPos.x, rightPos.y);
+
+        angleOld = angle;
+
+        //Utils.log(leftDistance + " / " + rightDistance);
 
         if (icon != null) {
             icon.setPosition(getX() - icon.getWidth() / 2, getY() + 1f);
@@ -212,7 +319,7 @@ public class Robot extends Entity {
             }
             changeControlsWasTrue = val;
 
-            if ((!Main.matchPlay || ScoreDisplay.getMatchTime() <= 134) && g != null) {
+            if ((!Game.isPlaying() || Game.getMatchTime() <= 134) && g != null) {
                 DriveOrder o = scrollOptions[controllerIndex].calculate(g);
 
                 setMotors(o.left, o.right);
@@ -384,5 +491,17 @@ public class Robot extends Entity {
         } else {
             return null;
         }
+    }
+
+    public PIDSource getGyro() {
+        return gyro;
+    }
+
+    public PIDSource getLeftEncoder() {
+        return leftEncoder;
+    }
+
+    public PIDSource getRightEncoder() {
+        return rightEncoder;
     }
 }

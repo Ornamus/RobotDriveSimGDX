@@ -3,44 +3,19 @@ package ryan.game.autonomous;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.bcnlib_pieces.Motor;
 import ryan.game.bcnlib_pieces.PIDController;
-import ryan.game.bcnlib_pieces.PIDSource;
 import ryan.game.entity.Robot;
-import ryan.game.games.ScoreDisplay;
+import ryan.game.games.Game;
 import ryan.game.games.steamworks.SteamworksMetadata;
-
-import java.util.ServiceConfigurationError;
 
 public class AutoHopper extends Command {
 
     Motor pidOutput;
-    PIDSource gyro;
     PIDController rotatePID;
 
     public AutoHopper(Robot r) {
         super(r);
         pidOutput = new Motor();
-        gyro = new PIDSource() {
-            double fakeReset = 0;
-            @Override
-            public double getForPID() {
-                double adjustAngle = -robot.getAngle() + fakeReset;
-
-                if (adjustAngle < 0) {
-                    adjustAngle = 360 + adjustAngle;
-                }
-                while (adjustAngle > 360) {
-                    adjustAngle -= 360;
-                }
-                //Utils.log("ANGLE: " + adjustAngle);
-                return adjustAngle;
-            }
-
-            @Override
-            public void reset() {
-                fakeReset = (double) robot.getAngle();
-            }
-        };
-        rotatePID = new PIDController(pidOutput, gyro, 0.01, 0.0008 * 2, 0.09 * 1.5, 0.15, 1).setRotational(true);
+        rotatePID = new PIDController(pidOutput, r.getGyro(), 0.01, 0.0008 * 2, 0.09 * 1.5, 0.15, 1).setRotational(true);
         rotatePID.setFinishedTolerance(1);
     }
 
@@ -48,7 +23,7 @@ public class AutoHopper extends Command {
     public void onInit() {
         SteamworksMetadata m = (SteamworksMetadata) robot.metadata;
         try {
-            gyro.reset();
+            robot.getGyro().reset();
             robot.setMotors(1f, 1f);
             Thread.sleep(1350);
             rotatePID.setTarget(robot.blue ? 270 : 90);
@@ -73,7 +48,7 @@ public class AutoHopper extends Command {
             }
             rotatePID.disable();
             robot.setMotors(0, 0);
-            while (ScoreDisplay.getMatchTime() > 135) {
+            while (Game.getMatchTime() > 135) {
                 m.shootFuel(robot);
             }
         } catch (Exception e) {

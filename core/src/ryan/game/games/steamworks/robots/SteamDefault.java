@@ -1,6 +1,7 @@
 package ryan.game.games.steamworks.robots;
 
-import ryan.game.autonomous.AutoSidegear;
+import ryan.game.autonomous.Auto254;
+import ryan.game.autonomous.AutoSideGear;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.entity.Robot;
 
@@ -13,6 +14,6 @@ public class SteamDefault extends SteamRobotStats {
 
     @Override
     public Command getAutonomous(Robot r) {
-        return new AutoSidegear(r);
+        return new AutoSideGear(r);
     }
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.entity.Entity;
+import ryan.game.games.Game;
 import ryan.game.games.ScoreDisplay;
 import ryan.game.games.steamworks.SteamworksField;
 
@@ -45,7 +46,7 @@ public class Boiler extends Entity {
         if (e.getName().equalsIgnoreCase("fuel") && e.getAirDistance() <= 5.5) {
             Main.getInstance().removeEntity(e);
             if (Main.matchPlay) {
-                if (ScoreDisplay.getMatchTime() > 135) {
+                if (Game.getMatchTime() > 135) {
                     if (blue) SteamworksField.blueFuelInAuto++;
                     else SteamworksField.redFuelInAuto++;
                 } else {

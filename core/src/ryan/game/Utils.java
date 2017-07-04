@@ -125,15 +125,16 @@ public class Utils {
                         }
                         float[] hsb = new float[3];
                         if (newColors.length - 1 >= colorType && colorType != -1) {
-
                             Color newC = newColors[colorType];
-                            java.awt.Color.RGBtoHSB(Math.round(newC.r * 255), Math.round(newC.g * 255), Math.round(newC.b * 255), hsb);
-                            hsb[2] *= changeAmount;
-                            java.awt.Color c = new java.awt.Color(java.awt.Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]));
+                            if (newC != null) {
+                                java.awt.Color.RGBtoHSB(Math.round(newC.r * 255), Math.round(newC.g * 255), Math.round(newC.b * 255), hsb);
+                                hsb[2] *= changeAmount;
+                                java.awt.Color c = new java.awt.Color(java.awt.Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]));
 
-                            Color recolor = toColor(c.getRed(), c.getGreen(), c.getBlue());
-                            pixmap.setColor(recolor);
-                            pixmap.fillRectangle(xx, yy, 1, 1);
+                                Color recolor = toColor(c.getRed(), c.getGreen(), c.getBlue());
+                                pixmap.setColor(recolor);
+                                pixmap.fillRectangle(xx, yy, 1, 1);
+                            }
                         }
                     } else {
                     /*

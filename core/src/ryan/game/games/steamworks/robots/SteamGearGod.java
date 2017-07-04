@@ -1,6 +1,6 @@
 package ryan.game.games.steamworks.robots;
 
-import ryan.game.autonomous.AutoBaseline;
+import ryan.game.autonomous.AutoCenterGear;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.entity.Robot;
 
@@ -16,6 +16,6 @@ public class SteamGearGod extends SteamRobotStats {
 
     @Override
     public Command getAutonomous(Robot r) {
-        return new AutoBaseline(r);
+        return new AutoCenterGear(r);
     }
 }

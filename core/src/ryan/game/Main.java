@@ -25,6 +25,7 @@ import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
 import ryan.game.games.Field;
+import ryan.game.games.Game;
 import ryan.game.games.ScoreDisplay;
 import ryan.game.games.steamworks.SteamworksField;
 import ryan.game.games.steamworks.robots.SteamDefault;
@@ -111,7 +112,7 @@ public class Main extends ApplicationAdapter {
         if (extraRobots > 0) currentRobot = 0;
 
         for (int i=0; i<ControllerManager.getGamepads().size() + extraRobots; i++) {
-            robots.add(Robot.create(new SteamDefault(), 0 + (index * 3), 0));
+            robots.add(Robot.create(new SteamDefault(), 0 + (index * 3), -11));
             index++;
         }
 
@@ -225,9 +226,11 @@ public class Main extends ApplicationAdapter {
     public void removeEntity(Entity e) {
         removeDrawable(e);
         for (Body b : e.getBodies()) {
-            b.setActive(false);
-            b.setAwake(false);
-            b.setUserData(null);
+            synchronized (world) {
+                b.setActive(false);
+                b.setAwake(false);
+                b.setUserData(null);
+            }
         }
     }
 
@@ -251,7 +254,7 @@ public class Main extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         doPhysicsStep(Gdx.graphics.getDeltaTime());
 
-        int seconds = ScoreDisplay.getMatchTime();
+        int seconds = Game.getMatchTime();
         int minutes = 0;
         while (seconds >= 60) {
             seconds-=60;
@@ -391,7 +394,7 @@ public class Main extends ApplicationAdapter {
             matchStartSound.play(.45f);
             if (playMusic) {
                 music = Gdx.audio.newMusic(musicChoices[Utils.randomInt(0, musicChoices.length - 1)]);
-                music.setVolume(.2f);
+                music.setVolume(.1f);
                 music.play();
             }
         }

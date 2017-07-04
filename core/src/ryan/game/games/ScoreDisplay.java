@@ -110,13 +110,7 @@ public abstract class ScoreDisplay extends Drawable {
     public void draw(SpriteBatch batch) {
         display.draw(batch);
 
-        if (Main.matchPlay) {
-            long timeIn = System.currentTimeMillis() - Main.matchStart;
-            long timeLeft = (150 * 1000) - timeIn;
-            seconds = Math.round(timeLeft / 1000f);
-        } else {
-            seconds = 150;
-        }
+        seconds = Game.getMatchTime();
         timerBar.setBounds(-127, getY() + 72, ((150f-seconds)/150f) * 254, 29);
         timerBar.draw(batch);
         timerBar.setTexture(Utils.colorImage("core/assets/whitepixel.png", (seconds <= 30 ? Color.YELLOW : Utils.toColor(39, 124, 28))));
@@ -135,13 +129,13 @@ public abstract class ScoreDisplay extends Drawable {
 
         drawCentered(Main.matchPlay ? (seconds > 135 ? seconds - 135 : seconds) + "" : "Infinite", 0, getY() + 93f, blackNormal, batch);
 
-        drawCentered(blueTeams[0] + "", -166, getY() + 92f, blackNormal, batch);
-        drawCentered(blueTeams[1] + "", -166, getY() + 71f, blackNormal, batch);
-        drawCentered(blueTeams[2] + "", -166, getY() + 71f - 21f, blackNormal, batch);
+        drawCentered(redTeams[0] + "", -166, getY() + 92f, blackNormal, batch);
+        drawCentered(redTeams[1] + "", -166, getY() + 71f, blackNormal, batch);
+        drawCentered(redTeams[2] + "", -166, getY() + 71f - 21f, blackNormal, batch);
 
-        drawCentered(redTeams[0] + "", 166, getY() + 92f, blackNormal, batch);
-        drawCentered(redTeams[1] + "", 166, getY() + 71f, blackNormal, batch);
-        drawCentered(redTeams[2] + "", 166, getY() + 71f - 21f, blackNormal, batch);
+        drawCentered(blueTeams[0] + "", 166, getY() + 92f, blackNormal, batch);
+        drawCentered(blueTeams[1] + "", 166, getY() + 71f, blackNormal, batch);
+        drawCentered(blueTeams[2] + "", 166, getY() + 71f - 21f, blackNormal, batch);
     }
 
     /**
@@ -173,17 +167,5 @@ public abstract class ScoreDisplay extends Drawable {
 
     public void setEventName(String e) {
         eventName = e;
-    }
-
-    public static int getMatchTime() {
-        int seconds = 0;
-        if (Main.matchPlay) {
-            long timeIn = System.currentTimeMillis() - Main.matchStart;
-            long timeLeft = (150 * 1000) - timeIn;
-            seconds = Math.round(timeLeft / 1000f);
-        } else {
-            seconds = 150;
-        }
-        return seconds;
     }
 }
