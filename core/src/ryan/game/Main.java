@@ -27,6 +27,7 @@ import ryan.game.entity.*;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
 import ryan.game.games.ScoreDisplay;
+import ryan.game.games.pirate.PirateField;
 import ryan.game.games.steamworks.SteamworksField;
 import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.render.Drawable;
@@ -380,12 +381,12 @@ public class Main extends ApplicationAdapter {
         gameField.tick();
 
         boolean aPressed = false;
-        for (Gamepad g : ControllerManager.getGamepads()) {
+        /*for (Gamepad g : ControllerManager.getGamepads()) {
             if (g.getButton(0).get()) {
                 aPressed = true;
                 break;
             }
-        }
+        }*/
         if ((aPressed || Gdx.input.isKeyPressed(Input.Keys.P)) && !matchPlay) {
             gameField.matchStart();
             resetField = true;

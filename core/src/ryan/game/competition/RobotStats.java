@@ -11,6 +11,7 @@ public abstract class RobotStats {
     public float maxAccel = 4.572f * 3.4f;
     public float robotWidth = 0.9144f;
     public float robotHeight = robotWidth;
+    public boolean fieldCentric = false;
     public String texture = "core/assets/robot_recolor.png";
 
     public RobotStats(Game g) {

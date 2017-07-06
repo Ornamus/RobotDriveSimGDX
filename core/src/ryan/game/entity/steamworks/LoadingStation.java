@@ -31,7 +31,7 @@ public class LoadingStation extends Entity {
             if (blue == r.blue) {
                 Gamepad g = r.getController();
                 if (g != null) {
-                    boolean val = g.getButton(left ? 2 : 3).get();
+                    boolean val = left ? g.isLeftTriggerPressed() : g.isRightTriggerPressed();//g.getButton(left ? 2 : 3).get();
                     if (wasHeld.get(g.id) == null) wasHeld.put(g.id, false);
                     if (val && !wasHeld.get(g.id)) {
 

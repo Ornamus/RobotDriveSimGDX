@@ -23,30 +23,46 @@ public class PirateField extends Field {
     public List<Drawable> generateField() {
         List<Drawable> drawables = new ArrayList<>();
 
-        drawables.add(new ImageDrawer(-27, -14f, 54, 27, "core/assets/overboard.png"));
+        float width = 54 * .915f;
+        float height = 27 * .915f;
+        drawables.add(new ImageDrawer(-width/2, -height/2 - .5f, width, height, "core/assets/overboard.png"));
 
-        drawables.addAll(generateChests());
+        Entity ent = Entity.barrier(0, 12.25f, width, .5f);
+        ent.initVisuals(width, .5f);
+        drawables.add(ent);
 
-        drawables.add(new ScoreDisplay("core/assets/score_display_overboard.png") {
-            @Override
-            public int[] calculateScores() {
-                return new int[]{0, 0};
-            }
-        });
+        ent = Entity.barrier(0, -13.25f, width, .5f);
+        ent.initVisuals(width, .5f);
+        drawables.add(ent);
+
+        ent = Entity.barrier(width / 2, 0, .5f, height);
+        ent.initVisuals(.5f, height);
+        drawables.add(ent);
+
+        ent = Entity.barrier(-width / 2, 0, .5f, height);
+        ent.initVisuals(.5f, height);
+        drawables.add(ent);
+
+        for (Entity e : generateChests()) {
+            Main.getInstance().addFriction(e.getPrimary());
+            drawables.add(e);
+        }
+
+        drawables.add(new PirateDisplay());
 
         return drawables;
     }
 
-    public List<Drawable> generateChests() {
-        List<Drawable> chests = new ArrayList<>();
+    public List<Entity> generateChests() {
+        List<Entity> chests = new ArrayList<>();
         for (int bX=0; bX<5; bX++) {
             for (int bY=0; bY<3; bY++) {
-                chests.add(new Chest(bX + 20, bY - 12, Main.BLUE));
+                chests.add(new Chest(bX + 19, bY - 11, Main.BLUE));
             }
         }
         for (int bX=0; bX<5; bX++) {
             for (int bY=0; bY<3; bY++) {
-                chests.add(new Chest(bX - 23.5f, bY + 9, Main.RED));
+                chests.add(new Chest(bX - 22.5f, bY + 8, Main.RED));
             }
         }
         for (int bX=0; bX<3; bX++) {

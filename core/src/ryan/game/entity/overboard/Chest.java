@@ -7,8 +7,8 @@ import ryan.game.entity.Entity;
 
 public class Chest extends Entity {
 
-    public static final float SIDE = .7f;
-    public static final float DENSITY = .2f;
+    public static final float SIDE = .45f;
+    public static final float DENSITY = .1f;
 
     public Chest(float x, float y, Color c) {
         super(Entity.rectangleBody(x, y, SIDE, SIDE, DENSITY, BodyDef.BodyType.DynamicBody));

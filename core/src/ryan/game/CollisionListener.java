@@ -31,9 +31,11 @@ public class CollisionListener implements ContactListener {
             return;
         }
 
-        if (Math.abs(a.getAirDistance() - b.getAirDistance()) >= 1) {
-            contact.setEnabled(false);
-            return;
+        if (a != null && b != null) {
+            if (Math.abs(a.getAirDistance() - b.getAirDistance()) >= 1) {
+                contact.setEnabled(false);
+                return;
+            }
         }
 
         if (a != null && b != null) {

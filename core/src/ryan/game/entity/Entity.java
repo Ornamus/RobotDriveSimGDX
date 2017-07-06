@@ -28,7 +28,6 @@ public class Entity extends Drawable {
     private Sprite s = null;
 
     private static final Texture defaultTexture = new Texture("core/assets/default_block.png");
-    private static final Texture fuelTex = new Texture("core/assets/fuel.png");
 
     protected Entity(Body... b) {
         super(-999, -999);

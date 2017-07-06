@@ -12,6 +12,8 @@ public class Gamepad {
     public final int id;
     private Controller c;
     private Component xAxis = null, yAxis = null, xAxis2 = null, yAxis2 = null;
+    private Component zAxis = null;
+    private Component dPad = null;
     private List<Button> buttons = new ArrayList<Button>();
     private boolean reverseSticks = false;
 
@@ -27,17 +29,20 @@ public class Gamepad {
         } else {
             boolean zRot = false;
             for (Component comp : c.getComponents()) {
-                //Utils.log(comp.getName());
+                Utils.log(comp.getName());
                 if (comp.getName().equalsIgnoreCase("X Axis")) xAxis = comp;
                 if (comp.getName().equalsIgnoreCase("Y Axis")) yAxis = comp;
                 if (comp.getName().equalsIgnoreCase("X Rotation")) xAxis2 = comp;
                 if (comp.getName().equalsIgnoreCase("Y Rotation")) yAxis2 = comp;
+                if (comp.getName().equalsIgnoreCase("Z Axis")) zAxis = comp;
                 if (comp.getName().equalsIgnoreCase("Z Rotation")) zRot = true;
+                if (comp.getName().equalsIgnoreCase("hat switch")) dPad = comp;
                 if (comp.getName().toLowerCase().contains("button")) buttons.add(new Button(comp));
                 //if (comp.getIdentifier() instanceof Component.Identifier.Button) buts.add(comp);
 
             }
             if (!hasSecondJoystick() && zRot) {
+                zAxis = null;
                 for (Component comp : c.getComponents()) {
                     //Utils.log(comp.getName());
                     if (comp.getName().equalsIgnoreCase("Z Axis")) xAxis2 = comp;
@@ -87,6 +92,29 @@ public class Gamepad {
             return -yAxis2.getPollData();
         }
         return 0;
+    }
+
+    public float getZ() {
+        if (zAxis != null) return zAxis.getPollData();
+        return 0;
+    }
+
+    public float getDPad() {
+        return dPad.getPollData();
+    }
+
+    public boolean isLeftTriggerPressed() {
+        if (hasZAxis()) return getZ() > 0.1;
+        return false;
+    }
+
+    public boolean isRightTriggerPressed() {
+        if (hasZAxis()) return getZ() < -0.1;
+        return false;
+    }
+
+    public boolean hasZAxis() {
+        return zAxis != null;
     }
 
     public boolean hasSecondJoystick() {

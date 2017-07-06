@@ -22,10 +22,7 @@ import ryan.game.drive.*;
 import ryan.game.autonomous.pathmagic.RobotStateGenerator;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
-import ryan.game.games.steamworks.robots.Steam254;
-import ryan.game.games.steamworks.robots.SteamDefault;
-import ryan.game.games.steamworks.robots.SteamDozer;
-import ryan.game.games.steamworks.robots.SteamGearGod;
+import ryan.game.games.steamworks.robots.*;
 
 public class Robot extends Entity {
 
@@ -42,9 +39,10 @@ public class Robot extends Entity {
     public RobotStateGenerator generator = null;
 
     private float leftMotor = 0, rightMotor = 0;
+    private float middleMotor = 0;
 
     private int statsIndex = 0;
-    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254()};
+    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902()};
     public RobotStats stats = statsOptions[statsIndex];
 
     public Command auto = null;
@@ -84,8 +82,6 @@ public class Robot extends Entity {
 
         blue = !Utils.hasDecimal(id / 2.0);
         updateSprite();
-
-        fieldCentric = new FieldCentricStrafe(this);
 
         setupButtons(getController());
 
@@ -140,6 +136,8 @@ public class Robot extends Entity {
         state = new RobotState();
         generator = new RobotStateGenerator(state, this);
         generator.start();
+
+        fieldCentric = new FieldCentricStrafe(this);
     }
 
     public void setupButtons(Gamepad g) {
@@ -169,7 +167,7 @@ public class Robot extends Entity {
         tex = stats.texture;
         //if (dozer) tex = "core/assets/dozer_recolor.png";
         //else tex = "core/assets/robot_recolor.png";
-        if (tex.contains("254")) {
+        if (tex.contains("254") || tex.contains("1902")) {
             setSprite(Utils.colorImage(tex, null, c));
         } else {
             setSprite(Utils.colorImage(tex, c));
@@ -286,18 +284,17 @@ public class Robot extends Entity {
             intakeSprite.setOriginCenter();
             intakeSprite.setRotation((float)Math.toDegrees(intake.getAngle()));
         }
-        Float middleMotor = null;
         if (ControllerManager.getGamepads().isEmpty()) {
             //leftMotor = Gdx.input.isKeyPressed(Input.Keys.A) ? 1 : 0;
             //rightMotor = Gdx.input.isKeyPressed(Input.Keys.D) ? 1 : 0;
         } else {
             Gamepad g = getController();
             setupButtons(g);
-            /*for (Button b : g.getButtons()) {
+            for (Button b : g.getButtons()) {
                 if (b.get()) {
                     Utils.log(b.id + "");
                 }
-            }*/
+            }
 
             boolean val = changeControls.get();
             if (val && !changeControlsWasTrue) {
@@ -320,25 +317,28 @@ public class Robot extends Entity {
             changeControlsWasTrue = val;
 
             if ((!Game.isPlaying() || Game.getMatchTime() <= 134) && g != null) {
-                DriveOrder o = scrollOptions[controllerIndex].calculate(g);
+                DriveOrder o;
+                if (stats.fieldCentric) {
+                    o = fieldCentric.calculate(g);
+                } else {
+                    o = scrollOptions[controllerIndex].calculate(g);
+                }
 
                 setMotors(o.left, o.right);
-                if (o.hasMiddle()) middleMotor = o.middle;
-
-                if (middleMotor != null) Utils.cap(middleMotor, 1);
-                if (middleMotor != null) {
-                    updateMiddleMotor(middleMotor);
-                } else {
-                    //doFriction(left);
-                    //doFriction(right);
+                if (o.hasMiddle()) {
+                    middleMotor = Utils.cap(o.middle, 1);
                 }
             }
             updateMotors(leftMotor, rightMotor);
-            doFriction(left);
-            doFriction(right);
+            if (stats.fieldCentric) {
+                updateMiddleMotor(middleMotor);
+            } else {
+                doFriction(left);
+                doFriction(right);
+            }
 
 
-            val = robotStatToggle.get();
+            val = g.getDPad() == .75;//robotStatToggle.get();
             if (val && !dozerToggleWasTrue) {
                 statsIndex++;
                 if (statsIndex >= statsOptions.length) {
@@ -381,6 +381,10 @@ public class Robot extends Entity {
         rightMotor = Utils.cap(r, 1);
     }
 
+    public void setMiddleMotor(float m) {
+        middleMotor = m;
+    }
+
     public void updateMotors(float l, float r) {
         float lAngle = -left.getAngle();
         float rAngle = -right.getAngle();
@@ -419,14 +423,25 @@ public class Robot extends Entity {
         //Vector2 vel = getLateralVelocity(left).add(getLateralVelocity(right));
         //vel.scl(0.5f);
 
-        Utils.log("Bot angle: " + Utils.roundToPlace(getAngle() + 90, 2));
+        float angle = (float) gyro.getForPID() + 90f;
+        //Utils.log("Pow: " + m + ", Angle of movement: " + angle);
 
-        /*
-        float forceX = ((maxSpeed * 2) * (m * 2)) * (float) Math.sin(getAngle() + 90);
-        float forceY = ((maxSpeed * 2) * (m * 2)) * (float) Math.cos(getAngle() + 90);
+        //Utils.log("Bot angle: " + Utils.roundToPlace(((float)gyro.getForPID() + 90), 2));
+        m = Utils.deadzone(m, 0.1f);
+        float pow = m * 1;
 
-        left.applyForceToCenter(Utils.cap(forceX, maxAccel * 2), Utils.cap(forceY, maxAccel * 2), true);
-        right.applyForceToCenter(Utils.cap(forceX, maxAccel * 2), Utils.cap(forceY, maxAccel * 2), true);*/
+        float strafeSpeed = stats.maxMPS * 6;
+
+        float forceX = (strafeSpeed * pow) * (float) Math.sin(Math.toRadians(angle));
+        float forceY = (strafeSpeed  * pow) * (float) Math.cos(Math.toRadians(angle));
+
+        forceX = Math.abs(speed.x) > stats.maxMPS * .7 ? 0 : forceX;
+        forceY = Math.abs(speed.y) > stats.maxMPS * .7 ? 0 : forceY;
+
+        float accel = stats.maxAccel * 2f;
+
+        left.applyForceToCenter(Utils.cap(forceX, accel), Utils.cap(forceY, accel), true);
+        right.applyForceToCenter(Utils.cap(forceX, accel), Utils.cap(forceY, accel), true);
     }
 
     private static void joint(Body a, Body b) {

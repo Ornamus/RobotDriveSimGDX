@@ -23,9 +23,12 @@ public class Gear extends Entity {
         creation = System.currentTimeMillis();
     }
 
+
+    //TODO: add some sort of mostly-paralell to loading station clause for picking up HP gears
+
     @Override
     public void onCollide(Entity e, Body self, Body other, Contact contact) {
-        if (loadingStation && e instanceof Robot && System.currentTimeMillis() - creation <= 250) {
+        if (loadingStation && e instanceof Robot && System.currentTimeMillis() - creation <= 50) {
             Robot r = (Robot) e;
             SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
             if (r.intake == other && !meta.hasGear) {

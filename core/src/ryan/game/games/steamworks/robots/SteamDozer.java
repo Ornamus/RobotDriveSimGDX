@@ -9,6 +9,7 @@ public class SteamDozer extends SteamRobotStats {
     public SteamDozer() {
         gearIntake = false;
         fuelIntake = true;
+        timePerShoot = 200;
         texture = "core/assets/dozer_recolor.png";
     }
 

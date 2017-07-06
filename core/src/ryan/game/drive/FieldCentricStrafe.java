@@ -6,54 +6,54 @@ import ryan.game.bcnlib_pieces.PIDController;
 import ryan.game.bcnlib_pieces.PIDSource;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.Robot;
+import ryan.game.games.Game;
 
 public class FieldCentricStrafe implements DriveController {
+
+    final float feedAngle = 60.56f;
 
     PIDController rotatePID;
     Motor pidOutput;
     PIDSource gyro;
     Robot robot;
-    float targetAngle = 0;
+    float targetAngle;
 
     public FieldCentricStrafe(Robot r) {
         this.robot = r;
         pidOutput = new Motor();
-        gyro = new PIDSource() {
-            double fakeReset = 0;
-            @Override
-            public double getForPID() {
-                double adjustAngle = -robot.getAngle() + fakeReset;
-
-                if (adjustAngle < 0) {
-                    adjustAngle = 360 + adjustAngle;
-                }
-                while (adjustAngle > 360) {
-                    adjustAngle -= 360;
-                }
-                //Utils.log("ANGLE: " + adjustAngle);
-                return adjustAngle;
-            }
-
-            @Override
-            public void reset() {
-                fakeReset = (double) robot.getAngle();
-            }
-        };
+        gyro = r.getGyro();
         rotatePID = new PIDController(pidOutput, gyro, 0.01, 0.0008 * 2, 0.09 * 1.5, 0.15, 1).setRotational(true);
+        targetAngle = r.blue ? 270 : 90;
     }
 
     public void setTargetAngle(float angle) {
         targetAngle = angle;
     }
 
+    //2 3 0 1
     @Override
     public DriveOrder calculate(Gamepad g) {
+        //Utils.log(g.getDPad() + "");
         //double x, y, target
+        float adjust = robot.blue ? 270 : 90;
+
+        if (g.getButton(robot.blue? 0 : 3).get()) targetAngle = adjust - feedAngle;
+        if (g.getButton(robot.blue ? 2 : 1).get()) targetAngle = adjust;
+        if (g.getButton(robot.blue ? 1 : 2).get()) targetAngle = adjust + 180;
+        if (g.getButton(robot.blue ? 3 : 0).get()) targetAngle = feedAngle + adjust;
+
+        if (g.getButton(2).get() && g.getButton(1).get()) targetAngle = adjust + (robot.blue ? -90 : 90);
+
+        if (Game.isAutonomous()) targetAngle = adjust;
+
+        while (targetAngle > 360) targetAngle -= 360;
+        while (targetAngle < 0) targetAngle = 360 + targetAngle;
+
         float x = g.getX();
         float y = g.getY();
         float target = targetAngle;
 
-        Utils.log("x: " + Utils.roundToPlace(x, 2) + ", y: "+ Utils.roundToPlace(y, 2));
+        //Utils.log("x: " + Utils.roundToPlace(x, 2) + ", y: "+ Utils.roundToPlace(y, 2));
 
         //y = -y;
         if (!rotatePID.isEnabled()) rotatePID.enable();
@@ -62,14 +62,14 @@ public class FieldCentricStrafe implements DriveController {
         //Utils.log("Target angle: " + target);
         //Utils.log("PID output: " + pidOutput.getPower());
 
-        float z = (float) pidOutput.getPower();
-        float angle = (float) Math.toRadians(gyro.getForPID());
+        float z = pidOutput.getPower();
+        float angle = (float) Math.toRadians(-gyro.getForPID());
         float xSet, ySet;
 
         xSet = (float)(y * Math.sin(angle) + x * Math.cos(angle));
         ySet = (float)(y * Math.cos(angle) - x * Math.sin(angle));
 
-        DriveOrder o = setFiltered(ySet + z, -(z - ySet), xSet);
+        DriveOrder o = setFiltered((ySet + z), -(z - ySet), xSet);
         //Utils.log("Motors: " + Utils.roundToPlace(o.left, 2) + " / " + Utils.roundToPlace(o.right, 2) + " / " + Utils.roundToPlace(o.middle, 2));
         return o;
     }
