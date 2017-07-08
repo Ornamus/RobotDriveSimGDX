@@ -36,11 +36,14 @@ public class SteamworksField extends Field {
     public static int blueFuelInAuto = 0;
     public static int redFuel = 0;
     public static int redFuelInAuto = 0;
+    public static int blueFouls = 0;
+    public static int redFouls = 0;
+    public static int blueBonusClimbs = 0;
+    public static int redBonusClimbs = 0;
 
     @Override
     public List<Drawable> generateField() {
         List<Drawable> drawables = new ArrayList<>();
-        World world = Main.getInstance().world;
 
         drawables.add(new ImageDrawer(-27.5f, -15, 54, 30, "core/assets/steamworks_norotors.png"));
 
@@ -111,8 +114,11 @@ public class SteamworksField extends Field {
         drawables.add(new Boiler(-24.6f, -12.25f, false)); //red boiler
         drawables.add(new Boiler(23.4f, -12.25f, true));
 
-        drawables.add(new Baseline(16.75f, 0, true)); //blue baseline
+        drawables.add(new Baseline(16.75f, 0, true)); //red baseline
         drawables.add(new Baseline(-18f, 0, false)); //blue baseline
+
+        drawables.add(new LoadingZone(-21, 9.75f, 26, true)); //blue loading zone
+        drawables.add(new LoadingZone(19.5f, 9.75f, -26, false)); //red loading zone
 
         float sideSpace = 1f;
 
@@ -158,6 +164,10 @@ public class SteamworksField extends Field {
         blueFuelInAuto = 0;
         redFuel = 0;
         redFuelInAuto = 0;
+        blueBonusClimbs = 0;
+        redBonusClimbs = 0;
+        blueFouls = 0;
+        redFouls = 0;
         for (Robot r : Main.robots) {
             r.auto = r.stats.getAutonomous(r);
             SteamworksMetadata m = (SteamworksMetadata) r.metadata;

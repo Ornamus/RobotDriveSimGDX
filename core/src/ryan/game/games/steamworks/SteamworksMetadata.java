@@ -1,14 +1,18 @@
 package ryan.game.games.steamworks;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import ryan.game.Main;
+import ryan.game.Utils;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
 import ryan.game.entity.steamworks.Fuel;
 import ryan.game.entity.steamworks.Gear;
+import ryan.game.entity.steamworks.LoadingZone;
 import ryan.game.entity.steamworks.Rope;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
@@ -28,6 +32,8 @@ public class SteamworksMetadata extends RobotMetadata {
 
     boolean startedIntakingWithGear = false;
     boolean gearToggleWasTrue = false;
+
+    boolean inLoadingZone = false;
 
     long timeOfLastFire = 0;
 
@@ -88,6 +94,9 @@ public class SteamworksMetadata extends RobotMetadata {
         }
     }
 
+    long zoneHit = 0;
+    long ropeTouch = 0;
+
     @Override
     public void collideStart(Robot r, Entity e, Body self, Body other, Contact contact) {
         if (self == r.intake) {
@@ -102,6 +111,11 @@ public class SteamworksMetadata extends RobotMetadata {
                 contact.setEnabled(false);
             }
         }
+        if (e instanceof LoadingZone && self != r.intake) {
+            if (((LoadingZone)e).blue == r.blue) {
+                inLoadingZone = true;
+            }
+        }
         if (e instanceof Rope) {
             if (((Rope)e).blue == r.blue) {
                 if (onRope == null) onRope = System.currentTimeMillis();
@@ -110,7 +124,24 @@ public class SteamworksMetadata extends RobotMetadata {
     }
 
     @Override
-    public void onCollide(Robot r, Entity e, Body self, Body other, Contact contact) {}
+    public void onCollide(Robot r, Entity e, Body self, Body other, Contact contact) {
+        if (e instanceof Robot) {
+            Robot otherR = (Robot) e;
+            if (r.blue != otherR.blue && Game.isPlaying()) {
+                if (onRope != null && Game.getMatchTime() <= 30 && System.currentTimeMillis() - ropeTouch >= 2000) {
+                    if (r.blue) SteamworksField.blueBonusClimbs++;
+                    else SteamworksField.redBonusClimbs++;
+                    ropeTouch = System.currentTimeMillis();
+                    //TODO: some sort of foul visual
+                } else if (inLoadingZone && System.currentTimeMillis() - zoneHit >= 2000) {
+                    if (r.blue) SteamworksField.redFouls += 25;
+                    else SteamworksField.blueFouls += 25;
+                    zoneHit = System.currentTimeMillis();
+                    //TODO: some sort of foul visual
+                }
+            }
+        }
+    }
 
     @Override
     public void collideEnd(Robot r, Entity e, Body self, Body other, Contact contact) {
@@ -124,6 +155,11 @@ public class SteamworksMetadata extends RobotMetadata {
                 intakeableFuel = null;
             }
         }
+        if (e instanceof LoadingZone && self != r.intake) {
+            if (((LoadingZone)e).blue == r.blue) {
+                inLoadingZone = false;
+            }
+        }
         if (e instanceof Rope) {
             onRope = null;
         }
@@ -131,12 +167,25 @@ public class SteamworksMetadata extends RobotMetadata {
 
     @Override
     public void draw(SpriteBatch batch, Robot r) {
+        SteamRobotStats stats = (SteamRobotStats) r.stats;
         if (fuel > 0) {
-            SteamRobotStats stats = (SteamRobotStats) r.stats;
             float size = 1 * (fuel / stats.maxFuel);
             batch.draw(fuel == stats.maxFuel ? Fuel.TEXTURE_MAX : Fuel.TEXTURE, r.getX() - (size / 2), r.getY() - (size / 2), size, size);
         }
         if (hasGear) gear.draw(batch);
+        if (onRope != null && Game.getMatchTime() <= 30) {
+            Sprite outline = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Color.BLACK));
+            Sprite background = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Color.RED));
+            Sprite front = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Color.GREEN));
+            outline.setBounds(r.getX() - 1, r.getY() + 1f, 2f, .5f);
+            background.setBounds(r.getX() - .9f, r.getY() + 1.1f, 1.8f, .3f);
+            float frontLength = ((System.currentTimeMillis() - onRope)/((stats.climbSpeed*1000))) * 1.8f;
+            if (frontLength > 1.8f) frontLength = 1.8f;
+            front.setBounds(r.getX() - .9f, r.getY() + 1.1f, frontLength, .3f);
+            outline.draw(batch);
+            background.draw(batch);
+            front.draw(batch);
+        }
     }
 
     public void ejectGear(Robot r) {

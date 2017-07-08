@@ -12,7 +12,7 @@ public abstract class SteamRobotStats extends RobotStats {
     public float timePerShoot = 166f;
     public float maxFuel = 45;
 
-    public float climbSpeed = 1f;
+    public float climbSpeed = 2f;
 
 
     public float gearScoreSuccess = 1f;

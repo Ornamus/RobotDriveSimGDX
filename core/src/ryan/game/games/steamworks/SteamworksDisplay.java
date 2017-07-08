@@ -183,6 +183,8 @@ public class SteamworksDisplay extends ScoreDisplay {
                     else redScore += 5;
                 }
             }
+            blueScore += SteamworksField.redFouls;
+            redScore += SteamworksField.blueFouls;
             if (seconds <= 30) {
                 for (Robot r : Main.robots) {
                     SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
@@ -192,6 +194,10 @@ public class SteamworksDisplay extends ScoreDisplay {
                         else redClimbs++;
                     }
                 }
+                blueClimbs += SteamworksField.blueBonusClimbs;
+                if (blueClimbs > 3) blueClimbs = 3;
+                redClimbs += SteamworksField.redBonusClimbs;
+                if (redClimbs > 3) redClimbs = 3;
                 blueScore += blueClimbs * 50;
                 redScore += redClimbs * 50;
             }
