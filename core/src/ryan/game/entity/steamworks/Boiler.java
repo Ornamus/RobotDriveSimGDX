@@ -57,7 +57,7 @@ public class Boiler extends Entity {
         }
 
         if (fuelToCount > 0) {
-            if (System.currentTimeMillis() - timeSinceLast >= 250) {
+            if (System.currentTimeMillis() - timeSinceLast >= 200) {
                 fuelToCount--;
                 if (Game.isAutonomous()) {
                     if (blue) SteamworksField.blueFuelInAuto++;
@@ -68,8 +68,6 @@ public class Boiler extends Entity {
                 }
                 timeSinceLast = System.currentTimeMillis();
             }
-        } else {
-            timeSinceLast = 0;
         }
     }
 
