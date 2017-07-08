@@ -29,7 +29,6 @@ public class Gamepad {
         } else {
             boolean zRot = false;
             for (Component comp : c.getComponents()) {
-                Utils.log(comp.getName());
                 if (comp.getName().equalsIgnoreCase("X Axis")) xAxis = comp;
                 if (comp.getName().equalsIgnoreCase("Y Axis")) yAxis = comp;
                 if (comp.getName().equalsIgnoreCase("X Rotation")) xAxis2 = comp;

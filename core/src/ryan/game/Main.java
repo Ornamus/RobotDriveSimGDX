@@ -26,6 +26,7 @@ import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
+import ryan.game.games.ResultDisplay;
 import ryan.game.games.ScoreDisplay;
 import ryan.game.games.pirate.PirateField;
 import ryan.game.games.steamworks.SteamworksField;
@@ -35,6 +36,7 @@ import ryan.game.render.Drawable;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Main extends ApplicationAdapter {
 
@@ -126,6 +128,8 @@ public class Main extends ApplicationAdapter {
             addFriction(r.right);
             drawables.add(r);
         }
+
+        //drawables.add(new ResultDisplay(0, 0));
 
 		batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
@@ -289,6 +293,9 @@ public class Main extends ApplicationAdapter {
         nonScaled.begin();
         for (Drawable e : drawables) {
             if (!e.isDrawScaled() && !drawablesRemove.contains(e)) e.draw(nonScaled);
+            if (e instanceof ScoreDisplay) {
+                ((ScoreDisplay)e).drawInPixels(nonScaled);
+            }
         }
         nonScaled.end();
 
@@ -360,7 +367,7 @@ public class Main extends ApplicationAdapter {
         for (Drawable e : new ArrayList<>(drawablesRemove)) {
             drawables.remove(e);
         }
-        for (Drawable d : drawablesAdd) {
+        for (Drawable d : new ArrayList<>(drawablesAdd)) {
             if (d instanceof Entity) {
                 Entity e = (Entity) d;
                 for (Body b : e.getBodies()) {
@@ -408,6 +415,9 @@ public class Main extends ApplicationAdapter {
         if (Gdx.input.isKeyPressed(Input.Keys.R) || resetField) {
             gameField.resetField(drawables);
             resetField = false;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.C)) {
+            ControllerManager.init();
         }
         if (ControllerManager.getGamepads().size() != robots.size() && ControllerManager.getGamepads().size() == 1) {
             Gamepad one = ControllerManager.getGamepad(0);

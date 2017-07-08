@@ -10,6 +10,7 @@ public class Steam1902 extends SteamDefault {
         gearIntake = false;
         fuelIntake = false;
         shooter = true;
+        maxFuel = 20;
         timePerShoot = 300;
         fieldCentric = true;
         texture = "core/assets/1902.png";

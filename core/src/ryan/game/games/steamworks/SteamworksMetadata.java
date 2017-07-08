@@ -73,7 +73,7 @@ public class SteamworksMetadata extends RobotMetadata {
                     hasGear = true;
                 }
 
-                if (intakeableFuel != null && fuel < 50 && fuelIntake) {
+                if (intakeableFuel != null && fuel < stats.maxFuel && fuelIntake) {
                     Main.getInstance().removeEntity(intakeableFuel);
                     intakeableFuel = null;
                     fuel++;
@@ -132,8 +132,9 @@ public class SteamworksMetadata extends RobotMetadata {
     @Override
     public void draw(SpriteBatch batch, Robot r) {
         if (fuel > 0) {
-            float size = 1 * (fuel / 50f);
-            batch.draw(fuel == 50 ? Fuel.TEXTURE_MAX : Fuel.TEXTURE, r.getX() - (size / 2), r.getY() - (size / 2), size, size);
+            SteamRobotStats stats = (SteamRobotStats) r.stats;
+            float size = 1 * (fuel / stats.maxFuel);
+            batch.draw(fuel == stats.maxFuel ? Fuel.TEXTURE_MAX : Fuel.TEXTURE, r.getX() - (size / 2), r.getY() - (size / 2), size, size);
         }
         if (hasGear) gear.draw(batch);
     }
@@ -151,7 +152,7 @@ public class SteamworksMetadata extends RobotMetadata {
                 float xChange = -distance * (float) Math.sin(Math.toRadians(r.getAngle()));
                 float yChange = distance * (float) Math.cos(Math.toRadians(r.getAngle()));
 
-                Entity e = Gear.create(r.getX() + xChange, r.getY() + yChange, r.getAngle(), false);
+                Entity e = Gear.create(r.getX() + xChange, r.getY() + yChange, r.getAngle());
 
                 Main.getInstance().spawnEntity(e);
                 for (Body b : e.getBodies()) {

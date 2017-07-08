@@ -10,7 +10,9 @@ public class SteamGearGod extends SteamRobotStats {
         gearIntake = false;
         fuelIntake = false;
         shooter = false;
+        maxFuel = 10;
         maxMPS = 18f / 3.28084f;
+        maxAccel = 16.5448f;
         texture = "core/assets/robot_onetrick.png";
     }
 

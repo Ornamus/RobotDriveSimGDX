@@ -36,7 +36,6 @@ public class Hopper extends Entity {
     }
 
     long timeOfLastDump = 0;
-    int dumpRate = 30;
     int fuelInHopper = 100;
 
     @Override

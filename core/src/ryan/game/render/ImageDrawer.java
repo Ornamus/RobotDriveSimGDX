@@ -7,7 +7,7 @@ import ryan.game.image.Image;
 
 public class ImageDrawer extends Drawable {
 
-    Sprite sprite;
+    public Sprite sprite;
 
     public ImageDrawer(float x, float y, String tex) {
         sprite = new Sprite(new Texture(tex));
@@ -19,6 +19,20 @@ public class ImageDrawer extends Drawable {
         sprite = new Sprite(new Texture(tex));
         sprite.setBounds(x, y, width, height);
         sprite.setOriginCenter();
+    }
+
+    @Override
+    public void tick() {
+        setX(sprite.getX());
+        setY(sprite.getY());
+    }
+
+    public float getCenterX() {
+        return getX() + (sprite.getWidth() / 2);
+    }
+
+    public float getCenterY() {
+        return getY() + (sprite.getHeight() / 2);
     }
 
     @Override

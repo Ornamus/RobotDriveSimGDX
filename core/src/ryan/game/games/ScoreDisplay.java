@@ -64,7 +64,7 @@ public abstract class ScoreDisplay extends Drawable {
         param.size = 20;
         param.color = Color.BLACK;
         param.shadowColor = Color.BLACK;
-        param.borderWidth = .25f;
+        param.borderWidth = .5f;
         param.borderColor = Color.BLACK;
         blackNormal = generator.generateFont(param);
         generator.dispose();
@@ -136,6 +136,10 @@ public abstract class ScoreDisplay extends Drawable {
         drawCentered(blueTeams[0] + "", 166, getY() + 92f, blackNormal, batch);
         drawCentered(blueTeams[1] + "", 166, getY() + 71f, blackNormal, batch);
         drawCentered(blueTeams[2] + "", 166, getY() + 71f - 21f, blackNormal, batch);
+    }
+
+    public void drawInPixels(SpriteBatch b) {
+
     }
 
     /**

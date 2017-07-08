@@ -23,6 +23,7 @@ import ryan.game.autonomous.pathmagic.RobotStateGenerator;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
 import ryan.game.games.steamworks.robots.*;
+import ryan.game.sensors.Gyro;
 
 public class Robot extends Entity {
 
@@ -32,7 +33,7 @@ public class Robot extends Entity {
     private DriveController[] scrollOptions = {new Arcade(false), new Arcade(true), new Tank(), new CheesyDrive()};
     private FieldCentricStrafe fieldCentric;
 
-    private PIDSource gyro = null;
+    private Gyro gyro = null;
     private PIDSource leftEncoder = null;
     private PIDSource rightEncoder = null;
     public RobotState state = null;
@@ -54,12 +55,8 @@ public class Robot extends Entity {
     private Button robotStatToggle;
     private Button reverseToggle;
 
-    private Long dozerHoldStart = null;
-
     private float maxTurn = 1.5f;
     public boolean blue;
-
-    //private static final float robot_size = 0.9144f;
 
     private static final Texture joyTex = new Texture(Gdx.files.internal("core/assets/joystick.png"));
     private static final Texture joysTex = new Texture(Gdx.files.internal("core/assets/joysticks.png"));
@@ -85,26 +82,7 @@ public class Robot extends Entity {
 
         setupButtons(getController());
 
-        gyro = new PIDSource() {
-            double fakeReset = 0;
-            @Override
-            public double getForPID() {
-                double adjustAngle = -getAngle() + fakeReset;
-
-                if (adjustAngle < 0) {
-                    adjustAngle = 360 + adjustAngle;
-                }
-                while (adjustAngle > 360) {
-                    adjustAngle -= 360;
-                }
-                return adjustAngle;
-            }
-
-            @Override
-            public void reset() {
-                fakeReset = (double) getAngle();
-            }
-        };
+        gyro = new Gyro(this);
 
         leftEncoder = new PIDSource() {
             double fakeReset = 0;
@@ -290,11 +268,12 @@ public class Robot extends Entity {
         } else {
             Gamepad g = getController();
             setupButtons(g);
+            /*
             for (Button b : g.getButtons()) {
                 if (b.get()) {
                     Utils.log(b.id + "");
                 }
-            }
+            }*/
 
             boolean val = changeControls.get();
             if (val && !changeControlsWasTrue) {
@@ -339,7 +318,7 @@ public class Robot extends Entity {
 
 
             val = g.getDPad() == .75;//robotStatToggle.get();
-            if (val && !dozerToggleWasTrue) {
+            if (val && !dozerToggleWasTrue && !Game.isPlaying()) {
                 statsIndex++;
                 if (statsIndex >= statsOptions.length) {
                     statsIndex = 0;
@@ -350,14 +329,14 @@ public class Robot extends Entity {
             dozerToggleWasTrue = val;
 
             val = changeAlliance.get();
-            if (val && !changeAllianceWasTrue) {
+            if (val && !changeAllianceWasTrue && !Game.isPlaying()) {
                 blue = !blue;
                 updateSprite();
             }
             changeAllianceWasTrue = val;
 
             val = reverseToggle.get();
-            if (val && !reverseToggleWasTrue) {
+            if (val && !reverseToggleWasTrue && !Game.isPlaying()) {
                 g.setReverseSticks(!g.isSticksReversed());
             }
             reverseToggleWasTrue = val;
@@ -508,7 +487,7 @@ public class Robot extends Entity {
         }
     }
 
-    public PIDSource getGyro() {
+    public Gyro getGyro() {
         return gyro;
     }
 

@@ -279,7 +279,7 @@ public class PIDController implements Runnable {
                         + ", D: " + Utils.roundToPlace(d*kD, 3)
                         + ", out " + Utils.roundToPlace(power, 3)
                         + ", set: " + Utils.roundToPlace(t, 3)
-                        + ", sensor: " + Utils.roundToPlace(s.getForPID(), 3));*/
+                        + ", sensors: " + Utils.roundToPlace(s.getForPID(), 3));*/
                 //Log.t(String.format("P %d; I %d; D %d", p, i, d));
             }
     }

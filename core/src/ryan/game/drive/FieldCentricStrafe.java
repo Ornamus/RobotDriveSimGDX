@@ -7,6 +7,7 @@ import ryan.game.bcnlib_pieces.PIDSource;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.Robot;
 import ryan.game.games.Game;
+import ryan.game.sensors.Gyro;
 
 public class FieldCentricStrafe implements DriveController {
 
@@ -14,7 +15,7 @@ public class FieldCentricStrafe implements DriveController {
 
     PIDController rotatePID;
     Motor pidOutput;
-    PIDSource gyro;
+    Gyro gyro;
     Robot robot;
     float targetAngle;
 
@@ -33,6 +34,7 @@ public class FieldCentricStrafe implements DriveController {
     //2 3 0 1
     @Override
     public DriveOrder calculate(Gamepad g) {
+        if (gyro.getZeroOffset() != 0) gyro.rezero(0);
         //Utils.log(g.getDPad() + "");
         //double x, y, target
         float adjust = robot.blue ? 270 : 90;

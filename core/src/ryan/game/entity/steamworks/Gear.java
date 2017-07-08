@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Main;
+import ryan.game.Utils;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.games.steamworks.SteamworksMetadata;
@@ -14,31 +15,37 @@ public class Gear extends Entity {
     static final float radius = .5f;
     static final float density = .25f;
 
-    boolean loadingStation;
+    LoadingStation loadingStation = null;
     long creation;
 
-    private Gear(boolean loading, Body b) {
+    private Gear(LoadingStation loading, Body b) {
         super(radius, radius, b);
         loadingStation = loading;
         creation = System.currentTimeMillis();
     }
 
-
-    //TODO: add some sort of mostly-paralell to loading station clause for picking up HP gears
-
     @Override
     public void onCollide(Entity e, Body self, Body other, Contact contact) {
-        if (loadingStation && e instanceof Robot && System.currentTimeMillis() - creation <= 50) {
-            Robot r = (Robot) e;
-            SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
-            if (r.intake == other && !meta.hasGear) {
-                meta.hasGear = true;
-                Main.getInstance().removeEntity(this);
+        if (loadingStation != null && e instanceof Robot && System.currentTimeMillis() - creation <= 35) {
+            float diff = Math.abs(e.getAngle() - loadingStation.getAngle());
+            //Utils.log("diff: " + diff);
+            if (diff <= 6.5) {
+
+                Robot r = (Robot) e;
+                SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
+                if (r.intake == other && !meta.hasGear) {
+                    meta.hasGear = true;
+                    Main.getInstance().removeEntity(this);
+                }
             }
         }
     }
 
-    public static Gear create(float x, float y, float angle, boolean loadingStation) {
+    public static Gear create(float x, float y, float angle) {
+        return create(x, y, angle, null);
+    }
+
+    public static Gear create(float x, float y, float angle, LoadingStation loadingStation) {
         World w = Main.getInstance().world;
         BodyDef rightDef = new BodyDef();
         rightDef.type = BodyDef.BodyType.DynamicBody;

@@ -10,6 +10,7 @@ public class SteamDefault extends SteamRobotStats {
     public SteamDefault() {
         gearIntake = true;
         fuelIntake = false;
+        timePerShoot = 250;
     }
 
     @Override

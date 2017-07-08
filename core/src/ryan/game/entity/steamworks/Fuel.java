@@ -7,6 +7,7 @@ import ryan.game.Main;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.games.steamworks.SteamworksMetadata;
+import ryan.game.games.steamworks.robots.SteamRobotStats;
 
 public class Fuel extends Entity {
 
@@ -29,7 +30,8 @@ public class Fuel extends Entity {
         if (loadingStation && e instanceof Robot && System.currentTimeMillis() - creation <= 175) {
             Robot r = (Robot) e;
             SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
-            if (meta.fuel < 50) {
+            SteamRobotStats stats = (SteamRobotStats) r.stats;
+            if (meta.fuel < stats.maxFuel) {
                 meta.fuel++;
                 Main.getInstance().removeEntity(this);
             }
