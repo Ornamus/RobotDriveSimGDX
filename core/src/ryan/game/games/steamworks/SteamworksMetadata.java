@@ -18,6 +18,11 @@ import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
 
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class SteamworksMetadata extends RobotMetadata {
 
     Sprite gear;
@@ -25,9 +30,11 @@ public class SteamworksMetadata extends RobotMetadata {
     public boolean crossedBaseline = false;
     public boolean hasGear = false;
     public Long onRope = null;
+    public Long gearIntakeStart = null;
     public int fuel = 0;
     public Entity peg = null;
-    public Entity intakeableFuel = null;
+    public List<Entity> intakeableFuel = new ArrayList<>();
+    public HashMap<Entity, Long> fuelIntakeTimes = new HashMap<>();
     public Entity intakeableGear = null;
 
     boolean startedIntakingWithGear = false;
@@ -43,6 +50,8 @@ public class SteamworksMetadata extends RobotMetadata {
         gear = new Sprite(Gear.TEXTURE);
         gear.setBounds(-999, -999, 1f, 1f);
     }
+
+    long timeOfLastIntake = 0;
 
     @Override
     public void tick(Robot r) {
@@ -74,15 +83,31 @@ public class SteamworksMetadata extends RobotMetadata {
                 }
 
                 if (!hasGear && intakeableGear != null && !startedIntakingWithGear && gearIntake) {
-                    Main.getInstance().removeEntity(intakeableGear);
-                    intakeableGear = null;
-                    hasGear = true;
+                    if (gearIntakeStart == null) gearIntakeStart = System.currentTimeMillis();
+                    double a = Math.toRadians(Utils.getAngle(new Point2D.Float(intakeableGear.getX(), intakeableGear.getY()), new Point2D.Float(r.getX(), r.getY())));
+                    intakeableGear.getPrimary().applyForceToCenter(stats.gearIntakeStrength * (float) Math.cos(a), stats.gearIntakeStrength * (float) Math.sin(a), true);
+                    if (System.currentTimeMillis() - gearIntakeStart >= stats.gearIntakeRate) {
+                        Main.getInstance().removeEntity(intakeableGear);
+                        intakeableGear = null;
+                        hasGear = true;
+                        gearIntakeStart = null;
+                    }
                 }
 
-                if (intakeableFuel != null && fuel < stats.maxFuel && fuelIntake) {
-                    Main.getInstance().removeEntity(intakeableFuel);
-                    intakeableFuel = null;
-                    fuel++;
+                if ( fuelIntake) {
+                    for (Entity e : new ArrayList<>(intakeableFuel)) {
+                        if (!intakeableFuel.isEmpty() && fuel < stats.maxFuel) {
+                            if (fuelIntakeTimes.get(e) == null) fuelIntakeTimes.put(e, System.currentTimeMillis());
+                            double a = Math.toRadians(Utils.getAngle(new Point2D.Float(e.getX(), e.getY()), new Point2D.Float(r.getX(), r.getY())));
+                            e.getPrimary().applyForceToCenter(stats.fuelIntakeStrength * (float) Math.cos(a), stats.fuelIntakeStrength * (float) Math.sin(a), true);
+                            if (System.currentTimeMillis() - fuelIntakeTimes.get(e) >= stats.fuelIntakeRate) {
+                                Main.getInstance().removeEntity(e);
+                                intakeableFuel.remove(e);
+                                fuelIntakeTimes.remove(e);
+                                fuel++;
+                            }
+                        }
+                    }
                 }
 
             }
@@ -107,7 +132,7 @@ public class SteamworksMetadata extends RobotMetadata {
                 intakeableGear = e;
                 contact.setEnabled(false);
             } else if (e instanceof Fuel) {
-                intakeableFuel = e;
+                if (!intakeableFuel.contains(e)) intakeableFuel.add(e);
                 contact.setEnabled(false);
             }
         }
@@ -148,11 +173,12 @@ public class SteamworksMetadata extends RobotMetadata {
         if (self == r.intake) {
             if (e == peg) {
                 peg = null;
-                //Utils.log("off peg");
             } else if (e == intakeableGear) {
                 intakeableGear = null;
-            } else if (e == intakeableFuel) {
-                intakeableFuel = null;
+                gearIntakeStart = null;
+            } else if (intakeableFuel.contains(e)) {
+                intakeableFuel.remove(e);
+                fuelIntakeTimes.remove(e);
             }
         }
         if (e instanceof LoadingZone && self != r.intake) {

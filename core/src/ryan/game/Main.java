@@ -41,7 +41,7 @@ public class Main extends ApplicationAdapter {
 
     private final boolean DEBUG_RENDER = false;
 
-    public static final Color BLUE = Utils.toColor(63, 72, 204);
+    public static final Color BLUE = Utils.toColor(50, 50, 245);//Utils.toColor(63, 72, 204);
     public static final Color RED = Utils.toColor(237, 28, 36);
 
     SteamResultDisplay results = null;
@@ -64,7 +64,6 @@ public class Main extends ApplicationAdapter {
 
     public static boolean isShowingResults = false;
 
-    GlyphLayout layout;
     FileHandle[] musicChoices;
     Music music = null;
 
@@ -120,7 +119,7 @@ public class Main extends ApplicationAdapter {
         nonScaledCamera.update();
         int index = 0;
 
-        int extraRobots = 2;
+        int extraRobots = 0;
         if (extraRobots > 0) currentRobot = 0;
 
         for (int i=0; i<ControllerManager.getGamepads().size() + extraRobots; i++) {

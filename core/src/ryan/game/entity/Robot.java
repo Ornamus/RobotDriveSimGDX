@@ -263,7 +263,7 @@ public class Robot extends Entity {
         }
         if (intakeSprite != null) {
             Vector2 pos = intake.getPosition();
-            intakeSprite.setBounds(pos.x - intakeSprite.getWidth()/2, pos.y - intakeSprite.getHeight()/2, stats.robotWidth * 2, stats.robotHeight / 2);
+            intakeSprite.setBounds(pos.x - intakeSprite.getWidth()/2, pos.y - intakeSprite.getHeight()/2, stats.intakeWidth * 2, stats.robotHeight / 2);
             intakeSprite.setOriginCenter();
             intakeSprite.setRotation((float)Math.toDegrees(intake.getAngle()));
         }
@@ -458,9 +458,8 @@ public class Robot extends Entity {
     }
 
     public static Robot create(RobotStats stats, float x, float y) {
-        Body left = createRobotPart(stats, x - (stats.robotWidth * 1), y);
+        Body left = createRobotPart(stats, x - stats.robotWidth, y);
         Body right = createRobotPart(stats, x, y);
-        Body intake = Entity.rectangleDynamicBody(x - (stats.robotWidth / 2), y + stats.robotHeight * 1.25f, stats.robotWidth, stats.robotHeight / 4);
 
         joint(left, right);
         joint(left, intake);
