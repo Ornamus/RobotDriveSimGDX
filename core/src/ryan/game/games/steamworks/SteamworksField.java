@@ -13,14 +13,20 @@ import ryan.game.competition.Team;
 import ryan.game.entity.*;
 import ryan.game.entity.steamworks.*;
 import ryan.game.games.Field;
+import ryan.game.games.Game;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
 import ryan.game.render.Drawable;
 import ryan.game.render.ImageDrawer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class SteamworksField extends Field {
+
+    public static List<HumanPlayer> humanPlayers = new ArrayList<>();
+
+    public static final float hpGearScoreSpeed = 4000f;
 
     List<Sprite> blueRotors = new ArrayList<Sprite>();
     List<Sprite> redRotors = new ArrayList<Sprite>();
@@ -31,6 +37,8 @@ public class SteamworksField extends Field {
     public static int blueGearsInAuto = 0;
     public static int redGears = 0;
     public static int redGearsInAuto = 0;
+    public static int blueGearQueue = 0;
+    public static int redGearQueue = 0;
     public static int blueFuel = 0;
     public static int blueFuelInAuto = 0;
     public static int redFuel = 0;
@@ -39,9 +47,14 @@ public class SteamworksField extends Field {
     public static int redFouls = 0;
     public static int blueBonusClimbs = 0;
     public static int redBonusClimbs = 0;
+    boolean addedBonusGears = false;
 
-    int matchesPlayed = 0;
-    public static Schedule.Match currentMatch = Main.schedule.matches.get(0);
+    public SteamworksField() {
+        humanPlayers.add(new HumanPlayer(true));
+        humanPlayers.add(new HumanPlayer(true));
+        humanPlayers.add(new HumanPlayer(false));
+        humanPlayers.add(new HumanPlayer(false));
+    }
 
     @Override
     public List<Drawable> generateField() {
@@ -145,7 +158,6 @@ public class SteamworksField extends Field {
 
         display = new SteamworksDisplay();
         drawables.add(display);
-
         return drawables;
     }
 
@@ -162,6 +174,8 @@ public class SteamworksField extends Field {
         blueGearsInAuto = 0;
         redGears = 0;
         redGearsInAuto = 0;
+        blueGearQueue = 0;
+        redGearQueue = 0;
         blueFuel = 0;
         blueFuelInAuto = 0;
         redFuel = 0;
@@ -170,6 +184,7 @@ public class SteamworksField extends Field {
         redBonusClimbs = 0;
         blueFouls = 0;
         redFouls = 0;
+        addedBonusGears = false;
         for (Robot r : Main.robots) {
             r.auto = r.stats.getAutonomous(r);
             SteamworksMetadata m = (SteamworksMetadata) r.metadata;
@@ -177,20 +192,24 @@ public class SteamworksField extends Field {
             m.fuel = 10;
             m.crossedBaseline = false;
         }
-
-        if (Main.schedule.matches.size() > matchesPlayed) {
-            currentMatch = Main.schedule.matches.get(matchesPlayed);
-            display.setBlueTeams(currentMatch.blue[0].number, currentMatch.blue[1].number, currentMatch.blue[2].number);
-            display.setRedTeams(currentMatch.red[0].number, currentMatch.red[1].number, currentMatch.red[2].number);
-            display.setMatchName("Qualification " + currentMatch.number + " of " + Main.schedule.matches.size());
-        } else {
-            //TODO: out of scheduled matches, what do?
-        }
-    } //Stuanobor
+    }
 
     @Override
     public void onMatchEnd() {
-        matchesPlayed++;
+        Main.schedule.completeCurrentMatch(0, 0); //TODO: pass in scores
+        updateMatchInfo();
+    }
+
+    @Override
+    public void updateMatchInfo() {
+        Schedule.Match m = Main.schedule.getCurrentMatch();
+        display.setBlueTeams(m.blue[0].number, m.blue[1].number, m.blue[2].number);
+        display.setRedTeams(m.red[0].number, m.red[1].number, m.red[2].number);
+        if (m.qualifier) {
+            display.setMatchName("Qualification " + m.number + " of " + Main.schedule.matches.size());
+        } else {
+            display.setMatchName("Elimination Match"); //TODO: when the match object provides more elimination data, show it here
+        }
     }
 
     @Override
@@ -216,8 +235,44 @@ public class SteamworksField extends Field {
 
     int blueSpinning, redSpinning;
 
+    class HumanPlayer {
+        Long scoreProgress = null;
+        boolean blue;
+
+        public HumanPlayer(boolean blue) {
+            this.blue = blue;
+        }
+    }
+
     @Override
     public void tick() {
+        for (HumanPlayer h : humanPlayers) {
+            if (h.scoreProgress == null) {
+                if (h.blue && blueGearQueue > 0) {
+                    blueGearQueue--;
+                    h.scoreProgress = System.currentTimeMillis();
+                } else if (!h.blue && redGearQueue > 0) {
+                    redGearQueue--;
+                    h.scoreProgress = System.currentTimeMillis();
+                }
+            } else {
+                if (System.currentTimeMillis() - h.scoreProgress >= hpGearScoreSpeed) {
+                    if (h.blue) blueGears++;
+                    else redGears++;
+                    if (Game.isAutonomous()) {
+                        if (h.blue) blueGearsInAuto++;
+                        else redGearsInAuto++;
+                    }
+                    h.scoreProgress = null;
+                }
+            }
+        }
+
+        if (Game.isPlaying() && Game.getMatchTime() == 135 && !addedBonusGears) {
+            blueGearQueue++;
+            redGearQueue++;
+            addedBonusGears = true;
+        }
         blueSpinning = 0;
         if (blueGears > 12) blueSpinning = 3;
         else if (blueGears > 6) blueSpinning = 2;

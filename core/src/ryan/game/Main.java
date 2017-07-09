@@ -31,6 +31,7 @@ import ryan.game.games.ScoreDisplay;
 import ryan.game.games.steamworks.SteamworksField;
 import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.render.Drawable;
+import ryan.game.render.Fonts;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -58,10 +59,11 @@ public class Main extends ApplicationAdapter {
     public static List<CollisionListener.Collision> collisions = new ArrayList<CollisionListener.Collision>();
 
     public static boolean playMusic = true;
+    public static boolean makeSchedule = false;
+    public static String eventName = "FIRST Championship";
 
     public static boolean isShowingResults = false;
 
-    public static BitmapFont bigFont, smallFont;
     GlyphLayout layout;
     FileHandle[] musicChoices;
     Music music = null;
@@ -74,6 +76,7 @@ public class Main extends ApplicationAdapter {
     public Sound teleopStartSound;
     Sound ropeDropSound;
     Sound matchEndSound;
+    Sound foghornSound;
     Pathfinding pathfinding;
     List<Point2D.Float> points;
 
@@ -84,6 +87,9 @@ public class Main extends ApplicationAdapter {
 
     public static final int world_width = 56, world_height = 30; //56, 29
     private static final int camera_y = -4;
+
+    public static float meterToPixelWidth = 1100f/world_width;
+    public static float meterToPixelHeight = 630f/world_height;
 
     private Field gameField;
 
@@ -101,6 +107,7 @@ public class Main extends ApplicationAdapter {
         schedule = new Schedule();
         schedule.generate(allTeams, 8);
         self = this;
+        Fonts.init();
         ControllerManager.init();
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
@@ -113,7 +120,7 @@ public class Main extends ApplicationAdapter {
         nonScaledCamera.update();
         int index = 0;
 
-        int extraRobots = 0;
+        int extraRobots = 2;
         if (extraRobots > 0) currentRobot = 0;
 
         for (int i=0; i<ControllerManager.getGamepads().size() + extraRobots; i++) {
@@ -131,6 +138,8 @@ public class Main extends ApplicationAdapter {
             drawables.add(r);
         }
 
+        gameField.updateMatchInfo();
+
         //drawables.add(new SteamResultDisplay(0,0));
 
 		batch = new SpriteBatch();
@@ -143,30 +152,9 @@ public class Main extends ApplicationAdapter {
         teleopStartSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/teleop.wav"));
         ropeDropSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/whoop.wav"));
         matchEndSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/end.wav"));
+        foghornSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/foghorn.wav"));
 
         musicChoices = Gdx.files.internal("core/assets/music").list();
-
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/Kozuka.otf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 52;
-        param.borderColor = Color.BLACK;
-        param.color = Color.ORANGE;
-        param.borderWidth = 2f;
-        param.shadowColor = Color.BLACK;
-        param.shadowOffsetX = 2;
-        param.shadowOffsetY = 2;
-        bigFont = generator.generateFont(param);
-        generator.dispose();
-
-        generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/DTM-Mono.otf"));
-        param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 26;
-        param.borderWidth = 2f;
-        param.borderColor = Color.BLACK;
-        smallFont = generator.generateFont(param);
-        generator.dispose();
-
-        layout = new GlyphLayout(bigFont, "");
 
         shape = new ShapeRenderer();
         shape.setAutoShapeType(true);
@@ -182,6 +170,7 @@ public class Main extends ApplicationAdapter {
         // Our camera needs to be created with new aspect ratio
         // Our visible gameworld width is still 20m but we need to
         // calculate what height keeps the AR correct.
+        meterToPixelHeight = 630f/((world_height * 2) /screenAR);
         camera = new OrthographicCamera(world_width, (world_height * 2) /screenAR);
         // Finally set camera position so that (0,0) is at bottom left
         //camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
@@ -275,7 +264,7 @@ public class Main extends ApplicationAdapter {
 
         if (minutes == 0 && seconds <= 0 && matchPlay) {
             matchEndSound.play(.6f);
-            if (playMusic) {
+            if (playMusic && music != null) {
                 if (music.isPlaying()) music.stop();
                 music.dispose();
                 music = null;
@@ -300,6 +289,9 @@ public class Main extends ApplicationAdapter {
         nonScaled.begin();
         for (Drawable e : drawables) {
             if (!e.isDrawScaled() && !drawablesRemove.contains(e)) e.draw(nonScaled);
+            else if (e instanceof Entity) {
+                ((Entity)e).drawUnscaled(nonScaled);
+            }
             if (e instanceof ScoreDisplay) {
                 ((ScoreDisplay)e).drawInPixels(nonScaled);
             }
@@ -370,6 +362,8 @@ public class Main extends ApplicationAdapter {
         }
     }
 
+    Long upHeld = null;
+
     private void tick() {
         for (Drawable e : new ArrayList<>(drawablesRemove)) {
             drawables.remove(e);
@@ -394,14 +388,20 @@ public class Main extends ApplicationAdapter {
         }
         gameField.tick();
 
-        boolean aPressed = false;
-        /*for (Gamepad g : ControllerManager.getGamepads()) {
-            if (g.getButton(0).get()) {
-                aPressed = true;
+        boolean controllerStartMatch = false;
+        boolean anyHeld = false;
+        for (Gamepad g : ControllerManager.getGamepads()) {
+            if (g.getDPad() == .25) {
+                anyHeld = true;
+                if (upHeld == null) upHeld = System.currentTimeMillis();
+                else if (System.currentTimeMillis() - upHeld >= 2000) {
+                    controllerStartMatch = true;
+                }
                 break;
             }
-        }*/
-        if ((aPressed || Gdx.input.isKeyPressed(Input.Keys.P)) && !matchPlay) {
+        }
+        if (!anyHeld) upHeld = null;
+        if ((controllerStartMatch || Gdx.input.isKeyPressed(Input.Keys.P)) && !matchPlay && !isShowingResults) {
             matchEnd = 0;
             gameField.onMatchStart();
             resetField = true;
@@ -413,10 +413,12 @@ public class Main extends ApplicationAdapter {
                 music.setVolume(.1f);
                 music.play();
             }
+            controllerStartMatch = false;
+            upHeld = null;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.I)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.I) || controllerStartMatch) {
             if (matchPlay) {
-                //TODO: play foghorn hoise
+                foghornSound.play(.45f);
                 matchPlay = false;
                 didWhoop = false;
                 if (playMusic && music.isPlaying()) music.stop();
@@ -425,6 +427,7 @@ public class Main extends ApplicationAdapter {
                 results = null;
                 isShowingResults = false;
             }
+            upHeld = null;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.R) || resetField) {
             gameField.resetField(drawables);
@@ -436,13 +439,20 @@ public class Main extends ApplicationAdapter {
         if (ControllerManager.getGamepads().size() != robots.size() && ControllerManager.getGamepads().size() == 1) {
             Gamepad one = ControllerManager.getGamepad(0);
             if (one.getButton(8).get()) {
-                currentRobot++;
-                if (currentRobot == robots.size()) {
-                    currentRobot = 0;
+                if (!wasHeld) {
+                    currentRobot++;
+                    if (currentRobot == robots.size()) {
+                        currentRobot = 0;
+                    }
                 }
+                wasHeld = true;
+            } else {
+                wasHeld = false;
             }
         }
     }
+
+    boolean wasHeld = false;
 
     public List<Entity> getEntities() {
         List<Entity> ents = new ArrayList<>();

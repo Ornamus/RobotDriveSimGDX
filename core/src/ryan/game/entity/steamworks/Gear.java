@@ -46,27 +46,26 @@ public class Gear extends Entity {
 
     public static Gear create(float x, float y, float angle, LoadingStation loadingStation) {
         World w = Main.getInstance().world;
-        BodyDef rightDef = new BodyDef();
-        rightDef.type = BodyDef.BodyType.DynamicBody;
-        rightDef.position.set(x, y);
-
-        Body right = null;
         synchronized (w) {
-            right = w.createBody(rightDef);
+            BodyDef rightDef = new BodyDef();
+            rightDef.type = BodyDef.BodyType.DynamicBody;
+            rightDef.position.set(x, y);
+
+            Body right = w.createBody(rightDef);
+            CircleShape shape = new CircleShape();
+            shape.setRadius(radius);
+
+            FixtureDef rightFix = new FixtureDef();
+            rightFix.shape = shape;
+            rightFix.density = density;
+            rightFix.restitution = 0f;
+
+            Fixture fixture = right.createFixture(rightFix);
+            shape.dispose();
+
+            Gear g = (Gear) new Gear(loadingStation, right).setName("Gear").setAngle(angle);
+            g.setSprite(TEXTURE);
+            return g;
         }
-        CircleShape shape = new CircleShape();
-        shape.setRadius(radius);
-
-        FixtureDef rightFix = new FixtureDef();
-        rightFix.shape = shape;
-        rightFix.density = density;
-        rightFix.restitution = 0f;
-
-        Fixture fixture = right.createFixture(rightFix);
-        shape.dispose();
-
-        Gear g = (Gear) new Gear(loadingStation, right).setName("Gear").setAngle(angle);
-        g.setSprite(TEXTURE);
-        return g;
     }
 }

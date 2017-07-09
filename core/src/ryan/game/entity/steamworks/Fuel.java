@@ -39,27 +39,26 @@ public class Fuel extends Entity {
     }
 
     public static Fuel create(float x, float y, boolean loadingStation) {
-        BodyDef rightDef = new BodyDef();
-        rightDef.type = BodyDef.BodyType.DynamicBody;
-        rightDef.position.set(x, y);
-
-        Body right = null;
         synchronized (Main.getInstance().world) {
-            right = Main.getInstance().world.createBody(rightDef);
+            BodyDef rightDef = new BodyDef();
+            rightDef.type = BodyDef.BodyType.DynamicBody;
+            rightDef.position.set(x, y);
+
+            Body right = Main.getInstance().world.createBody(rightDef);
+            CircleShape shape = new CircleShape();
+            shape.setRadius(radius);
+
+            FixtureDef rightFix = new FixtureDef();
+            rightFix.shape = shape;
+            rightFix.density = density;
+            rightFix.restitution = 0f;
+
+            Fixture fixture = right.createFixture(rightFix);
+            shape.dispose();
+
+            Fuel f = (Fuel) new Fuel(loadingStation, right).setName("Fuel");
+            f.setSprite(TEXTURE);
+            return f;
         }
-        CircleShape shape = new CircleShape();
-        shape.setRadius(radius);
-
-        FixtureDef rightFix = new FixtureDef();
-        rightFix.shape = shape;
-        rightFix.density = density;
-        rightFix.restitution = 0f;
-
-        Fixture fixture = right.createFixture(rightFix);
-        shape.dispose();
-
-        Fuel f = (Fuel) new Fuel(loadingStation, right).setName("Fuel");
-        f.setSprite(TEXTURE);
-        return f;
     }
 }

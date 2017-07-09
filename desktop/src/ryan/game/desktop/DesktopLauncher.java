@@ -16,11 +16,19 @@ public class DesktopLauncher {
 		config.height = 630;
 		config.title = "Robot Drive Sim GDX - " + random[Utils.randomInt(0, random.length-1)];
 		for (String s : arg) {
+			System.out.println("Arg: " + s);
 			if (s.equalsIgnoreCase("no_music")) {
 				Main.playMusic = false;
 			}
 			if (s.equalsIgnoreCase("software_gl")) {
 				System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true");
+			}
+			if (s.equalsIgnoreCase("schedule")) {
+				Main.makeSchedule = true;
+			}
+			if (s.startsWith("event_name=")) {
+				String name = s.replace("event_name=", "");
+				Main.eventName = name;
 			}
 		}
 		new LwjglApplication(new Main(), config);

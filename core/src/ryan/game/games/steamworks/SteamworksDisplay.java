@@ -5,11 +5,17 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import ryan.game.Main;
+import ryan.game.Utils;
+import ryan.game.competition.Schedule;
 import ryan.game.entity.steamworks.Gear;
 import ryan.game.entity.Robot;
 import ryan.game.games.Game;
 import ryan.game.games.ScoreDisplay;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
+import ryan.game.render.Fonts;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.Math.cos;
 import static java.lang.StrictMath.sin;
@@ -57,25 +63,68 @@ public class SteamworksDisplay extends ScoreDisplay {
 
         super.draw(batch);
 
-        drawCentered(blueKPA + "", 257.5f, getY() + 35f, blackNormal, batch); //blue kpa
-        drawCentered(redKPA + "", -257.5f, getY() + 35f, blackNormal, batch); //red kpa
+        Fonts.drawCentered(blueKPA + "", 257.5f, getY() + 35f, Fonts.fmsBlack, batch); //blue kpa
+        Fonts.drawCentered(redKPA + "", -257.5f, getY() + 35f, Fonts.fmsBlack, batch); //red kpa
 
-        drawCentered(blueRots + "", 360.5f, getY() + 36f, blackNormal, batch); //blue rotors
-        drawCentered(redRots + "", -360.5f, getY() + 36f, blackNormal, batch); //red rotors
+        Fonts.drawCentered(blueRots + "", 360.5f, getY() + 36f, Fonts.fmsBlack, batch); //blue rotors
+        Fonts.drawCentered(redRots + "", -360.5f, getY() + 36f, Fonts.fmsBlack, batch); //red rotors
 
-        drawCentered(blueClimbs + "", 455, getY() + 36f, blackNormal, batch); //blue climbs
-        drawCentered(redClimbs + "", -455, getY() + 36f, blackNormal, batch); //red climbs
+        Fonts.drawCentered(blueClimbs + "", 455, getY() + 36f, Fonts.fmsBlack, batch); //blue climbs
+        Fonts.drawCentered(redClimbs + "", -455, getY() + 36f, Fonts.fmsBlack, batch); //red climbs
 
         if (Main.matchPlay) {
             drawGearDisplay(232.5f, 45, SteamworksField.blueGears, SteamworksField.blueGears > 12 ? Color.YELLOW : Color.WHITE, batch);
             drawGearDisplay(-287.5f, 45, SteamworksField.redGears, SteamworksField.redGears > 12 ? Color.YELLOW : Color.WHITE, batch);
+            int blueHPShown = 0;
+            int redHPShown = 0;
+            /*
+            232.5f, 45
+            -287.5f, 45
+             */
+            List<Long> progresses = new ArrayList<>();
+            for (SteamworksField.HumanPlayer h : SteamworksField.humanPlayers) {
+                if (h.blue && h.scoreProgress != null) {
+                    progresses.add(h.scoreProgress);
+                }
+            }
+            int loops = progresses.size()+SteamworksField.blueGearQueue;
+            final float spacing = 22f;
+            float hpX = 215.5f;
+            float hpY = 45 + (spacing * (loops/2f));
+            for (int i=0; i<loops; i++) {
+                long progress = System.currentTimeMillis();
+                if (i <= progresses.size()-1) progress = progresses.get(i);
+                Utils.drawUnscaledProgressBar(hpX + 40, hpY - (spacing * i), 60, 15, (System.currentTimeMillis()-progress)/SteamworksField.hpGearScoreSpeed, batch);
+                batch.draw(Gear.TEXTURE, hpX-12, hpY-4 - (spacing * i), 20f, 20f);
+                blueHPShown++;
+            }
+
+
+            progresses = new ArrayList<>();
+            for (SteamworksField.HumanPlayer h : SteamworksField.humanPlayers) {
+                if (!h.blue && h.scoreProgress != null) {
+                    progresses.add(h.scoreProgress);
+                }
+            }
+            loops = progresses.size()+SteamworksField.redGearQueue;
+            hpX = -287.5f-(232.5f-215.5f);
+            hpY = 45 + (spacing * (loops/2f));
+            for (int i=0; i<loops; i++) {
+                long progress = System.currentTimeMillis();
+                if (i <= progresses.size()-1) progress = progresses.get(i);
+                Utils.drawUnscaledProgressBar(hpX + 40, hpY - (spacing * i), 60, 15, (System.currentTimeMillis()-progress)/SteamworksField.hpGearScoreSpeed, batch);
+                batch.draw(Gear.TEXTURE, hpX-12, hpY-4 - (spacing * i), 20f, 20f);
+                blueHPShown++;
+            }
+            drawFuelProgress(274, -273, true, batch);
+            drawFuelProgress(-291, -275, false, batch);
         }
     }
 
     @Override
     public void drawInPixels(SpriteBatch b) {
-        drawFuelProgress(274, -273, true, b);
-        drawFuelProgress(-291, -275, false, b);
+        //drawFuelProgress(274, -273, true, b);
+        //drawFuelProgress(-291, -275, false, b);
     }
 
     public void drawFuelProgress(float startX, float startY, boolean blue, SpriteBatch b) {
@@ -132,6 +181,7 @@ public class SteamworksDisplay extends ScoreDisplay {
     @Override
     public int[] calculateScores() {
         if (Main.matchPlay) {
+            Schedule.Match current = Main.schedule.getCurrentMatch();
             blueScore = 0;
             redScore = 0;
             if (SteamworksField.blueGearsInAuto > 0) {
@@ -155,7 +205,7 @@ public class SteamworksDisplay extends ScoreDisplay {
             if (SteamworksField.blueGears > 12) {
                 blueRotorPoints += 40;
                 blueRots++;
-                if (!SteamworksField.currentMatch.qualifier) {
+                if (!current.qualifier) {
                     blueScore += 100;
                 }
             }
@@ -181,7 +231,7 @@ public class SteamworksDisplay extends ScoreDisplay {
             if (SteamworksField.redGears > 12) {
                 redRotorPoints += 40;
                 redRots++;
-                if (!SteamworksField.currentMatch.qualifier) {
+                if (!current.qualifier) {
                     redScore += 100;
                 }
             }
@@ -194,7 +244,7 @@ public class SteamworksDisplay extends ScoreDisplay {
             redKPA += SteamworksField.redFuelInAuto;
             blueScore += blueKPA;
             redScore += redKPA;
-            if (!SteamworksField.currentMatch.qualifier) {
+            if (!current.qualifier) {
                 if (blueKPA >= 40) blueScore += 20;
                 if (redKPA >= 40) redScore += 20;
             }
@@ -231,13 +281,9 @@ public class SteamworksDisplay extends ScoreDisplay {
         return new int[]{blueScore, redScore};
     }
 
-    public void drawFuelProgress() {
-
-    }
-
     public void drawGearDisplay(float x, float y, int gears, Color c, SpriteBatch b) {
         b.draw(Gear.TEXTURE, x, y, 30f, 30f);
-        Main.smallFont.setColor(c);
-        Main.smallFont.draw(b, gears + "", x + 15 - (getWidth(gears + "", Main.smallFont) / 2), y + 55);
+        Fonts.monoWhiteLarge.setColor(c);
+        Fonts.monoWhiteLarge.draw(b, gears + "", x + 15 - (Fonts.getWidth(gears + "", Fonts.monoWhiteLarge) / 2), y + 55);
     }
 }

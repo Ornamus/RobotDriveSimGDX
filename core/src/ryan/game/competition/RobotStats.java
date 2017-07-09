@@ -12,6 +12,7 @@ public abstract class RobotStats {
     public float robotWidth = 0.9144f;
     public float robotHeight = robotWidth;
     public boolean fieldCentric = false;
+    public float fieldCentricStrafeMult = .7f;
     public String texture = "core/assets/robot_recolor.png";
 
     public RobotStats(Game g) {

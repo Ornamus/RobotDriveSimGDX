@@ -3,6 +3,8 @@ package ryan.game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.awt.geom.Point2D;
 import java.util.Random;
@@ -152,6 +154,38 @@ public class Utils {
         image.getTextureData().disposePixmap();
         pixmap.dispose();
         return recolor;
+    }
+
+    public static void drawProgressBar(float x, float y, float width, float height, float progress, SpriteBatch b) {
+        x = x - (width/2);
+        progress = Utils.cap(progress, 1);
+        Sprite outline = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Color.BLACK));
+        Sprite background = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Color.RED));
+        Sprite front = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Color.GREEN));
+        outline.setBounds(x, y, width, height);
+        background.setBounds(x + .1f, y + .1f, width-.2f, height-.2f);
+        float frontLength = progress * (width-.2f);
+        front.setBounds(x + .1f, y + .1f, frontLength, height-.2f);
+        outline.draw(b);
+        background.draw(b);
+        front.draw(b);
+    }
+
+    public static void drawUnscaledProgressBar(float x, float y, float width, float height, float progress, SpriteBatch b) {
+        x = x - (width/2);
+        progress = Utils.cap(progress, 1);
+        Sprite outline = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Color.BLACK));
+        Sprite background = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Color.RED));
+        Sprite front = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Color.GREEN));
+        outline.setBounds(x, y, width, height);
+        background.setBounds(x + (Main.meterToPixelWidth*.1f), y + (Main.meterToPixelHeight*.1f),
+                width-(Main.meterToPixelWidth*.2f), height-(Main.meterToPixelHeight*.2f));
+        float frontLength = progress * (width-(Main.meterToPixelWidth*.2f));
+        front.setBounds(x + (Main.meterToPixelWidth*.1f), y + (Main.meterToPixelHeight*.1f),
+                frontLength, height-(Main.meterToPixelHeight*.2f));
+        outline.draw(b);
+        background.draw(b);
+        front.draw(b);
     }
 
     public static Color toColor(int r, int g, int b) {

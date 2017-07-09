@@ -174,17 +174,7 @@ public class SteamworksMetadata extends RobotMetadata {
         }
         if (hasGear) gear.draw(batch);
         if (onRope != null && Game.getMatchTime() <= 30) {
-            Sprite outline = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Color.BLACK));
-            Sprite background = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Color.RED));
-            Sprite front = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Color.GREEN));
-            outline.setBounds(r.getX() - 1, r.getY() + 1f, 2f, .5f);
-            background.setBounds(r.getX() - .9f, r.getY() + 1.1f, 1.8f, .3f);
-            float frontLength = ((System.currentTimeMillis() - onRope)/((stats.climbSpeed*1000))) * 1.8f;
-            if (frontLength > 1.8f) frontLength = 1.8f;
-            front.setBounds(r.getX() - .9f, r.getY() + 1.1f, frontLength, .3f);
-            outline.draw(batch);
-            background.draw(batch);
-            front.draw(batch);
+            Utils.drawProgressBar(r.getX(), r.getY() + 1f, 2f, .5f, ((System.currentTimeMillis() - onRope)/((stats.climbSpeed*1000))), batch);
         }
     }
 
@@ -213,12 +203,13 @@ public class SteamworksMetadata extends RobotMetadata {
             } else {
                 hasGear = false;
                 if (Main.matchPlay) {
-                    if (r.blue) SteamworksField.blueGears++;
-                    else SteamworksField.redGears++;
-                    if (Game.getMatchTime() > 135) {
+                    if (r.blue) SteamworksField.blueGearQueue++;
+                    else SteamworksField.redGearQueue++;
+                    /*
+                    if (Game.isAutonomous()) {
                         if (r.blue) SteamworksField.blueGearsInAuto++;
                         else SteamworksField.redGearsInAuto++;
-                    }
+                    }*/
                 }
             }
         }

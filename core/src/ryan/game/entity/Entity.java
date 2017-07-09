@@ -148,6 +148,8 @@ public class Entity extends Drawable {
         }
     }
 
+    public void drawUnscaled(SpriteBatch b) {}
+
     public List<Body> getBodies() {
         return new ArrayList<Body>(bodies);
     }

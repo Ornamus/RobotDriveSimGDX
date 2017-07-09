@@ -14,6 +14,7 @@ import ryan.game.autonomous.pathmagic.RobotState;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.bcnlib_pieces.PIDSource;
 import ryan.game.competition.RobotStats;
+import ryan.game.competition.Team;
 import ryan.game.controls.Button;
 import ryan.game.controls.ControllerManager;
 import ryan.game.controls.FakeButton;
@@ -23,6 +24,7 @@ import ryan.game.autonomous.pathmagic.RobotStateGenerator;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
 import ryan.game.games.steamworks.robots.*;
+import ryan.game.render.Fonts;
 import ryan.game.sensors.Gyro;
 
 public class Robot extends Entity {
@@ -43,8 +45,10 @@ public class Robot extends Entity {
     private float middleMotor = 0;
 
     private int statsIndex = 0;
-    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902()};
+    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16()};
     public RobotStats stats = statsOptions[statsIndex];
+
+    private int numberIndex = 0;
 
     public Command auto = null;
 
@@ -145,7 +149,7 @@ public class Robot extends Entity {
         tex = stats.texture;
         //if (dozer) tex = "core/assets/dozer_recolor.png";
         //else tex = "core/assets/robot_recolor.png";
-        if (tex.contains("254") || tex.contains("1902")) {
+        if (tex.contains("254") || tex.contains("1902") || tex.contains("16")) {
             setSprite(Utils.colorImage(tex, null, c));
         } else {
             setSprite(Utils.colorImage(tex, c));
@@ -192,7 +196,8 @@ public class Robot extends Entity {
 
     boolean changeAllianceWasTrue = false;
     boolean changeControlsWasTrue = false;
-    boolean dozerToggleWasTrue = false;
+    boolean statsToggleWasTrue = false;
+    boolean numberChangeWasTrue = false;
     boolean reverseToggleWasTrue = false;
 
     float iconAlpha;
@@ -263,8 +268,7 @@ public class Robot extends Entity {
             intakeSprite.setRotation((float)Math.toDegrees(intake.getAngle()));
         }
         if (ControllerManager.getGamepads().isEmpty()) {
-            //leftMotor = Gdx.input.isKeyPressed(Input.Keys.A) ? 1 : 0;
-            //rightMotor = Gdx.input.isKeyPressed(Input.Keys.D) ? 1 : 0;
+            //TODO: ?????
         } else {
             Gamepad g = getController();
             setupButtons(g);
@@ -316,9 +320,8 @@ public class Robot extends Entity {
                 doFriction(right);
             }
 
-
-            val = g.getDPad() == .75;//robotStatToggle.get();
-            if (val && !dozerToggleWasTrue && !Game.isPlaying()) {
+            val = g != null ? g.getDPad() == .75 : false;
+            if (val && !statsToggleWasTrue && !Game.isPlaying()) {
                 statsIndex++;
                 if (statsIndex >= statsOptions.length) {
                     statsIndex = 0;
@@ -326,7 +329,16 @@ public class Robot extends Entity {
                 stats = statsOptions[statsIndex];
                 updateSprite();
             }
-            dozerToggleWasTrue = val;
+            statsToggleWasTrue = val;
+
+            val = g != null ? g.getDPad() == .5 : false;
+            if (val && !numberChangeWasTrue && !Game.isPlaying()) {
+                numberIndex++;
+                if (numberIndex > 2) {
+                    numberIndex = 0;
+                }
+            }
+            numberChangeWasTrue = val;
 
             val = changeAlliance.get();
             if (val && !changeAllianceWasTrue && !Game.isPlaying()) {
@@ -350,7 +362,22 @@ public class Robot extends Entity {
         super.draw(b);
         if (icon != null) icon.draw(b);
         if (intakeSprite != null) intakeSprite.draw(b);
-        if (metadata != null) metadata.draw(b, this);;
+        if (metadata != null) metadata.draw(b, this);
+
+        Sprite outline = new Sprite(Utils.colorImage("core/assets/whitepixel.png", blue ? Main.BLUE : Main.RED));
+        outline.setBounds(getX() - 1, getY() - 1.95f, 2f, .7f);
+        outline.setAlpha(.6f);
+        outline.draw(b);
+    }
+
+    //float convertWidth = 1100f/56f;
+    //float convertHeight = 630f/35.25f;
+
+    public void drawUnscaled(SpriteBatch b) {
+        Team t;
+        if (blue) t = Main.schedule.getCurrentMatch().blue[numberIndex];
+        else t = Main.schedule.getCurrentMatch().red[numberIndex];
+        Fonts.drawCentered(t.number + "", getX() * Main.meterToPixelWidth, (getY()*Main.meterToPixelHeight) + (Main.meterToPixelHeight*2.7f), Fonts.fmsWhiteSmall, b);
     }
 
     final float k = 10.0f; //2.25
@@ -414,8 +441,8 @@ public class Robot extends Entity {
         float forceX = (strafeSpeed * pow) * (float) Math.sin(Math.toRadians(angle));
         float forceY = (strafeSpeed  * pow) * (float) Math.cos(Math.toRadians(angle));
 
-        forceX = Math.abs(speed.x) > stats.maxMPS * .7 ? 0 : forceX;
-        forceY = Math.abs(speed.y) > stats.maxMPS * .7 ? 0 : forceY;
+        forceX = Math.abs(speed.x) > stats.maxMPS * stats.fieldCentricStrafeMult ? 0 : forceX;
+        forceY = Math.abs(speed.y) > stats.maxMPS * stats.fieldCentricStrafeMult ? 0 : forceY;
 
         float accel = stats.maxAccel * 2f;
 
