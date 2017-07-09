@@ -1,4 +1,4 @@
-package ryan.game.autonomous;
+package ryan.game.autonomous.steamworks;
 
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.bcnlib_pieces.Motor;
@@ -28,7 +28,7 @@ public class AutoHopper extends Command {
             Thread.sleep(1350);
             rotatePID.setTarget(robot.blue ? 270 : 90);
             rotatePID.enable();
-            while (!rotatePID.isDone()) {
+            while (!rotatePID.isDone() && Game.isAutonomous()) {
                 robot.setMotors(pidOutput.getPower(), -pidOutput.getPower());
                 Thread.sleep(10);
             }
@@ -42,13 +42,13 @@ public class AutoHopper extends Command {
             robot.setMotors(0, 0);
             rotatePID.setTarget(robot.blue ? 188 : 360-188);
             rotatePID.enable();
-            while (!rotatePID.isDone()) {
+            while (!rotatePID.isDone() && Game.isAutonomous()) {
                 robot.setMotors(pidOutput.getPower(), -pidOutput.getPower());
                 Thread.sleep(10);
             }
             rotatePID.disable();
             robot.setMotors(0, 0);
-            while (Game.getMatchTime() > 135) {
+            while (Game.isAutonomous()) {
                 m.shootFuel(robot);
             }
         } catch (Exception e) {

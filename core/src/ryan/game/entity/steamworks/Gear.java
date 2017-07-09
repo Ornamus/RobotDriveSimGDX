@@ -28,8 +28,7 @@ public class Gear extends Entity {
     public void onCollide(Entity e, Body self, Body other, Contact contact) {
         if (loadingStation != null && e instanceof Robot && System.currentTimeMillis() - creation <= 35) {
             float diff = Math.abs(e.getAngle() - loadingStation.getAngle());
-            //Utils.log("diff: " + diff);
-            if (diff <= 6.5) {
+            if (diff <= 7.5) {
 
                 Robot r = (Robot) e;
                 SteamworksMetadata meta = (SteamworksMetadata) r.metadata;

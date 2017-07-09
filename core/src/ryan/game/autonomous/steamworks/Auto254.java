@@ -1,4 +1,4 @@
-package ryan.game.autonomous;
+package ryan.game.autonomous.steamworks;
 
 
 import ryan.game.Utils;
@@ -36,8 +36,6 @@ public class Auto254 extends Command {
             robot.generator = new RobotStateGenerator(robot.state, robot);
             robot.generator.start();
 
-            Utils.log("Gyro: " + robot.getGyro().getForPID() + ", left: " + robot.getLeftEncoder().getForPID() + ", right: " + robot.getRightEncoder().getForPID());
-
             PursuitControl c = new PursuitControl(robot);
 
             int blue = robot.blue ? 1 : -1;
@@ -69,7 +67,6 @@ public class Auto254 extends Command {
             while (Game.isAutonomous()) {
                 meta.shootFuel(robot);
             }
-            Utils.log("254 done");
         } catch (Exception e) {
             e.printStackTrace();
         }

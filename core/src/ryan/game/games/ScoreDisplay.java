@@ -84,7 +84,6 @@ public abstract class ScoreDisplay extends Drawable {
                     for (Robot r : Main.robots) {
                         if (r.auto != null) {
                             r.auto.start();
-                            Utils.log("Started an auto");
                         }
                     }
                 }
@@ -93,7 +92,6 @@ public abstract class ScoreDisplay extends Drawable {
                     for (Robot r : Main.robots) {
                         if (r.auto != null && r.auto.isRunning()) {
                             r.auto.stop();
-                            Utils.log("Ended an auto");
                         }
                     }
                     Main.getInstance().teleopStartSound.play(.45f);
@@ -165,8 +163,16 @@ public abstract class ScoreDisplay extends Drawable {
         redTeams = r;
     }
 
+    public String getMatchName() {
+        return matchName;
+    }
+
     public void setMatchName(String m) {
         matchName = m;
+    }
+
+    public String getEventName() {
+        return eventName;
     }
 
     public void setEventName(String e) {

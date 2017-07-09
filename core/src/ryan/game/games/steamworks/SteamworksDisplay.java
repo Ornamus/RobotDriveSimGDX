@@ -18,9 +18,12 @@ public class SteamworksDisplay extends ScoreDisplay {
 
     Sprite blueBlob, redBlob;
 
-    int blueRots = 0, redRots = 0;
-    int blueKPA = 0, redKPA = 0;
-    int blueClimbs = 0, redClimbs = 0;
+    public int blueScore = 0, redScore = 0;
+    public int blueRots = 0, redRots = 0;
+    public int blueRotorPoints = 0, redRotorPoints = 0;
+    public int blueKPA = 0, redKPA = 0;
+    public int blueClimbs = 0, redClimbs = 0;
+    public int blueCrosses = 0, redCrosses = 0;
 
     public SteamworksDisplay() {
         super("core/assets/score_display.png");
@@ -37,12 +40,20 @@ public class SteamworksDisplay extends ScoreDisplay {
 
     @Override
     public void draw(SpriteBatch batch) {
-        blueRots = 0;
-        redRots = 0;
-        blueKPA = 0;
-        redKPA = 0;
-        blueClimbs = 0;
-        redClimbs = 0;
+        if (!Main.isShowingResults) {
+            blueScore = 0;
+            redScore = 0;
+            blueRots = 0;
+            redRots = 0;
+            blueRotorPoints = 0;
+            redRotorPoints = 0;
+            blueKPA = 0;
+            redKPA = 0;
+            blueClimbs = 0;
+            redClimbs = 0;
+            blueCrosses = 0;
+            redCrosses = 0;
+        }
 
         super.draw(batch);
 
@@ -120,44 +131,47 @@ public class SteamworksDisplay extends ScoreDisplay {
 
     @Override
     public int[] calculateScores() {
-        int blueScore = 0;
-        int redScore = 0;
         if (Main.matchPlay) {
+            blueScore = 0;
+            redScore = 0;
             if (SteamworksField.blueGearsInAuto > 0) {
-                blueScore += 20;
+                blueRotorPoints += 20;
             }
             if (SteamworksField.blueGearsInAuto > 2) {
-                blueScore += 20;
+                blueRotorPoints += 20;
             }
             if (SteamworksField.blueGears > 0) {
-                blueScore += 40;
+                blueRotorPoints += 40;
                 blueRots++;
             }
             if (SteamworksField.blueGears > 2) {
-                blueScore += 40;
+                blueRotorPoints += 40;
                 blueRots++;
             }
             if (SteamworksField.blueGears > 6) {
-                blueScore += 40;
+                blueRotorPoints += 40;
                 blueRots++;
             }
             if (SteamworksField.blueGears > 12) {
-                blueScore += 140;
+                blueRotorPoints += 40;
                 blueRots++;
+                if (!SteamworksField.currentMatch.qualifier) {
+                    blueScore += 100;
+                }
             }
 
             if (SteamworksField.redGearsInAuto > 0) {
-                redScore += 20;
+                redRotorPoints += 20;
             }
             if (SteamworksField.redGearsInAuto > 2) {
-                redScore += 20;
+                redRotorPoints += 20;
             }
             if (SteamworksField.redGears > 0) {
-                redScore += 40;
+                redRotorPoints += 40;
                 redRots++;
             }
             if (SteamworksField.redGears > 2) {
-                redScore += 40;
+                redRotorPoints += 40;
                 redRots++;
             }
             if (SteamworksField.redGears > 6) {
@@ -165,24 +179,36 @@ public class SteamworksDisplay extends ScoreDisplay {
                 redRots++;
             }
             if (SteamworksField.redGears > 12) {
-                redScore += 140;
+                redRotorPoints += 40;
                 redRots++;
+                if (!SteamworksField.currentMatch.qualifier) {
+                    redScore += 100;
+                }
             }
+            blueScore += blueRotorPoints;
+            redScore += redRotorPoints;
+
             blueKPA = (int)Math.round(Math.floor(SteamworksField.blueFuel / 3.0));
             redKPA = (int)Math.round(Math.floor(SteamworksField.redFuel / 3.0));
             blueKPA += SteamworksField.blueFuelInAuto;
             redKPA += SteamworksField.redFuelInAuto;
             blueScore += blueKPA;
             redScore += redKPA;
-            if (blueKPA >= 40) blueScore += 20;
-            if (redKPA >= 40) redScore += 20;
+            if (!SteamworksField.currentMatch.qualifier) {
+                if (blueKPA >= 40) blueScore += 20;
+                if (redKPA >= 40) redScore += 20;
+            }
+
             for (Robot r : Main.robots) {
                 SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
                 if (meta.crossedBaseline) {
-                    if (r.blue) blueScore += 5;
-                    else redScore += 5;
+                    if (r.blue) blueCrosses++;
+                    else redCrosses++;
                 }
             }
+            blueScore += (blueCrosses * 5);
+            redScore += (redCrosses * 5);
+
             blueScore += SteamworksField.redFouls;
             redScore += SteamworksField.blueFouls;
             if (seconds <= 30) {

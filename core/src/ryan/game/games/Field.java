@@ -9,7 +9,9 @@ public abstract class Field extends Drawable {
 
     public abstract void affectRobots();
 
-    public abstract void matchStart();
+    public abstract void onMatchStart();
+
+    public abstract void onMatchEnd();
 
     public abstract void resetField(List<Drawable> field);
 

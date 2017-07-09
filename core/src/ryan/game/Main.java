@@ -26,9 +26,8 @@ import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
-import ryan.game.games.ResultDisplay;
+import ryan.game.games.steamworks.SteamResultDisplay;
 import ryan.game.games.ScoreDisplay;
-import ryan.game.games.pirate.PirateField;
 import ryan.game.games.steamworks.SteamworksField;
 import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.render.Drawable;
@@ -36,7 +35,6 @@ import ryan.game.render.Drawable;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class Main extends ApplicationAdapter {
 
@@ -45,6 +43,7 @@ public class Main extends ApplicationAdapter {
     public static final Color BLUE = Utils.toColor(63, 72, 204);
     public static final Color RED = Utils.toColor(237, 28, 36);
 
+    SteamResultDisplay results = null;
 	SpriteBatch batch;
     SpriteBatch nonScaled;
     ShapeRenderer shape;
@@ -60,6 +59,8 @@ public class Main extends ApplicationAdapter {
 
     public static boolean playMusic = true;
 
+    public static boolean isShowingResults = false;
+
     public static BitmapFont bigFont, smallFont;
     GlyphLayout layout;
     FileHandle[] musicChoices;
@@ -67,6 +68,7 @@ public class Main extends ApplicationAdapter {
 
     public static boolean matchPlay = false;
     public static long matchStart = 0;
+    public static long matchEnd = 0;
 
     Sound matchStartSound;
     public Sound teleopStartSound;
@@ -129,7 +131,7 @@ public class Main extends ApplicationAdapter {
             drawables.add(r);
         }
 
-        //drawables.add(new ResultDisplay(0, 0));
+        //drawables.add(new SteamResultDisplay(0,0));
 
 		batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
@@ -281,6 +283,11 @@ public class Main extends ApplicationAdapter {
             matchPlay = false;
             didWhoop = false;
             resetField = true;
+            results = new SteamResultDisplay(0, 0);
+            drawables.add(results);
+            isShowingResults = true;
+            matchEnd = System.currentTimeMillis();
+            gameField.onMatchEnd();
         }
 
         batch.begin();
@@ -395,7 +402,8 @@ public class Main extends ApplicationAdapter {
             }
         }*/
         if ((aPressed || Gdx.input.isKeyPressed(Input.Keys.P)) && !matchPlay) {
-            gameField.matchStart();
+            matchEnd = 0;
+            gameField.onMatchStart();
             resetField = true;
             matchPlay = true;
             matchStart = System.currentTimeMillis();
@@ -406,11 +414,17 @@ public class Main extends ApplicationAdapter {
                 music.play();
             }
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.I) && matchPlay) {
-            //TODO: play foghorn hoise
-            matchPlay = false;
-            didWhoop = false;
-            if (playMusic && music.isPlaying()) music.stop();
+        if (Gdx.input.isKeyPressed(Input.Keys.I)) {
+            if (matchPlay) {
+                //TODO: play foghorn hoise
+                matchPlay = false;
+                didWhoop = false;
+                if (playMusic && music.isPlaying()) music.stop();
+            } else if (isShowingResults) {
+                drawables.remove(results);
+                results = null;
+                isShowingResults = false;
+            }
         }
         if (Gdx.input.isKeyPressed(Input.Keys.R) || resetField) {
             gameField.resetField(drawables);

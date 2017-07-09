@@ -1,6 +1,6 @@
 package ryan.game.games.steamworks.robots;
 
-import ryan.game.autonomous.AutoCenterGear;
+import ryan.game.autonomous.steamworks.AutoCenterGear;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.entity.Robot;
 

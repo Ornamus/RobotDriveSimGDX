@@ -81,7 +81,12 @@ public class PirateField extends Field {
     }
 
     @Override
-    public void matchStart() {
+    public void onMatchStart() {
+
+    }
+
+    @Override
+    public void onMatchEnd() {
 
     }
 

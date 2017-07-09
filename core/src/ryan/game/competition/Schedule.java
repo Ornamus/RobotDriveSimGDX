@@ -73,6 +73,7 @@ public class Schedule {
         public final Team[] blue, red;
         public List<Integer> blueSurrogates = new ArrayList<>();
         public List<Integer> redSurrogates = new ArrayList<>();
+        public boolean qualifier = true;
 
         public Match(int number, Team[] b, Team[] r) {
             this.number = number;

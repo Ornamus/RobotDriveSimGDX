@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.competition.Schedule;
@@ -26,7 +25,7 @@ public class SteamworksField extends Field {
     List<Sprite> blueRotors = new ArrayList<Sprite>();
     List<Sprite> redRotors = new ArrayList<Sprite>();
 
-    SteamworksDisplay display;
+    public static SteamworksDisplay display;
 
     public static int blueGears = 0;
     public static int blueGearsInAuto = 0;
@@ -40,6 +39,9 @@ public class SteamworksField extends Field {
     public static int redFouls = 0;
     public static int blueBonusClimbs = 0;
     public static int redBonusClimbs = 0;
+
+    int matchesPlayed = 0;
+    public static Schedule.Match currentMatch = Main.schedule.matches.get(0);
 
     @Override
     public List<Drawable> generateField() {
@@ -155,7 +157,7 @@ public class SteamworksField extends Field {
     }
 
     @Override
-    public void matchStart() {
+    public void onMatchStart() {
         blueGears = 0;
         blueGearsInAuto = 0;
         redGears = 0;
@@ -175,12 +177,21 @@ public class SteamworksField extends Field {
             m.fuel = 10;
             m.crossedBaseline = false;
         }
-        /*
-        Schedule.Match m = Main.schedule.matches.get(Utils.randomInt(0, Main.schedule.matches.size()-1));
-        display.setBlueTeams(m.blue[0].number, m.blue[1].number, m.blue[2].number);
-        display.setRedTeams(m.red[0].number, m.red[1].number, m.red[2].number);
-        display.setMatchName("Qualification " + m.number + " of " + Main.schedule.matches.size());*/
+
+        if (Main.schedule.matches.size() > matchesPlayed) {
+            currentMatch = Main.schedule.matches.get(matchesPlayed);
+            display.setBlueTeams(currentMatch.blue[0].number, currentMatch.blue[1].number, currentMatch.blue[2].number);
+            display.setRedTeams(currentMatch.red[0].number, currentMatch.red[1].number, currentMatch.red[2].number);
+            display.setMatchName("Qualification " + currentMatch.number + " of " + Main.schedule.matches.size());
+        } else {
+            //TODO: out of scheduled matches, what do?
+        }
     } //Stuanobor
+
+    @Override
+    public void onMatchEnd() {
+        matchesPlayed++;
+    }
 
     @Override
     public void resetField(List<Drawable> field) {
