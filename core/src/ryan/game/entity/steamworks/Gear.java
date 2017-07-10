@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Main;
-import ryan.game.Utils;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.games.steamworks.SteamworksMetadata;
@@ -26,9 +25,9 @@ public class Gear extends Entity {
 
     @Override
     public void onCollide(Entity e, Body self, Body other, Contact contact) {
-        if (loadingStation != null && e instanceof Robot && System.currentTimeMillis() - creation <= 35) {
+        if (loadingStation != null && e instanceof Robot && System.currentTimeMillis() - creation <= 150) {
             float diff = Math.abs(e.getAngle() - loadingStation.getAngle());
-            if (diff <= 7.5) {
+            if (diff <= 9.5) {
 
                 Robot r = (Robot) e;
                 SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
@@ -45,13 +44,12 @@ public class Gear extends Entity {
     }
 
     public static Gear create(float x, float y, float angle, LoadingStation loadingStation) {
-        World w = Main.getInstance().world;
-        synchronized (w) {
+        synchronized (Main.getInstance().world) {
             BodyDef rightDef = new BodyDef();
             rightDef.type = BodyDef.BodyType.DynamicBody;
             rightDef.position.set(x, y);
 
-            Body right = w.createBody(rightDef);
+            Body right = Main.getInstance().world.createBody(rightDef);
             CircleShape shape = new CircleShape();
             shape.setRadius(radius);
 

@@ -7,6 +7,7 @@ import ryan.game.entity.Robot;
 public class SteamDefault extends SteamRobotStats {
 
     public SteamDefault() {
+        super();
         gearIntake = true;
         fuelIntake = false;
         timePerShoot = 250;

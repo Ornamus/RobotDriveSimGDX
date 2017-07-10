@@ -1,7 +1,5 @@
 package ryan.game.games.steamworks;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -73,11 +71,6 @@ public class SteamworksMetadata extends RobotMetadata {
             }
 
             if (val) {
-                boolean canScore = false;
-                if (peg != null) {
-                    float diff = Math.abs(r.getAngle() - peg.getAngle());
-                    if (Math.abs(diff - 270) < 6 || Math.abs(diff - 90) < 6) canScore = true;
-                }
                 if (hasGear && startedIntakingWithGear) {
                     ejectGear(r);
                 }
@@ -97,7 +90,7 @@ public class SteamworksMetadata extends RobotMetadata {
                 if ( fuelIntake) {
                     for (Entity e : new ArrayList<>(intakeableFuel)) {
                         if (!intakeableFuel.isEmpty() && fuel < stats.maxFuel) {
-                            if (fuelIntakeTimes.get(e) == null) fuelIntakeTimes.put(e, System.currentTimeMillis());
+                            fuelIntakeTimes.putIfAbsent(e, System.currentTimeMillis());
                             double a = Math.toRadians(Utils.getAngle(new Point2D.Float(e.getX(), e.getY()), new Point2D.Float(r.getX(), r.getY())));
                             e.getPrimary().applyForceToCenter(stats.fuelIntakeStrength * (float) Math.cos(a), stats.fuelIntakeStrength * (float) Math.sin(a), true);
                             if (System.currentTimeMillis() - fuelIntakeTimes.get(e) >= stats.fuelIntakeRate) {

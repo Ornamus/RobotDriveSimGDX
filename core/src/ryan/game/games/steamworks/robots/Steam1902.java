@@ -7,7 +7,9 @@ import ryan.game.entity.Robot;
 public class Steam1902 extends SteamDefault {
 
     public Steam1902() {
+        super();
         gearIntake = false;
+        //intakeWidth = robotWidth * .65f; //TODO: reeneable when this is redone when switched to
         fuelIntake = false;
         shooter = true;
         maxFuel = 20;

@@ -1,9 +1,7 @@
 package ryan.game.autonomous.steamworks;
 
 
-import ryan.game.Utils;
 import ryan.game.autonomous.pathmagic.PursuitControl;
-import ryan.game.autonomous.pathmagic.RobotState;
 import ryan.game.autonomous.pathmagic.RobotStateGenerator;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.drive.DriveOrder;

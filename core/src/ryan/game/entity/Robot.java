@@ -56,7 +56,6 @@ public class Robot extends Entity {
 
     private Button changeAlliance;
     private Button changeControls;
-    private Button robotStatToggle;
     private Button reverseToggle;
 
     private float maxTurn = 1.5f;
@@ -126,12 +125,10 @@ public class Robot extends Entity {
         if (g != null) {
             changeAlliance = g.getButton(7);
             changeControls = g.getButton(6);
-            robotStatToggle = g.getButton(1);
             reverseToggle = g.getButton(9);
         } else {
             changeAlliance = new FakeButton();
             changeControls = new FakeButton();
-            robotStatToggle = new FakeButton();
             reverseToggle = new FakeButton();
         }
     }
@@ -253,7 +250,6 @@ public class Robot extends Entity {
 
         angleOld = angle;
 
-        //Utils.log(leftDistance + " / " + rightDistance);
 
         if (icon != null) {
             icon.setPosition(getX() - icon.getWidth() / 2, getY() + 1f);
@@ -278,7 +274,6 @@ public class Robot extends Entity {
                     Utils.log(b.id + "");
                 }
             }*/
-
             boolean val = changeControls.get();
             if (val && !changeControlsWasTrue) {
                 controllerIndex++;
@@ -320,18 +315,19 @@ public class Robot extends Entity {
                 doFriction(right);
             }
 
-            val = g != null ? g.getDPad() == .75 : false;
+            val = g != null && g.getDPad() == .75;
             if (val && !statsToggleWasTrue && !Game.isPlaying()) {
                 statsIndex++;
                 if (statsIndex >= statsOptions.length) {
                     statsIndex = 0;
                 }
                 stats = statsOptions[statsIndex];
+                //reinitBody(); //TODO: reenable when this doesn't crash the game
                 updateSprite();
             }
             statsToggleWasTrue = val;
 
-            val = g != null ? g.getDPad() == .5 : false;
+            val = g != null && g.getDPad() == .5;
             if (val && !numberChangeWasTrue && !Game.isPlaying()) {
                 numberIndex++;
                 if (numberIndex > 2) {
@@ -366,18 +362,18 @@ public class Robot extends Entity {
 
         Sprite outline = new Sprite(Utils.colorImage("core/assets/whitepixel.png", blue ? Main.BLUE : Main.RED));
         outline.setBounds(getX() - 1, getY() - 1.95f, 2f, .7f);
-        outline.setAlpha(.6f);
+        outline.setAlpha(getAngle() > 110 && getAngle() < 250 ? .3f : .6f);
+        //Utils.log(getAngle() + "");
         outline.draw(b);
     }
-
-    //float convertWidth = 1100f/56f;
-    //float convertHeight = 630f/35.25f;
 
     public void drawUnscaled(SpriteBatch b) {
         Team t;
         if (blue) t = Main.schedule.getCurrentMatch().blue[numberIndex];
         else t = Main.schedule.getCurrentMatch().red[numberIndex];
+        Fonts.fmsWhiteSmall.setColor(255, 255, 255, getAngle() > 110 && getAngle() < 250 ? .3f : 1);
         Fonts.drawCentered(t.number + "", getX() * Main.meterToPixelWidth, (getY()*Main.meterToPixelHeight) + (Main.meterToPixelHeight*2.7f), Fonts.fmsWhiteSmall, b);
+        Fonts.fmsWhiteSmall.setColor(255, 255, 255, 1);
     }
 
     final float k = 10.0f; //2.25
@@ -448,6 +444,36 @@ public class Robot extends Entity {
 
         left.applyForceToCenter(Utils.cap(forceX, accel), Utils.cap(forceY, accel), true);
         right.applyForceToCenter(Utils.cap(forceX, accel), Utils.cap(forceY, accel), true);
+    }
+
+    //TODO: conflicts with other threads reading the angle
+    public void reinitBody() {
+        float x = getX();
+        float y = getY();
+        float angle = (float)Math.toRadians(getPhysicsAngle());
+        left = null;
+        right = null;
+        intake = null;
+        synchronized (Main.getInstance().world) {
+            for (Body b : getBodies()) {
+                Main.getInstance().world.destroyBody(b);
+            }
+        }
+        left = createRobotPart(stats, x - stats.robotWidth, y);
+        right = createRobotPart(stats, x, y);
+        intake = Entity.rectangleDynamicBody(x - (stats.robotWidth/2), y + stats.robotHeight * 1.25f, stats.intakeWidth, stats.robotHeight / 4);
+        addBody(left);
+        addBody(right);
+        addBody(intake);
+        joint(left, right);
+        joint(left, intake);
+        joint(right, intake);
+        Main.getInstance().addFriction(left);
+        Main.getInstance().addFriction(right);
+
+        left.setTransform(left.getPosition(), angle);
+        right.setTransform(right.getPosition(), angle);
+        intake.setTransform(intake.getPosition(), angle);
     }
 
     private static void joint(Body a, Body b) {

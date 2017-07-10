@@ -3,7 +3,6 @@ package ryan.game.drive;
 import ryan.game.Utils;
 import ryan.game.bcnlib_pieces.Motor;
 import ryan.game.bcnlib_pieces.PIDController;
-import ryan.game.bcnlib_pieces.PIDSource;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.Robot;
 import ryan.game.games.Game;
@@ -71,9 +70,8 @@ public class FieldCentricStrafe implements DriveController {
         xSet = (float)(y * Math.sin(angle) + x * Math.cos(angle));
         ySet = (float)(y * Math.cos(angle) - x * Math.sin(angle));
 
-        DriveOrder o = setFiltered((ySet + z), -(z - ySet), xSet);
         //Utils.log("Motors: " + Utils.roundToPlace(o.left, 2) + " / " + Utils.roundToPlace(o.right, 2) + " / " + Utils.roundToPlace(o.middle, 2));
-        return o;
+        return setFiltered((ySet + z), -(z - ySet), xSet);
     }
 
     private DriveOrder setFiltered(float leftPower, float rightPower, float strafePower) {

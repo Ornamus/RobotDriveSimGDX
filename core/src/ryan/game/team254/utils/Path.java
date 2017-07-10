@@ -40,9 +40,9 @@ public class Path {
     }
 
     public Path(List<Waypoint> waypoints) {
-        mMarkersCrossed = new HashSet<String>();
+        mMarkersCrossed = new HashSet<>();
         mWaypoints = waypoints;
-        mSegments = new ArrayList<PathSegment>();
+        mSegments = new ArrayList<>();
         for (int i = 0; i < waypoints.size() - 1; ++i) {
             mSegments.add(
                     new PathSegment(waypoints.get(i).position, waypoints.get(i + 1).position, waypoints.get(i).speed));

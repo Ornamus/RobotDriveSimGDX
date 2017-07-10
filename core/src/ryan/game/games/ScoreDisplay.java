@@ -110,8 +110,6 @@ public abstract class ScoreDisplay extends Drawable {
         Fonts.drawCentered(blueTeams[2] + "", 166, getY() + 71f - 21f, Fonts.fmsBlack, batch);
     }
 
-    public void drawInPixels(SpriteBatch b) {}
-
     /**
      * Calculates the Blue and Red Alliance's scores.
      * @return An int[] of the scores. Index 0 is Blue's score, Index 1 is Red's score.

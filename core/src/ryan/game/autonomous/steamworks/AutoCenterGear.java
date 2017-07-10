@@ -6,7 +6,6 @@ import ryan.game.games.steamworks.SteamworksMetadata;
 
 public class AutoCenterGear extends Command {
 
-    long start = 0;
     boolean spam = false;
 
     public AutoCenterGear(Robot r, boolean doSpam) {

@@ -14,7 +14,7 @@ import java.util.List;
  * field will be reflected and be able to set externally
  */
 public abstract class ConstantsBase {
-    HashMap<String, Boolean> modifiedKeys = new HashMap<String, Boolean>();
+    HashMap<String, Boolean> modifiedKeys = new HashMap<>();
 
     public abstract String getFileLocation();
 
@@ -119,7 +119,7 @@ public abstract class ConstantsBase {
 
     private Collection<Constant> getAllConstants() {
         Field[] declaredFields = this.getClass().getDeclaredFields();
-        List<Constant> constants = new ArrayList<Constant>(declaredFields.length);
+        List<Constant> constants = new ArrayList<>(declaredFields.length);
         for (Field field : declaredFields) {
             if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
                 Constant c;

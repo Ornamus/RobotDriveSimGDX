@@ -7,6 +7,7 @@ import ryan.game.entity.Robot;
 public class SteamDozer extends SteamRobotStats {
 
     public SteamDozer() {
+        super();
         gearIntake = false;
         fuelIntake = true;
         timePerShoot = 200;

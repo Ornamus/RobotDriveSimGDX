@@ -17,7 +17,7 @@ public enum Game {
     }
 
     public static int getMatchTime() {
-        int seconds = 0;
+        int seconds;
         if (Main.matchPlay) {
             long timeIn = System.currentTimeMillis() - Main.matchStart;
             long timeLeft = (150 * 1000) - timeIn;

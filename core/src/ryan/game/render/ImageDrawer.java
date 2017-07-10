@@ -3,7 +3,6 @@ package ryan.game.render;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import ryan.game.image.Image;
 
 public class ImageDrawer extends Drawable {
 

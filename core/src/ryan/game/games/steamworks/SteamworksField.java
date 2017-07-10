@@ -19,7 +19,6 @@ import ryan.game.render.Drawable;
 import ryan.game.render.ImageDrawer;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public class SteamworksField extends Field {
@@ -28,8 +27,8 @@ public class SteamworksField extends Field {
 
     public static final float hpGearScoreSpeed = 4000f;
 
-    List<Sprite> blueRotors = new ArrayList<Sprite>();
-    List<Sprite> redRotors = new ArrayList<Sprite>();
+    List<Sprite> blueRotors = new ArrayList<>();
+    List<Sprite> redRotors = new ArrayList<>();
 
     public static SteamworksDisplay display;
 
@@ -73,7 +72,7 @@ public class SteamworksField extends Field {
 
         drawables.add(Entity.barrier(0, 12, 28f, .5f)); //top wall
         drawables.add(Entity.barrier(0, -13.2f, 28f, .5f)); //bottom wall
-        drawables.add(Entity.barrier(-25.5f, 0, .5f, 10f)); //left wall
+        drawables.add(Entity.barrier(-25.75f, 0, .5f, 10f)); //left wall
         drawables.add(Entity.barrier(24.5f, 0, .5f, 10f)); //right wall
 
         drawables.add(LoadingStation.create(true, true, -24.8f, 11, 26)); //blue load left
@@ -134,8 +133,6 @@ public class SteamworksField extends Field {
 
         drawables.add(new LoadingZone(-21, 9.75f, 26, true)); //blue loading zone
         drawables.add(new LoadingZone(19.5f, 9.75f, -26, false)); //red loading zone
-
-        float sideSpace = 1f;
 
         for (int i=0; i<2; i++) {
 
@@ -224,10 +221,6 @@ public class SteamworksField extends Field {
                     field.remove(e);
                 } else if (e instanceof Hopper) {
                     ((Hopper) e).reset();
-                } else if (e instanceof Robot) {
-                    SteamworksMetadata meta = (SteamworksMetadata) ((Robot)e).metadata;
-                    //meta.fuel = 0;
-                    //meta.hasGear = false;
                 }
             }
         }

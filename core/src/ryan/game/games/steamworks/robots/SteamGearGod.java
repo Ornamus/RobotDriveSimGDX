@@ -7,6 +7,7 @@ import ryan.game.entity.Robot;
 public class SteamGearGod extends SteamRobotStats {
 
     public SteamGearGod() {
+        super();
         gearIntake = false;
         fuelIntake = false;
         shooter = false;

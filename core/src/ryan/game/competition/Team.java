@@ -10,7 +10,7 @@ public class Team {
         this.number = number;
         this.name = name;
         if (name.equals("null")) {
-            name = NameMagic.generateName();
+            this.name = NameMagic.generateName();
             //Utils.log(name);
         }
     }

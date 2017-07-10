@@ -3,7 +3,6 @@ package ryan.game.entity;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Constants;
@@ -11,7 +10,6 @@ import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.render.Drawable;
 
-import javax.xml.soap.Text;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +21,7 @@ public class Entity extends Drawable {
     private float airDistance = 1;
     private float airMomentum = 0;
     public float friction = 8f;
-    private List<Body> bodies = new ArrayList<Body>();
+    private List<Body> bodies = new ArrayList<>();
     private Body primary = null;
     private Sprite s = null;
 
@@ -151,7 +149,7 @@ public class Entity extends Drawable {
     public void drawUnscaled(SpriteBatch b) {}
 
     public List<Body> getBodies() {
-        return new ArrayList<Body>(bodies);
+        return new ArrayList<>(bodies);
     }
 
     public static Entity circleEntity(float x, float y, float radius, float density, World w) {

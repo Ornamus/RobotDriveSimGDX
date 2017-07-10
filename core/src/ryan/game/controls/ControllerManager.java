@@ -4,8 +4,6 @@ import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
 import ryan.game.Utils;
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +46,7 @@ public class ControllerManager {
 
     private static ControllerEnvironment createDefaultEnvironment()  {
         try {
+            //noinspection unchecked
             Constructor<ControllerEnvironment> constructor = (Constructor<ControllerEnvironment>)
                     Class.forName("net.java.games.input.DefaultControllerEnvironment").getDeclaredConstructors()[0];
 

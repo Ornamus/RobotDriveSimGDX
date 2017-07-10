@@ -1,11 +1,9 @@
 package ryan.game.autonomous.steamworks;
 
-import ryan.game.Utils;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.bcnlib_pieces.Motor;
 import ryan.game.bcnlib_pieces.PIDController;
 import ryan.game.entity.Robot;
-import ryan.game.games.Game;
 import ryan.game.games.steamworks.SteamworksMetadata;
 
 public class Auto16 extends Command {
@@ -23,7 +21,6 @@ public class Auto16 extends Command {
     @Override
     public void onInit() {
         SteamworksMetadata meta = (SteamworksMetadata) robot.metadata;
-        float startAngle = (float) robot.getGyro().getForPID();
         try {
             long start = System.currentTimeMillis();
             while (System.currentTimeMillis() - start < 3000) {

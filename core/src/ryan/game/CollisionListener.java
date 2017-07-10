@@ -76,7 +76,7 @@ public class CollisionListener implements ContactListener {
         Body bA = contact.getFixtureA().getBody();
         Body bB = contact.getFixtureB().getBody();
         Entity a = (Entity) bA.getUserData();
-        Entity b = (Entity) bB.getUserData();;
+        Entity b = (Entity) bB.getUserData();
         colliding.remove(bA);
         colliding.remove(bB);
         if (a != null && b != null) {

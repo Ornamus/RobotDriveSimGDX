@@ -8,13 +8,13 @@ import ryan.game.Utils;
 public class DesktopLauncher {
 
     static String[] random = {"Water Game Confirmed", "Driver Practice Confirmed", "Driver Skill Simulator", "pOrK liFt", "100%* Real Physics",
-	"Phillip Approved", "Fuel Is Still Useless", "Revenge of the Tank Drive", "The Peg Strikes Back", "Raiders of the Lost Gears"};
+	"Phillip Approved", "Fuel Matters", "Revenge of the Tank Drive", "The Peg Strikes Back", "Raiders of the Lost Gears"};
 
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.width = 1100;
 		config.height = 630;
-		config.title = "Robot Drive Sim GDX - " + random[Utils.randomInt(0, random.length-1)];
+		config.title = "RobotDriveSimGDX - " + random[Utils.randomInt(0, random.length-1)];
 		for (String s : arg) {
 			System.out.println("Arg: " + s);
 			if (s.equalsIgnoreCase("no_music")) {
@@ -27,8 +27,10 @@ public class DesktopLauncher {
 				Main.makeSchedule = true;
 			}
 			if (s.startsWith("event_name=")) {
-				String name = s.replace("event_name=", "");
-				Main.eventName = name;
+                Main.eventName = s.replace("event_name=", "");
+			}
+			if (s.equalsIgnoreCase("debug_view")) {
+				Main.DEBUG_RENDER = true;
 			}
 		}
 		new LwjglApplication(new Main(), config);

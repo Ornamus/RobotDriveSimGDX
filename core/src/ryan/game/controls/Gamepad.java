@@ -2,7 +2,6 @@ package ryan.game.controls;
 
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
-import ryan.game.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +13,7 @@ public class Gamepad {
     private Component xAxis = null, yAxis = null, xAxis2 = null, yAxis2 = null;
     private Component zAxis = null;
     private Component dPad = null;
-    private List<Button> buttons = new ArrayList<Button>();
+    private List<Button> buttons = new ArrayList<>();
     private boolean reverseSticks = false;
 
     private static int gamepads = 0;
@@ -103,13 +102,11 @@ public class Gamepad {
     }
 
     public boolean isLeftTriggerPressed() {
-        if (hasZAxis()) return getZ() > 0.1;
-        return false;
+        return hasZAxis() && getZ() > 0.1;
     }
 
     public boolean isRightTriggerPressed() {
-        if (hasZAxis()) return getZ() < -0.1;
-        return false;
+        return hasZAxis() && getZ() < -0.1;
     }
 
     public boolean hasZAxis() {
@@ -129,7 +126,7 @@ public class Gamepad {
     }
 
     public List<Button> getButtons() {
-        return new ArrayList<Button>(buttons);
+        return new ArrayList<>(buttons);
     }
 
     public Button getButton(int id) {
@@ -140,6 +137,8 @@ public class Gamepad {
             if (id == 6) return buttons.get(8);
             if (id == 7) return buttons.get(9);
             if (id == 9) return buttons.get(11);
+            if (id == 98) return buttons.get(6);
+            if (id == 99) return buttons.get(7);
         } else if (c.getName().equalsIgnoreCase("Logitech Attack 3")) {
             if (id == 0) return buttons.get(1);
             if (id == 2) return buttons.get(3);

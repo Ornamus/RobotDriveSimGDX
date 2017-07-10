@@ -4,5 +4,5 @@ import ryan.game.controls.Gamepad;
 
 public interface DriveController {
 
-    public DriveOrder calculate(Gamepad g);
+    DriveOrder calculate(Gamepad g);
 }

@@ -2,7 +2,6 @@ package ryan.game.entity.steamworks;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import ryan.game.Main;
-import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
@@ -22,17 +21,19 @@ public class LoadingStation extends Entity {
         this.left = left;
     }
 
-    HashMap<Integer, Boolean> wasHeld = new HashMap<Integer, Boolean>();
+    HashMap<Integer, Boolean> wasHeld = new HashMap<>();
 
     @Override
     public void tick() {
         super.tick();
-        for (Robot r : Main.getInstance().robots) {
+        for (Robot r : Main.robots) {
             if (blue == r.blue) {
                 Gamepad g = r.getController();
                 if (g != null) {
-                    boolean val = left ? g.isLeftTriggerPressed() : g.isRightTriggerPressed();//g.getButton(left ? 2 : 3).get();
-                    if (wasHeld.get(g.id) == null) wasHeld.put(g.id, false);
+                    boolean val;
+                    if (g.hasZAxis()) val = left ? g.isLeftTriggerPressed() : g.isRightTriggerPressed();//g.getButton(left ? 2 : 3).get();
+                    else val = left ? g.getButton(98).get() : g.getButton(99).get();
+                    wasHeld.putIfAbsent(g.id, false);
                     if (val && !wasHeld.get(g.id)) {
 
                         float distance = 1.85f;

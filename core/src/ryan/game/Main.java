@@ -9,10 +9,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -39,7 +36,7 @@ import java.util.List;
 
 public class Main extends ApplicationAdapter {
 
-    private final boolean DEBUG_RENDER = false;
+    public static boolean DEBUG_RENDER = false;
 
     public static final Color BLUE = Utils.toColor(50, 50, 245);//Utils.toColor(63, 72, 204);
     public static final Color RED = Utils.toColor(237, 28, 36);
@@ -52,11 +49,11 @@ public class Main extends ApplicationAdapter {
     Box2DDebugRenderer debugRenderer;
     OrthographicCamera camera;
     OrthographicCamera nonScaledCamera;
-    public static List<Robot> robots = new ArrayList<Robot>();
-    public static List<Drawable> drawablesAdd = new ArrayList<Drawable>();
-    public static List<Drawable> drawablesRemove = new ArrayList<Drawable>();
-    public static List<Drawable> drawables = new ArrayList<Drawable>();
-    public static List<CollisionListener.Collision> collisions = new ArrayList<CollisionListener.Collision>();
+    public static List<Robot> robots = new ArrayList<>();
+    public static List<Drawable> drawablesAdd = new ArrayList<>();
+    public static List<Drawable> drawablesRemove = new ArrayList<>();
+    public static List<Drawable> drawables = new ArrayList<>();
+    public static List<CollisionListener.Collision> collisions = new ArrayList<>();
 
     public static boolean playMusic = true;
     public static boolean makeSchedule = false;
@@ -291,9 +288,6 @@ public class Main extends ApplicationAdapter {
             else if (e instanceof Entity) {
                 ((Entity)e).drawUnscaled(nonScaled);
             }
-            if (e instanceof ScoreDisplay) {
-                ((ScoreDisplay)e).drawInPixels(nonScaled);
-            }
         }
         nonScaled.end();
 
@@ -366,12 +360,22 @@ public class Main extends ApplicationAdapter {
     private void tick() {
         for (Drawable e : new ArrayList<>(drawablesRemove)) {
             drawables.remove(e);
+            drawablesRemove.remove(e);
+            if (e instanceof Entity) {
+                synchronized (world) {
+                    for (Body b : ((Entity) e).getBodies()) {
+                        world.destroyBody(b);
+                    }
+                }
+            }
         }
         for (Drawable d : new ArrayList<>(drawablesAdd)) {
             if (d instanceof Entity) {
                 Entity e = (Entity) d;
-                for (Body b : e.getBodies()) {
-                    addFriction(b, e.friction);
+                synchronized (world) {
+                    for (Body b : e.getBodies()) {
+                        addFriction(b, e.friction);
+                    }
                 }
             }
             drawables.add(d);

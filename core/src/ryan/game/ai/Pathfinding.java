@@ -21,6 +21,7 @@ public class Pathfinding {
     public Pathfinding() {
         cells = createCells();
         navGrid = new NavigationGrid<>(cells, true);
+        //noinspection unchecked
         finder = new AStarGridFinder(GridCell.class);
     }
 

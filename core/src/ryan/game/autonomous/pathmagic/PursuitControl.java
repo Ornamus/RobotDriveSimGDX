@@ -1,19 +1,12 @@
 package ryan.game.autonomous.pathmagic;
 
-import ryan.game.Utils;
 import ryan.game.bcnlib_pieces.Motor;
 import ryan.game.bcnlib_pieces.PIDController;
-import ryan.game.controls.Gamepad;
-import ryan.game.drive.DriveController;
 import ryan.game.drive.DriveOrder;
 import ryan.game.entity.Robot;
 import ryan.game.team254.utils.AdaptivePurePursuitController;
 import ryan.game.team254.utils.Path;
 import ryan.game.team254.utils.RigidTransform2d;
-import ryan.game.team254.utils.Translation2d;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class PursuitControl {
 

@@ -47,7 +47,6 @@ public class Auto1902 extends Command {
                 robot.setMotors(pidOutput.getPower(), -pidOutput.getPower());
                 Thread.sleep(10);
             }
-            Utils.log("pid done");;
             rotatePID.disable();
             robot.setMotors(.5f, .5f);
             Thread.sleep(2000);

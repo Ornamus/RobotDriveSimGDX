@@ -1,7 +1,6 @@
 package ryan.game.autonomous.steamworks;
 
 import ryan.game.bcnlib_pieces.Command;
-import ryan.game.bcnlib_pieces.PIDController;
 import ryan.game.entity.Robot;
 
 public class AutoBaseline extends Command {
