@@ -2,6 +2,7 @@ package ryan.game.entity.steamworks;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
+import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 
 public class Rope extends Entity {
@@ -10,7 +11,7 @@ public class Rope extends Entity {
     public final boolean blue;
 
     public Rope(float x, float y, float angle, boolean blue) {
-        super(Entity.rectangleStaticBody(x, y, side, side));
+        super(BodyFactory.getRectangleStatic(x, y, side, side, 0));
         setAngle(angle);
         this.blue = blue;
     }

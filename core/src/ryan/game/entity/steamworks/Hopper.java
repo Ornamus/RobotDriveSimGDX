@@ -5,6 +5,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 
@@ -18,8 +19,8 @@ public class Hopper extends Entity {
     private static final Texture full = new Texture("core/assets/hopper_full.png");
     private static final Texture empty = new Texture("core/assets/hopper_empty.png");
 
-    protected Hopper(float x, float y, boolean dropDown, Body b) {
-        super(.9f, .9f, b);
+    public Hopper(float x, float y, boolean dropDown) {
+        super(.9f, .9f, BodyFactory.getRectangleStatic(x, y, .9f, .9f, 0));
         this.x = x;
         this.y = y;
         this.dropDown = dropDown;
@@ -44,9 +45,9 @@ public class Hopper extends Entity {
         if (dumping) {
             if (System.currentTimeMillis() - timeOfLastDump > dumpRate) {
                 for (int i=0; 2>i; i++) {
-                    Entity e = Fuel.create(x + (i == 0 ? 2 : -2), y + (dropDown ? -1 : 1), true);
-                    for (Body b : e.getBodies()) {
-                        b.applyForceToCenter((Utils.randomInt(500, 900) / 100f) * (Utils.randomInt(0, 1) == 0 ? -1 : 1), (Utils.randomInt(500, 900) / 100f) * (Utils.randomInt(0, 1) == 0 ? -1 : 1), true);
+                    Entity e = new Fuel(x + (i == 0 ? 2 : -2), y + (dropDown ? -1 : 1), true);
+                    synchronized (Main.getInstance().world) {
+                        e.getPrimary().applyForceToCenter((Utils.randomInt(500, 900) / 100f) * (Utils.randomInt(0, 1) == 0 ? -1 : 1), (Utils.randomInt(500, 900) / 100f) * (Utils.randomInt(0, 1) == 0 ? -1 : 1), true);
                     }
                     Main.getInstance().spawnEntity(.2f, e);
                     if (fuelInHopper > 0) {
@@ -71,12 +72,5 @@ public class Hopper extends Entity {
             dumping = true;
             timeOfLastDump = System.currentTimeMillis();
         }
-    }
-
-    public static Hopper create(float x, float y, boolean down) {
-        Body b = Entity.rectangleStaticBody(x, y, .9f, .9f);
-        Hopper h = new Hopper(x, y, down, b);
-        b.setUserData(h);
-        return h;
     }
 }

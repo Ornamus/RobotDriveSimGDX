@@ -24,7 +24,6 @@ import ryan.game.entity.*;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
 import ryan.game.games.steamworks.SteamResultDisplay;
-import ryan.game.games.ScoreDisplay;
 import ryan.game.games.steamworks.SteamworksField;
 import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.render.Drawable;

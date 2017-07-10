@@ -1,8 +1,8 @@
 package ryan.game.entity.steamworks;
 
-import com.badlogic.gdx.physics.box2d.Body;
 import ryan.game.Main;
 import ryan.game.controls.Gamepad;
+import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 
@@ -15,8 +15,9 @@ public class LoadingStation extends Entity {
 
     static final float width = 1f, height = 2f;
 
-    private LoadingStation(boolean blue, boolean left, Body b) {
-        super(b); //3f, 2f
+    public LoadingStation(float x, float y, float angle, boolean blue, boolean left) {
+        super(BodyFactory.getRectangleStatic(x, y, width, height, 0));
+        setAngle(angle);
         this.blue = blue;
         this.left = left;
     }
@@ -40,7 +41,7 @@ public class LoadingStation extends Entity {
                         float xChange = distance * (float) Math.sin(Math.toRadians(getAngle()));
                         float yChange = -distance * (float) Math.cos(Math.toRadians(getAngle()));
 
-                        Gear gear = Gear.create(getX() + xChange, getY() + yChange, 0, this);
+                        Gear gear = new Gear(getX() + xChange, getY() + yChange, 0, this);
                         Main.getInstance().spawnEntity(gear);
                         gear.getPrimary().applyForceToCenter(xChange * 50, yChange * 50, true);
                     }
@@ -48,12 +49,5 @@ public class LoadingStation extends Entity {
                 }
             }
         }
-    }
-
-    public static LoadingStation create(boolean blue, boolean left, float x, float y, float angle) {
-        Body b = Entity.rectangleStaticBody(x, y, width, height);
-        LoadingStation l = new LoadingStation(blue, left, b);
-        l.setAngle(angle);
-        return l;
     }
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Main;
+import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.games.steamworks.SteamworksMetadata;
@@ -16,18 +17,20 @@ public class Fuel extends Entity {
     static final float radius = .2f;
     static final float density = .2f;
 
-    boolean loadingStation;
+    boolean hopper;
     long creation;
 
-    private Fuel(boolean loading, Body b) {
-        super(radius, radius, b);
-        loadingStation = loading;
+    public Fuel(float x, float y, boolean hopper) {
+        super(radius, radius, new BodyFactory(x,y).setTypeDynamic().setDensity(density).setShapeCircle(radius).create());
+        this.hopper = hopper;
+        setSprite(TEXTURE);
+        setName("Fuel");
         creation = System.currentTimeMillis();
     }
 
     @Override
     public void onCollide(Entity e, Body self, Body other, Contact contact) {
-        if (loadingStation && e instanceof Robot && System.currentTimeMillis() - creation <= 175) {
+        if (hopper && e instanceof Robot && System.currentTimeMillis() - creation <= 175) {
             Robot r = (Robot) e;
             SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
             SteamRobotStats stats = (SteamRobotStats) r.stats;
@@ -35,30 +38,6 @@ public class Fuel extends Entity {
                 meta.fuel++;
                 Main.getInstance().removeEntity(this);
             }
-        }
-    }
-
-    public static Fuel create(float x, float y, boolean loadingStation) {
-        synchronized (Main.getInstance().world) {
-            BodyDef rightDef = new BodyDef();
-            rightDef.type = BodyDef.BodyType.DynamicBody;
-            rightDef.position.set(x, y);
-
-            Body right = Main.getInstance().world.createBody(rightDef);
-            CircleShape shape = new CircleShape();
-            shape.setRadius(radius);
-
-            FixtureDef rightFix = new FixtureDef();
-            rightFix.shape = shape;
-            rightFix.density = density;
-            rightFix.restitution = 0f;
-
-            Fixture fixture = right.createFixture(rightFix);
-            shape.dispose();
-
-            Fuel f = (Fuel) new Fuel(loadingStation, right).setName("Fuel");
-            f.setSprite(TEXTURE);
-            return f;
         }
     }
 }

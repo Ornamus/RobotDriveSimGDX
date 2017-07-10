@@ -461,7 +461,10 @@ public class Robot extends Entity {
         }
         left = createRobotPart(stats, x - stats.robotWidth, y);
         right = createRobotPart(stats, x, y);
-        intake = Entity.rectangleDynamicBody(x - (stats.robotWidth/2), y + stats.robotHeight * 1.25f, stats.intakeWidth, stats.robotHeight / 4);
+
+        float width = stats.intakeWidth, height = stats.robotHeight / 4;
+        intake = BodyFactory.getRectangleDynamic(x - (stats.robotWidth/2), y + stats.robotHeight * 1.25f, width, height, width*height);
+
         addBody(left);
         addBody(right);
         addBody(intake);
@@ -486,7 +489,9 @@ public class Robot extends Entity {
     public static Robot create(RobotStats stats, float x, float y) {
         Body left = createRobotPart(stats, x - stats.robotWidth, y);
         Body right = createRobotPart(stats, x, y);
-        Body intake = Entity.rectangleDynamicBody(x - (stats.robotWidth/2), y + stats.robotHeight * 1.25f, stats.intakeWidth, stats.robotHeight / 4);
+
+        float width = stats.intakeWidth, height = stats.robotHeight / 4;
+        Body intake = BodyFactory.getRectangleDynamic(x - (stats.robotWidth/2), y + stats.robotHeight * 1.25f, width, height, width*height);
 
         joint(left, right);
         joint(left, intake);
@@ -499,6 +504,8 @@ public class Robot extends Entity {
     }
 
     private static Body createRobotPart(RobotStats stats, float x, float y) {
+        return BodyFactory.getRectangleDynamic(x, y, stats.robotWidth/2, stats.robotHeight, .5f);
+        /*
         BodyDef rightDef = new BodyDef();
         rightDef.type = BodyDef.BodyType.DynamicBody;
         rightDef.position.set(x, y);
@@ -514,7 +521,7 @@ public class Robot extends Entity {
 
         Fixture fixture = right.createFixture(rightFix);
         rightShape.dispose();
-        return right;
+        return right;*/
     }
 
     //TODO: allow skid

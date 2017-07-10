@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Constants;
-import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.render.Drawable;
 
@@ -152,124 +151,20 @@ public class Entity extends Drawable {
         return new ArrayList<>(bodies);
     }
 
-    public static Entity circleEntity(float x, float y, float radius, float density, World w) {
-        BodyDef rightDef = new BodyDef();
-        rightDef.type = BodyDef.BodyType.DynamicBody;
-        rightDef.position.set(x, y);
-
-        Body right = w.createBody(rightDef);
-        CircleShape shape = new CircleShape();
-        shape.setRadius(radius);
-
-        FixtureDef rightFix = new FixtureDef();
-        rightFix.shape = shape;
-        rightFix.density = density;
-        rightFix.restitution = 0f;
-
-        Fixture fixture = right.createFixture(rightFix);
-        shape.dispose();
-        Entity e = new Entity(radius, radius, right);
-        right.setUserData(e);
-        return e;
-    }
-
     public static Entity peg(float x, float y, float angle) {
-        Body b = Entity.rectangleStaticBody(x, y, .8f, .12f);
-        Entity e = new Entity(.8f, .12f, b).setName("peg");
-
-        //Entity e = Entity.rectangleEntity(x, y, .8f, .12f, Main.getInstance().world).setName("peg");
+        Entity e = new Entity(.8f, .12f, BodyFactory.getRectangleStatic(x, y, .8f, .12f, 0)).setName("peg");
         e.setAngle(angle);
         e.setSprite(new Texture("core/assets/peg.png"));
         return e;
     }
 
-    public static Entity rectangleEntity(float x, float y, float width, float height) {
-        Body body = rectangleDynamicBody(x, y, width, height);
-        Entity e = new Entity(width, height, body);
-        body.setUserData(e);
-        return e;
-    }
-
-    protected static Body rectangleDynamicBody(float x, float y, float width, float height) {
-        return rectangleBody(x, y, width, height, BodyDef.BodyType.DynamicBody);
-    }
-
-    protected static Body rectangleStaticBody(float x, float y, float width, float height) {
-        return rectangleBody(x, y, width, height, BodyDef.BodyType.StaticBody);
-    }
-
-    protected static Body rectangleBody(float x, float y, float width, float height, BodyDef.BodyType type) {
-        BodyDef rightDef = new BodyDef();
-        rightDef.type = type;
-        rightDef.position.set(x, y);
-
-        Body right = Main.getInstance().world.createBody(rightDef);
-        PolygonShape rightShape = new PolygonShape();
-        rightShape.setAsBox(width, height);
-
-        FixtureDef rightFix = new FixtureDef();
-        rightFix.shape = rightShape;
-        rightFix.density = width * height;
-        rightFix.restitution = 0f;
-
-        Fixture fixture = right.createFixture(rightFix);
-        rightShape.dispose();
-        return right;
-    }
-
-    protected static Body rectangleBody(float x, float y, float width, float height, float density, BodyDef.BodyType type) {
-        BodyDef rightDef = new BodyDef();
-        rightDef.type = type;
-        rightDef.position.set(x, y);
-
-        Body right = Main.getInstance().world.createBody(rightDef);
-        PolygonShape rightShape = new PolygonShape();
-        rightShape.setAsBox(width, height);
-
-        FixtureDef rightFix = new FixtureDef();
-        rightFix.shape = rightShape;
-        rightFix.density = density;
-        rightFix.restitution = 0f;
-
-        Fixture fixture = right.createFixture(rightFix);
-        rightShape.dispose();
-        return right;
-    }
-
     public static Entity barrier(float x, float y, float width, float height) {
-        PolygonShape rightShape = new PolygonShape();
-        rightShape.setAsBox(width, height);
-        Entity e = barrier(x, y, rightShape);
-        //e.initVisuals(width, height);
-        rightShape.dispose();
-        return e;
+        return new Entity(new BodyFactory(x,y).setShapeRectangle(width, height).setTypeStatic().create());
     }
 
     public static Entity barrier(float x, float y, Shape s) {
-        BodyDef rightDef = new BodyDef();
-        rightDef.type = BodyDef.BodyType.StaticBody;
-        rightDef.position.set(x, y);
-
-        Body right = Main.getInstance().world.createBody(rightDef);
-
-        FixtureDef rightFix = new FixtureDef();
-        rightFix.shape = s;
-        rightFix.density = (float) Math.pow(s.getRadius(), 2);
-        rightFix.restitution = 0f;
-
-        Fixture fixture = right.createFixture(rightFix);
-        Entity e = new Entity(right);
-        right.setUserData(e);
-        return e;
+        return new Entity(new BodyFactory(x,y).setShape(s).setTypeStatic().create());
     }
-
-    /*
-    public static Entity generateFuelBall(float x, float y, World w) {
-        Entity e = Entity.circleEntity(x, y, 0.2f, .2f, w);
-        e.setSprite(fuelTex);
-        e.setName("fuel");
-        return e;
-    }*/
 
     public Entity setAngle(float angle) {
         this.angle = angle;

@@ -78,7 +78,9 @@ public class SteamworksMetadata extends RobotMetadata {
                 if (!hasGear && intakeableGear != null && !startedIntakingWithGear && gearIntake) {
                     if (gearIntakeStart == null) gearIntakeStart = System.currentTimeMillis();
                     double a = Math.toRadians(Utils.getAngle(new Point2D.Float(intakeableGear.getX(), intakeableGear.getY()), new Point2D.Float(r.getX(), r.getY())));
-                    intakeableGear.getPrimary().applyForceToCenter(stats.gearIntakeStrength * (float) Math.cos(a), stats.gearIntakeStrength * (float) Math.sin(a), true);
+                    synchronized (Main.getInstance().world) {
+                        intakeableGear.getPrimary().applyForceToCenter(stats.gearIntakeStrength * (float) Math.cos(a), stats.gearIntakeStrength * (float) Math.sin(a), true);
+                    }
                     if (System.currentTimeMillis() - gearIntakeStart >= stats.gearIntakeRate) {
                         Main.getInstance().removeEntity(intakeableGear);
                         intakeableGear = null;
@@ -92,7 +94,9 @@ public class SteamworksMetadata extends RobotMetadata {
                         if (!intakeableFuel.isEmpty() && fuel < stats.maxFuel) {
                             fuelIntakeTimes.putIfAbsent(e, System.currentTimeMillis());
                             double a = Math.toRadians(Utils.getAngle(new Point2D.Float(e.getX(), e.getY()), new Point2D.Float(r.getX(), r.getY())));
-                            e.getPrimary().applyForceToCenter(stats.fuelIntakeStrength * (float) Math.cos(a), stats.fuelIntakeStrength * (float) Math.sin(a), true);
+                            synchronized (Main.getInstance().world) {
+                                e.getPrimary().applyForceToCenter(stats.fuelIntakeStrength * (float) Math.cos(a), stats.fuelIntakeStrength * (float) Math.sin(a), true);
+                            }
                             if (System.currentTimeMillis() - fuelIntakeTimes.get(e) >= stats.fuelIntakeRate) {
                                 Main.getInstance().removeEntity(e);
                                 intakeableFuel.remove(e);
@@ -210,13 +214,15 @@ public class SteamworksMetadata extends RobotMetadata {
                 float xChange = -distance * (float) Math.sin(Math.toRadians(r.getAngle()));
                 float yChange = distance * (float) Math.cos(Math.toRadians(r.getAngle()));
 
-                Entity e = Gear.create(r.getX() + xChange, r.getY() + yChange, r.getAngle());
+                Entity e = new Gear(r.getX() + xChange, r.getY() + yChange, r.getAngle());
 
                 Main.getInstance().spawnEntity(e);
-                for (Body b : e.getBodies()) {
-                    float xPow = 50 * (float) Math.sin(Math.toRadians(-r.getAngle()));
-                    float yPow = 50 * (float) Math.cos(Math.toRadians(-r.getAngle()));
-                    b.applyForceToCenter(xPow, yPow, true);
+                synchronized (Main.getInstance().world) {
+                    for (Body b : e.getBodies()) {
+                        float xPow = 50 * (float) Math.sin(Math.toRadians(-r.getAngle()));
+                        float yPow = 50 * (float) Math.cos(Math.toRadians(-r.getAngle()));
+                        b.applyForceToCenter(xPow, yPow, true);
+                    }
                 }
                 hasGear = false;
             } else {
@@ -242,7 +248,7 @@ public class SteamworksMetadata extends RobotMetadata {
             float yChange = distance * (float) Math.cos(Math.toRadians(r.getAngle()));
             //Utils.log("angle: " + getAngle());
 
-            Entity f = Fuel.create(r.getX() + xChange, r.getY() + yChange, false);//shootFuel(getX() + xChange, getY() + yChange, 1);
+            Entity f = new Fuel(r.getX() + xChange, r.getY() + yChange, false);//shootFuel(getX() + xChange, getY() + yChange, 1);
             f.setAirMomentum(1);
             Main.getInstance().spawnEntity(.2f, f);
             for (Body b : f.getBodies()) {

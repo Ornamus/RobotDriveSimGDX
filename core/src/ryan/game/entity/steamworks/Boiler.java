@@ -2,6 +2,7 @@ package ryan.game.entity.steamworks;
 
 import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Main;
+import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.games.Game;
 import ryan.game.games.steamworks.SteamworksField;
@@ -18,27 +19,8 @@ public class Boiler extends Entity {
     int fuelToCount = 0;
 
     public Boiler(float x, float y, boolean blue) {
-        super(new Body[]{});
+        super(new BodyFactory(x,y).setTypeStatic().setShapeCircle(radius).create());
         this.blue = blue;
-        BodyDef rightDef = new BodyDef();
-        rightDef.type = BodyDef.BodyType.StaticBody;
-        rightDef.position.set(x, y);
-
-        Body right = Main.getInstance().world.createBody(rightDef);
-        CircleShape shape = new CircleShape();
-        shape.setRadius(radius);
-
-        FixtureDef rightFix = new FixtureDef();
-        rightFix.shape = shape;
-        rightFix.density = 0;
-        rightFix.restitution = 0f;
-
-        Fixture fixture = right.createFixture(rightFix);
-        shape.dispose();
-
-        right.setUserData(this);
-        addBody(right);
-        setPrimary(right);
     }
 
     long timeSinceLast = 0;

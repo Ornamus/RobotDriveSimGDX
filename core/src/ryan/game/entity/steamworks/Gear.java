@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Main;
+import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.games.steamworks.SteamworksMetadata;
@@ -17,8 +18,15 @@ public class Gear extends Entity {
     LoadingStation loadingStation = null;
     long creation;
 
-    private Gear(LoadingStation loading, Body b) {
-        super(radius, radius, b);
+    public Gear(float x, float y, float angle) {
+        this(x, y, angle, null);
+    }
+
+    public Gear(float x, float y, float angle, LoadingStation loading) {
+        super(radius, radius, new BodyFactory(x,y).setTypeDynamic().setDensity(density).setShapeCircle(radius).create());
+        setAngle(angle);
+        setName("Gear");
+        setSprite(TEXTURE);
         loadingStation = loading;
         creation = System.currentTimeMillis();
     }
@@ -36,34 +44,6 @@ public class Gear extends Entity {
                     Main.getInstance().removeEntity(this);
                 }
             }
-        }
-    }
-
-    public static Gear create(float x, float y, float angle) {
-        return create(x, y, angle, null);
-    }
-
-    public static Gear create(float x, float y, float angle, LoadingStation loadingStation) {
-        synchronized (Main.getInstance().world) {
-            BodyDef rightDef = new BodyDef();
-            rightDef.type = BodyDef.BodyType.DynamicBody;
-            rightDef.position.set(x, y);
-
-            Body right = Main.getInstance().world.createBody(rightDef);
-            CircleShape shape = new CircleShape();
-            shape.setRadius(radius);
-
-            FixtureDef rightFix = new FixtureDef();
-            rightFix.shape = shape;
-            rightFix.density = density;
-            rightFix.restitution = 0f;
-
-            Fixture fixture = right.createFixture(rightFix);
-            shape.dispose();
-
-            Gear g = (Gear) new Gear(loadingStation, right).setName("Gear").setAngle(angle);
-            g.setSprite(TEXTURE);
-            return g;
         }
     }
 }
