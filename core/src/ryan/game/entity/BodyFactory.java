@@ -71,7 +71,7 @@ public class BodyFactory {
             def.position.set(x, y);
 
             Body body;
-            synchronized (Main.getInstance().world) {
+            synchronized (Main.WORLD_USE) {
                 body = Main.getInstance().world.createBody(def);
             }
 

@@ -4,7 +4,7 @@ import ryan.game.autonomous.steamworks.Auto1902;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.entity.Robot;
 
-public class Steam1902 extends SteamDefault {
+public class Steam1902 extends SteamRobotStats {
 
     public Steam1902() {
         super();

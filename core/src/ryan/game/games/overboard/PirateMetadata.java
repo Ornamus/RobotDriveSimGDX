@@ -23,6 +23,8 @@ public class PirateMetadata extends RobotMetadata {
 
     Sprite chest;
 
+    private boolean intaking = false;
+
     public List<ChestInfo> chests = new ArrayList<>();
 
     public int ejectGearButton = 5;
@@ -49,12 +51,12 @@ public class PirateMetadata extends RobotMetadata {
         chest.setOriginCenter();
         chest.setRotation(r.getAngle());
 
-        if (stats.chestIntake && gamepad.isRightTriggerPressed()) {
+        if (stats.chestIntake && (gamepad.isRightTriggerPressed() || intaking)) {
             for (Entity e : new ArrayList<>(intakeableChests)) {
                 if (!intakeableChests.isEmpty() && chests.size() < stats.maxChests) {
                     chestIntakeTimes.putIfAbsent(e, System.currentTimeMillis());
                     double a = Math.toRadians(Utils.getAngle(new Point2D.Float(e.getX(), e.getY()), new Point2D.Float(r.getX(), r.getY())));
-                    synchronized (Main.getInstance().world) {
+                    synchronized (Main.WORLD_USE) {
                         e.getPrimary().applyForceToCenter(stats.chestIntakeStrength * (float) Math.cos(a), stats.chestIntakeStrength * (float) Math.sin(a), true);
                     }
                     if (System.currentTimeMillis() - chestIntakeTimes.get(e) >= stats.chestIntakeTime) {
@@ -107,6 +109,10 @@ public class PirateMetadata extends RobotMetadata {
         if (chests.size() > 0) chest.draw(batch);
     }
 
+    public void setIntaking(boolean b) {
+        intaking = b;
+    }
+
     public void ejectChest(Robot r) {
         if (chests.size() > 0) {
             float distance = 1.25f;
@@ -117,7 +123,7 @@ public class PirateMetadata extends RobotMetadata {
             Entity e = new Chest(r.getX() + xChange, r.getY() + yChange, r.getAngle(), f.heavy, f.alliance);
 
             Main.getInstance().spawnEntity(e);
-            synchronized (Main.getInstance().world) {
+            synchronized (Main.WORLD_USE) {
                 for (Body b : e.getBodies()) {
                     float xPow = 10 * (float) Math.sin(Math.toRadians(-r.getAngle()));
                     float yPow = 10 * (float) Math.cos(Math.toRadians(-r.getAngle()));

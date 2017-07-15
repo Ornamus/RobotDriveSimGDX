@@ -68,6 +68,10 @@ public class Utils {
         return rand.nextInt((max - min) + 1) + min;
     }
 
+    public static float randomFloat(float min, float max) {
+        return (rand.nextInt((Math.round((max - min) * 1000)) + 1) + (min*1000))/1000;
+    }
+
     public static float maxFloat(float... nums) {
         float currMax = Math.abs(nums[0]);
 

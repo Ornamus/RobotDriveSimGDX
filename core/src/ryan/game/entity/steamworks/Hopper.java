@@ -46,7 +46,7 @@ public class Hopper extends Entity {
             if (System.currentTimeMillis() - timeOfLastDump > dumpRate) {
                 for (int i=0; 2>i; i++) {
                     Entity e = new Fuel(x + (i == 0 ? 2 : -2), y + (dropDown ? -1 : 1), true);
-                    synchronized (Main.getInstance().world) {
+                    synchronized (Main.WORLD_USE) {
                         e.getPrimary().applyForceToCenter((Utils.randomInt(500, 900) / 100f) * (Utils.randomInt(0, 1) == 0 ? -1 : 1), (Utils.randomInt(500, 900) / 100f) * (Utils.randomInt(0, 1) == 0 ? -1 : 1), true);
                     }
                     Main.getInstance().spawnEntity(.2f, e);

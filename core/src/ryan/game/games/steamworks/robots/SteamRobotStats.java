@@ -14,6 +14,12 @@ public abstract class SteamRobotStats extends RobotStats {
     public float fuelIntakeStrength = 1f;
     public boolean shooter = true;
     public float timePerShoot = 166f;
+
+    public float shootHeight = 1f;
+    public float shootHeightVariance = .1f;
+    public float shootPower = 24;
+    public float shootPowerVariance = 3;
+    public float shootAngleVariance = 2;
     public float maxFuel = 45;
 
     public float climbSpeed = 2f;

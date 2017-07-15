@@ -27,6 +27,7 @@ import ryan.game.games.overboard.PirateField;
 import ryan.game.games.overboard.robots.OverRobotStats;
 import ryan.game.games.steamworks.SteamResultDisplay;
 import ryan.game.games.steamworks.SteamworksField;
+import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.render.Drawable;
 import ryan.game.render.Fonts;
 
@@ -35,6 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main extends ApplicationAdapter {
+
+    public static final Object WORLD_USE = new Object();
 
     public static boolean DEBUG_RENDER = false;
 
@@ -120,11 +123,12 @@ public class Main extends ApplicationAdapter {
         if (extraRobots > 0) currentRobot = 0;
 
         for (int i=0; i<ControllerManager.getGamepads().size() + extraRobots; i++) {
-            robots.add(Robot.create(new OverRobotStats(), 0 + (index * 3), -11)); //TODO: change
+            robots.add(Robot.create(new SteamDefault(), 2 + (index * 3), -11)); //TODO: make this not reliant somehow
             index++;
         }
 
-        gameField = new PirateField();//new SteamworksField();
+        //gameField = new PirateField();
+        gameField = new SteamworksField();
         gameField.affectRobots();
         drawables.addAll(gameField.generateField());
 
@@ -184,26 +188,28 @@ public class Main extends ApplicationAdapter {
     }
 
 	public void addFriction(Body b, float force) {
-        BodyDef frictionDef = new BodyDef();
-        frictionDef.type = BodyDef.BodyType.StaticBody;
-        frictionDef.position.set(0, 0);
+        synchronized (WORLD_USE) {
+            BodyDef frictionDef = new BodyDef();
+            frictionDef.type = BodyDef.BodyType.StaticBody;
+            frictionDef.position.set(0, 0);
 
-        Body frictionBody = world.createBody(frictionDef);
+            Body frictionBody = world.createBody(frictionDef);
 
-        FixtureDef frictionFixture = new FixtureDef();
+            FixtureDef frictionFixture = new FixtureDef();
 
-        PolygonShape frictionShape = new PolygonShape();
-        frictionShape.setAsBox(100, 100);
+            PolygonShape frictionShape = new PolygonShape();
+            frictionShape.setAsBox(100, 100);
 
-        frictionFixture.shape = frictionShape;
-        frictionFixture.density = 0f;
-        frictionFixture.restitution = 0;
+            frictionFixture.shape = frictionShape;
+            frictionFixture.density = 0f;
+            frictionFixture.restitution = 0;
 
-        FrictionJointDef friction = new FrictionJointDef();
-        friction.maxForce = force;
-        friction.maxTorque = 2f;
-        friction.initialize(frictionBody, b, b.getPosition());
-        world.createJoint(friction);
+            FrictionJointDef friction = new FrictionJointDef();
+            friction.maxForce = force;
+            friction.maxTorque = 2f;
+            friction.initialize(frictionBody, b, b.getPosition());
+            world.createJoint(friction);
+        }
     }
 
     public void spawnEntity(Entity e) {
@@ -217,8 +223,8 @@ public class Main extends ApplicationAdapter {
 
     public void removeEntity(Entity e) {
         removeDrawable(e);
-        for (Body b : e.getBodies()) {
-            synchronized (world) {
+        synchronized (WORLD_USE) {
+            for (Body b : e.getBodies()) {
                 b.setActive(false);
                 b.setAwake(false);
                 b.setUserData(null);
@@ -351,7 +357,7 @@ public class Main extends ApplicationAdapter {
         accumulator += frameTime;
         while (accumulator >= Constants.TIME_STEP) {
             tick();
-            synchronized (world) {
+            synchronized (WORLD_USE) {
                 world.step(Constants.TIME_STEP, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
             }
             accumulator -= Constants.TIME_STEP;
@@ -365,17 +371,18 @@ public class Main extends ApplicationAdapter {
             drawables.remove(e);
             drawablesRemove.remove(e);
             if (e instanceof Entity) {
-                synchronized (world) {
+                /*
+                synchronized (WORLD_USE) {
                     for (Body b : ((Entity) e).getBodies()) {
                         world.destroyBody(b);
                     }
-                }
+                }*/
             }
         }
         for (Drawable d : new ArrayList<>(drawablesAdd)) {
             if (d instanceof Entity) {
                 Entity e = (Entity) d;
-                synchronized (world) {
+                synchronized (WORLD_USE) {
                     for (Body b : e.getBodies()) {
                         addFriction(b, e.friction);
                     }
@@ -424,7 +431,7 @@ public class Main extends ApplicationAdapter {
         }
         if (Gdx.input.isKeyPressed(Input.Keys.I) || controllerStartMatch) {
             if (matchPlay) {
-                foghornSound.play(.45f);
+                foghornSound.play(.25f);
                 matchPlay = false;
                 didWhoop = false;
                 if (playMusic && music.isPlaying()) music.stop();

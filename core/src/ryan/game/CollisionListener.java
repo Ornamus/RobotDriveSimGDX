@@ -24,19 +24,20 @@ public class CollisionListener implements ContactListener {
         Entity a = (Entity) bA.getUserData();
         Entity b = (Entity) bB.getUserData();
 
-        if (!colliding.contains(bA)) colliding.add(bA);
-        if (!colliding.contains(bB)) colliding.add(bB);
         if (Main.drawablesRemove.contains(a) || Main.drawablesRemove.contains(b)) {
             contact.setEnabled(false);
             return;
         }
 
         if (a != null && b != null) {
-            if (Math.abs(a.getAirDistance() - b.getAirDistance()) >= 1) {
+            if (heightTouchCheck(a, b)) {
                 contact.setEnabled(false);
                 return;
             }
         }
+
+        if (!colliding.contains(bA)) colliding.add(bA);
+        if (!colliding.contains(bB)) colliding.add(bB);
 
         if (a != null && b != null) {
             a.collideStart(b, bA, bB, contact);
@@ -67,6 +68,13 @@ public class CollisionListener implements ContactListener {
         Entity b = (Entity) bB.getUserData();
 
         if (a != null && b != null) {
+            if (heightTouchCheck(a, b)) {
+                contact.setEnabled(false);
+                return;
+            }
+        }
+
+        if (a != null && b != null) {
             Main.collisions.add(new Collision(a, b, contact.getFixtureA().getBody(), contact.getFixtureB().getBody(), contact));
         }
     }
@@ -83,6 +91,11 @@ public class CollisionListener implements ContactListener {
             a.collideEnd(b, bA, bB, contact);
             b.collideEnd(a, bB, bA, contact);
         }
+    }
+
+    public boolean heightTouchCheck(Entity a, Entity b) {
+        //return Math.abs(a.getAirDistance() - b.getAirDistance()) > 1;
+        return (a.getAirDistance() > b.actual3DHeight || b.getAirDistance() > a.actual3DHeight);
     }
 
     class Collision {

@@ -12,6 +12,7 @@ public class Steam16 extends SteamRobotStats {
         gearIntake = true;
         fuelIntake = true;
         timePerShoot = 200;
+        shootPowerVariance = 2.5f;
         maxFuel = 35;
         fieldCentric = true;
         fieldCentricStrafeMult = 1;

@@ -21,9 +21,15 @@ public class PirateDisplay extends ScoreDisplay {
         boolean blue = alliance == Game.ALLIANCE.BLUE;
         for (Ship s : PirateField.ships) {
             if (s.blue == blue) {
-                for (Chest c : s.scoredChests) {
-                    if (c.isHeavy()) score += 20;
-                    else score += 3;
+                for (Chest c : s.scoredChests.keySet()) {
+                    int secondsOfScore = s.scoredChests.get(c);
+                    if (secondsOfScore > 135) {
+                        if (c.isHeavy()) score += 50;
+                        else score += 6;
+                    } else {
+                        if (c.isHeavy()) score += 20;
+                        else score += 3;
+                    }
                 }
                 if (Game.getMatchTime() <= 30) {
                     if (s.bottomRampRobots.size() > 0) score += 10;

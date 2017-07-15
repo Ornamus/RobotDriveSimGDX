@@ -11,6 +11,13 @@ public class Steam254 extends SteamRobotStats {
         //intakeWidth = robotWidth; //TODO: reeneable when this is redone when switched to
         gearIntake = true;
         fuelIntake = true;
+        timePerShoot = 143f;
+        shootHeight = 1.15f;
+        shootPower = 21;
+        //shootHeightVariance = .2f;
+        shootPowerVariance = 2.5f;
+        shootAngleVariance = 1;
+
         texture = "core/assets/254.png";
     }
 

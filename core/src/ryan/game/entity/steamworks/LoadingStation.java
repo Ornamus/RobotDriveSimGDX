@@ -42,7 +42,9 @@ public class LoadingStation extends Entity {
 
                         Gear gear = new Gear(getX() + xChange, getY() + yChange, 0, this);
                         Main.getInstance().spawnEntity(gear);
-                        gear.getPrimary().applyForceToCenter(xChange * 50, yChange * 50, true);
+                        synchronized (Main.WORLD_USE) {
+                            gear.getPrimary().applyForceToCenter(xChange * 50, yChange * 50, true);
+                        }
                     }
                     wasHeld.put(g.id, val);
                 }

@@ -78,7 +78,7 @@ public class SteamworksMetadata extends RobotMetadata {
                 if (!hasGear && intakeableGear != null && !startedIntakingWithGear && gearIntake) {
                     if (gearIntakeStart == null) gearIntakeStart = System.currentTimeMillis();
                     double a = Math.toRadians(Utils.getAngle(new Point2D.Float(intakeableGear.getX(), intakeableGear.getY()), new Point2D.Float(r.getX(), r.getY())));
-                    synchronized (Main.getInstance().world) {
+                    synchronized (Main.WORLD_USE) {
                         intakeableGear.getPrimary().applyForceToCenter(stats.gearIntakeStrength * (float) Math.cos(a), stats.gearIntakeStrength * (float) Math.sin(a), true);
                     }
                     if (System.currentTimeMillis() - gearIntakeStart >= stats.gearIntakeRate) {
@@ -94,7 +94,7 @@ public class SteamworksMetadata extends RobotMetadata {
                         if (!intakeableFuel.isEmpty() && fuel < stats.maxFuel) {
                             fuelIntakeTimes.putIfAbsent(e, System.currentTimeMillis());
                             double a = Math.toRadians(Utils.getAngle(new Point2D.Float(e.getX(), e.getY()), new Point2D.Float(r.getX(), r.getY())));
-                            synchronized (Main.getInstance().world) {
+                            synchronized (Main.WORLD_USE) {
                                 e.getPrimary().applyForceToCenter(stats.fuelIntakeStrength * (float) Math.cos(a), stats.fuelIntakeStrength * (float) Math.sin(a), true);
                             }
                             if (System.currentTimeMillis() - fuelIntakeTimes.get(e) >= stats.fuelIntakeRate) {
@@ -217,7 +217,7 @@ public class SteamworksMetadata extends RobotMetadata {
                 Entity e = new Gear(r.getX() + xChange, r.getY() + yChange, r.getAngle());
 
                 Main.getInstance().spawnEntity(e);
-                synchronized (Main.getInstance().world) {
+                synchronized (Main.WORLD_USE) {
                     for (Body b : e.getBodies()) {
                         float xPow = 50 * (float) Math.sin(Math.toRadians(-r.getAngle()));
                         float yPow = 50 * (float) Math.cos(Math.toRadians(-r.getAngle()));
@@ -230,11 +230,6 @@ public class SteamworksMetadata extends RobotMetadata {
                 if (Main.matchPlay) {
                     if (r.blue) SteamworksField.blueGearQueue++;
                     else SteamworksField.redGearQueue++;
-                    /*
-                    if (Game.isAutonomous()) {
-                        if (r.blue) SteamworksField.blueGearsInAuto++;
-                        else SteamworksField.redGearsInAuto++;
-                    }*/
                 }
             }
         }
@@ -249,12 +244,16 @@ public class SteamworksMetadata extends RobotMetadata {
             //Utils.log("angle: " + getAngle());
 
             Entity f = new Fuel(r.getX() + xChange, r.getY() + yChange, false);//shootFuel(getX() + xChange, getY() + yChange, 1);
-            f.setAirMomentum(1);
+            f.setAirMomentum(stats.shootHeight + (Utils.randomFloat(-stats.shootHeightVariance, stats.shootHeightVariance)));
             Main.getInstance().spawnEntity(.2f, f);
             for (Body b : f.getBodies()) {
-                float xPow = 25 * (float) Math.sin(Math.toRadians(-r.getAngle()));
-                float yPow = 25 * (float) Math.cos(Math.toRadians(-r.getAngle()));
-                b.applyForceToCenter(xPow, yPow, true);
+                float pow = stats.shootPower + (Utils.randomFloat(-stats.shootPowerVariance, stats.shootPowerVariance));
+                float angle = -r.getAngle() + Utils.randomFloat(-stats.shootAngleVariance, stats.shootAngleVariance);
+                float xPow = pow * (float) Math.sin(Math.toRadians(angle));
+                float yPow = pow * (float) Math.cos(Math.toRadians(angle));
+                synchronized (Main.WORLD_USE) {
+                    b.applyForceToCenter(xPow, yPow, true);
+                }
             }
             fuel--;
             timeOfLastFire = System.currentTimeMillis();

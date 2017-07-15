@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import com.badlogic.gdx.physics.box2d.joints.*;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.autonomous.pathmagic.RobotState;
@@ -24,6 +24,7 @@ import ryan.game.autonomous.pathmagic.RobotStateGenerator;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
 import ryan.game.games.overboard.robots.OverRobotStats;
+import ryan.game.games.steamworks.robots.*;
 import ryan.game.render.Fonts;
 import ryan.game.sensors.Gyro;
 
@@ -45,7 +46,8 @@ public class Robot extends Entity {
     private float middleMotor = 0;
 
     private int statsIndex = 0;
-    private RobotStats[] statsOptions = {new OverRobotStats()};//{new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16()};
+    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16()};
+    //private RobotStats[] statsOptions = {new OverRobotStats()};
     public RobotStats stats = statsOptions[statsIndex];
 
     private int numberIndex = 0;
@@ -174,6 +176,7 @@ public class Robot extends Entity {
         float angle = 0;
         Body[] important = new Body[]{left, right};
         for (Body b : important) {
+            if (b != null)
             angle += b.getAngle();
         }
         angle /= important.length;
@@ -267,12 +270,7 @@ public class Robot extends Entity {
         } else {
             Gamepad g = getController();
             setupButtons(g);
-/*
-            for (Button b : g.getButtons()) {
-                if (b.get()) {
-                    Utils.log(b.id + "");
-                }
-            }*/
+
             boolean val = changeControls.get();
             if (val && !changeControlsWasTrue) {
                 controllerIndex++;
@@ -321,7 +319,6 @@ public class Robot extends Entity {
                     statsIndex = 0;
                 }
                 stats = statsOptions[statsIndex];
-                //reinitBody(); //TODO: reenable when this doesn't crash the game
                 updateSprite();
             }
             statsToggleWasTrue = val;
@@ -445,44 +442,13 @@ public class Robot extends Entity {
         right.applyForceToCenter(Utils.cap(forceX, accel), Utils.cap(forceY, accel), true);
     }
 
-    //TODO: conflicts with other threads reading the angle
-    public void reinitBody() {
-        float x = getX();
-        float y = getY();
-        float angle = (float)Math.toRadians(getPhysicsAngle());
-        left = null;
-        right = null;
-        intake = null;
-        synchronized (Main.getInstance().world) {
-            for (Body b : getBodies()) {
-                Main.getInstance().world.destroyBody(b);
-            }
+    private static void weldJoint(Body a, Body b) {
+        synchronized (Main.WORLD_USE) {
+            WeldJointDef jointDef = new WeldJointDef();
+            jointDef.collideConnected = false;
+            jointDef.initialize(a, b, new Vector2(0, 0));
+            Main.getInstance().world.createJoint(jointDef);
         }
-        left = createRobotPart(stats, x - stats.robotWidth, y);
-        right = createRobotPart(stats, x, y);
-
-        float width = stats.intakeWidth, height = stats.robotHeight / 4;
-        intake = BodyFactory.getRectangleDynamic(x - (stats.robotWidth/2), y + stats.robotHeight * 1.25f, width, height, width*height);
-
-        addBody(left);
-        addBody(right);
-        addBody(intake);
-        joint(left, right);
-        joint(left, intake);
-        joint(right, intake);
-        Main.getInstance().addFriction(left);
-        Main.getInstance().addFriction(right);
-
-        left.setTransform(left.getPosition(), angle);
-        right.setTransform(right.getPosition(), angle);
-        intake.setTransform(intake.getPosition(), angle);
-    }
-
-    private static void joint(Body a, Body b) {
-        WeldJointDef jointDef = new WeldJointDef ();
-        jointDef.collideConnected = false;
-        jointDef.initialize(a, b, new Vector2(0, 0));
-        Main.getInstance().world.createJoint(jointDef);
     }
 
     public static Robot create(RobotStats stats, float x, float y) {
@@ -492,9 +458,9 @@ public class Robot extends Entity {
         float width = stats.intakeWidth, height = stats.robotHeight / 4;
         Body intake = BodyFactory.getRectangleDynamic(x - (stats.robotWidth/2), y + stats.robotHeight * 1.25f, width, height, width*height);
 
-        joint(left, right);
-        joint(left, intake);
-        joint(right, intake);
+        weldJoint(left, right);
+        weldJoint(left, intake);
+        weldJoint(right, intake);
 
         Robot r = new Robot(stats, left, right);
         r.setIntake(intake);
@@ -504,23 +470,6 @@ public class Robot extends Entity {
 
     private static Body createRobotPart(RobotStats stats, float x, float y) {
         return BodyFactory.getRectangleDynamic(x, y, stats.robotWidth/2, stats.robotHeight, .5f);
-        /*
-        BodyDef rightDef = new BodyDef();
-        rightDef.type = BodyDef.BodyType.DynamicBody;
-        rightDef.position.set(x, y);
-
-        Body right = Main.getInstance().world.createBody(rightDef);
-        PolygonShape rightShape = new PolygonShape();
-        rightShape.setAsBox(stats.robotWidth / 2, stats.robotHeight);
-
-        FixtureDef rightFix = new FixtureDef();
-        rightFix.shape = rightShape;
-        rightFix.density = .5f;
-        rightFix.restitution = 0.6f; // Make it bounce a little bit
-
-        Fixture fixture = right.createFixture(rightFix);
-        rightShape.dispose();
-        return right;*/
     }
 
     //TODO: allow skid

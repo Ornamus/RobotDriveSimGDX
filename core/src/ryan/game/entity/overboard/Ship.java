@@ -10,6 +10,7 @@ import ryan.game.entity.Robot;
 import ryan.game.games.Game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Ship extends Entity {
@@ -18,7 +19,7 @@ public class Ship extends Entity {
     Body wall1, wall2;
     Body crowsNest, chestScore, topRamp, bottomRamp;
 
-    public List<Chest> scoredChests = new ArrayList<>();
+    public HashMap<Chest, Integer> scoredChests = new HashMap<>();
 
     public List<Robot> topRampRobots = new ArrayList<>(), bottomRampRobots = new ArrayList<>();
 
@@ -74,10 +75,10 @@ public class Ship extends Entity {
     public void collideStart(Entity e, Body self, Body other, Contact contact) {
         if (self == topRamp || self == bottomRamp || self == chestScore || self == crowsNest) {
             contact.setEnabled(false);
-            if (self == chestScore && e instanceof Chest && !scoredChests.contains(e)) {
+            if (self == chestScore && e instanceof Chest && scoredChests.get(e) == null) {
                 Chest c = (Chest) e;
                 if ((blue && c.alliance != Game.ALLIANCE.RED) || (!blue && c.alliance != Game.ALLIANCE.BLUE))
-                    scoredChests.add(c);
+                    scoredChests.put(c, Game.getMatchTime());
             }
             Robot r = null;
             if (e instanceof Robot) r = (Robot) e;
@@ -93,7 +94,7 @@ public class Ship extends Entity {
 
     @Override
     public void collideEnd(Entity e, Body self, Body other, Contact contact) {
-        if (self == chestScore && scoredChests.contains(e)) {
+        if (self == chestScore && scoredChests.get(e) != null) {
             scoredChests.remove(e);
         }
         Robot r = null;

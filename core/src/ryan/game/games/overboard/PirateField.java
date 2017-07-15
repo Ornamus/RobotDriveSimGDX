@@ -6,10 +6,12 @@ import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
+import ryan.game.entity.overboard.Barricade;
 import ryan.game.entity.overboard.Chest;
 import ryan.game.entity.overboard.Ship;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
+import ryan.game.games.steamworks.SteamworksMetadata;
 import ryan.game.render.Drawable;
 import ryan.game.render.ImageDrawer;
 import java.util.ArrayList;
@@ -49,6 +51,8 @@ public class PirateField extends Field {
 
         ships[1] = new Ship(-12.65f, -0.45f, false);
         drawables.add(ships[1]);
+
+        drawables.add(new Barricade(-0.14f, 0));
 
         for (Chest c : generateChests()) {
             Main.getInstance().addFriction(c.getPrimary(), c.friction);
@@ -106,7 +110,11 @@ public class PirateField extends Field {
 
     @Override
     public void onMatchStart() {
-
+        for (Robot r : Main.robots) {
+            r.auto = r.stats.getAutonomous(r);
+            PirateMetadata m = (PirateMetadata) r.metadata;
+            m.chests.clear();
+        }
     }
 
     @Override

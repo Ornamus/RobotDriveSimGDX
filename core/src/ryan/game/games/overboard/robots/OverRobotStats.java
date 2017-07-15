@@ -1,5 +1,7 @@
 package ryan.game.games.overboard.robots;
 
+import ryan.game.Utils;
+import ryan.game.autonomous.overboard.Auto254Over;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.competition.RobotStats;
 import ryan.game.entity.Robot;
@@ -10,7 +12,7 @@ public class OverRobotStats extends RobotStats {
 
     public boolean chestIntake = true;
     public int maxChestIntakeAtOnce = 1;
-    public int maxChests = 2;
+    public int maxChests = 1;
     public float chestIntakeStrength = 5.75f;
     public float chestIntakeTime = 500;
 
@@ -24,10 +26,11 @@ public class OverRobotStats extends RobotStats {
 
     public OverRobotStats() {
         super(Game.OVERBOARD);
+        robotWidth = 0.8128f;
     }
 
     @Override
     public Command getAutonomous(Robot r) {
-        return null;
+        return new Auto254Over(r);
     }
 }

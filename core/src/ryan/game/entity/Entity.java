@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Constants;
+import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.render.Drawable;
 
@@ -16,8 +17,10 @@ public class Entity extends Drawable {
 
     private String name = "entity";
     public float width = -1, height = -1;
+    public float actual3DHeight = 1;
     private float angle = 0;
     private float airDistance = 1;
+    private boolean dontMoveAirDistance = false;
     private float airMomentum = 0;
     public float friction = 8f;
     private List<Body> bodies = new ArrayList<>();
@@ -85,10 +88,12 @@ public class Entity extends Drawable {
         setX(pos.x);
         setY(pos.y);
 
-        airDistance += airMomentum;
-        if (airMomentum > -1f) airMomentum -=.1f;
+        if (!dontMoveAirDistance) {
+            airDistance += airMomentum;
+            if (airMomentum > -1f) airMomentum -= .1f;
+        }
         if (airDistance < 1) airDistance = 1;
-        float sizeChanger = airDistance / 3f; //2,5
+        float sizeChanger = airDistance / 3.2f; //2,5
         if (sizeChanger < 1) sizeChanger = 1;
         if (s != null) {
             s.setBounds(pos.x - s.getWidth()/2, pos.y - s.getHeight()/2, width * 2 * sizeChanger, height * 2 * sizeChanger);
@@ -150,6 +155,38 @@ public class Entity extends Drawable {
         return new ArrayList<>(bodies);
     }
 
+    public Entity setAngle(float angle) {
+        this.angle = angle;
+        synchronized (Main.WORLD_USE) {
+            for (Body body : bodies) {
+                body.setTransform(body.getPosition(), (float) Math.toRadians(angle));
+            }
+        }
+        return this;
+    }
+
+    public float getAirDistance() {
+        return airDistance;
+    }
+
+    public void setAirDistance(float f) {
+        airDistance = f;
+        dontMoveAirDistance = true;
+    }
+
+    public float getAirMomentum() {
+        return airMomentum;
+    }
+
+    public void setAirMomentum(float airMomentum) {
+        this.airMomentum = airMomentum;
+    }
+
+    public Vector2 getSpeed() {
+        return speed;
+    }
+
+    //TODO: move out of this class
     public static Entity peg(float x, float y, float angle) {
         Entity e = new Entity(.8f, .12f, BodyFactory.getRectangleStatic(x, y, .8f, .12f, 0)).setName("peg");
         e.setAngle(angle);
@@ -163,25 +200,5 @@ public class Entity extends Drawable {
 
     public static Entity barrier(float x, float y, Shape s) {
         return new Entity(new BodyFactory(x,y).setShape(s).setTypeStatic().create());
-    }
-
-    public Entity setAngle(float angle) {
-        this.angle = angle;
-        for (Body body : bodies) {
-            body.setTransform(body.getPosition(), (float) Math.toRadians(angle));
-        }
-        return this;
-    }
-
-    public float getAirDistance() {
-        return airDistance;
-    }
-
-    public float getAirMomentum() {
-        return airMomentum;
-    }
-
-    public void setAirMomentum(float airMomentum) {
-        this.airMomentum = airMomentum;
     }
 }
