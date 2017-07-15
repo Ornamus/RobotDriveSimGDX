@@ -20,7 +20,7 @@ public class PirateMetadata extends RobotMetadata {
     public void collideStart(Robot r, Entity e, Body self, Body other, Contact contact) {
         if (self == r.intake) {
             if (e instanceof Chest) {
-                contact.setEnabled(false);
+                //contact.setEnabled(false);
                 intakeableChest = e;
             }
         }

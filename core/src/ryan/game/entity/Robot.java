@@ -268,7 +268,7 @@ public class Robot extends Entity {
         } else {
             Gamepad g = getController();
             setupButtons(g);
-            /*
+/*
             for (Button b : g.getButtons()) {
                 if (b.get()) {
                     Utils.log(b.id + "");

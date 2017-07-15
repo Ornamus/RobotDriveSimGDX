@@ -23,6 +23,7 @@ import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
+import ryan.game.games.pirate.PirateField;
 import ryan.game.games.steamworks.SteamResultDisplay;
 import ryan.game.games.steamworks.SteamworksField;
 import ryan.game.games.steamworks.robots.SteamDefault;
@@ -123,7 +124,7 @@ public class Main extends ApplicationAdapter {
             index++;
         }
 
-        gameField = new SteamworksField();//new PirateField();
+        gameField = new PirateField();//new SteamworksField();
         gameField.affectRobots();
         drawables.addAll(gameField.generateField());
 
