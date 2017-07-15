@@ -32,8 +32,7 @@ public class LoadingStation extends Entity {
                 Gamepad g = r.getController();
                 if (g != null) {
                     boolean val;
-                    if (g.hasZAxis()) val = left ? g.isLeftTriggerPressed() : g.isRightTriggerPressed();//g.getButton(left ? 2 : 3).get();
-                    else val = left ? g.getButton(98).get() : g.getButton(99).get();
+                    val = left ? g.isLeftTriggerPressed() : g.isRightTriggerPressed();
                     wasHeld.putIfAbsent(g.id, false);
                     if (val && !wasHeld.get(g.id)) {
 

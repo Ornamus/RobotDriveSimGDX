@@ -104,11 +104,10 @@ public class Entity extends Drawable {
     }
 
     public void setPrimary(Body b) {
-        if (bodies.contains(b) || b == null) {
-            primary = b;
-        } else {
-            Utils.log("Primary body is not even one of the bodies??");
+        if (!bodies.contains(b) && b != null) {
+            bodies.add(b);
         }
+        primary = b;
     }
 
     public Vector2 getPhysicsPosition() {

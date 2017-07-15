@@ -1,15 +1,15 @@
-package ryan.game.games.pirate;
+package ryan.game.games.overboard;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.entity.overboard.Chest;
+import ryan.game.entity.overboard.Ship;
 import ryan.game.games.Field;
+import ryan.game.games.Game;
 import ryan.game.render.Drawable;
 import ryan.game.render.ImageDrawer;
 import java.util.ArrayList;
@@ -17,58 +17,42 @@ import java.util.List;
 
 public class PirateField extends Field {
 
+    public static Ship[] ships = new Ship[2];
+
+    float width = 51 * .915f;
+    float height = 26 * .915f;
+
     @Override
     public List<Drawable> generateField() {
         List<Drawable> drawables = new ArrayList<>();
 
-        float width = 51 * .915f;
-        float height = 26 * .915f;
         drawables.add(new ImageDrawer(-width/2, -height/2 - .5f, width, height, "core/assets/overboard.png"));
 
-
         Entity ent = Entity.barrier(0, 11.75f, width, .5f); //Top wall
+        ent.initVisuals(width, .5f);
         drawables.add(ent);
 
         ent = Entity.barrier(0, -12.75f, width, .5f); //Bottom wall
+        ent.initVisuals(width, .5f);
         drawables.add(ent);
 
-        ent = Entity.barrier((width / 2)-3.25f, 0, .5f, height); //Right wall
+        ent = Entity.barrier((width / 2)-3.2f, 0, .5f, height); //Right wall
+        ent.initVisuals(.5f, height);
         drawables.add(ent);
 
         ent = Entity.barrier((-width / 2)+2.9f, 0, .5f, height); //Left wall
+        ent.initVisuals(.5f, height);
         drawables.add(ent);
 
-        PolygonShape s = new PolygonShape();
-        Vector2[] vertices = new Vector2[] {
-                new Vector2(0, 0),
-                new Vector2(1.25f, 2),
-                new Vector2(1.875f, 2.75f),
-                new Vector2(3, 3.4f),
-                new Vector2(4, 3.75f),
-                new Vector2(5.2f, 3.9f),
-                new Vector2(5.2f, -3.9f),
-        };
-        s.set(vertices);
-        ent = Entity.barrier(12.3f, -0.45f, s);
-        drawables.add(ent);
+        ships[0] = new Ship(12.3f, -0.45f, true);
+        drawables.add(ships[0]);
 
-        s = new PolygonShape();
-        vertices = new Vector2[] {
-                new Vector2(0, 0),
-                new Vector2(1.25f, -2),
-                new Vector2(1.875f, -2.75f),
-                new Vector2(3, -3.4f),
-                new Vector2(4, -3.75f),
-                new Vector2(5.2f, -3.9f),
-                new Vector2(5.2f, 3.9f),
-        };
-        s.set(vertices);
-        ent = Entity.barrier(12.3f, -0.45f, s);
-        drawables.add(ent);
+        ships[1] = new Ship(-12.65f, -0.45f, false);
+        drawables.add(ships[1]);
 
-        for (Entity e : generateChests()) {
-            Main.getInstance().addFriction(e.getPrimary(), 6f);
-            drawables.add(e);
+        for (Chest c : generateChests()) {
+            Main.getInstance().addFriction(c.getPrimary(), c.friction);
+            drawables.add(c);
         }
 
         drawables.add(new PirateDisplay());
@@ -76,21 +60,33 @@ public class PirateField extends Field {
         return drawables;
     }
 
-    public List<Entity> generateChests() {
-        List<Entity> chests = new ArrayList<>();
+    public List<Chest> generateChests() {
+        List<Chest> chests = new ArrayList<>();
+
+        int heavy = Utils.randomInt(0, 11);
+        int current = 0;
         for (int bX=0; bX<4; bX++) {
             for (int bY=0; bY<3; bY++) {
-                chests.add(new Chest(bX + 16, bY - 11, Main.BLUE));
+                chests.add(new Chest(bX + 16, bY - 11, current == heavy, Game.ALLIANCE.RED));
+                current++;
             }
         }
+
+        heavy = Utils.randomInt(0, 11);
+        current = 0;
         for (int bX=0; bX<4; bX++) {
             for (int bY=0; bY<3; bY++) {
-                chests.add(new Chest(bX - 19.5f, bY + 8, Main.RED));
+                chests.add(new Chest(bX - 19.5f, bY + 8, current == heavy, Game.ALLIANCE.BLUE));
+                current++;
+            }
         }
-        }
+
+        heavy = Utils.randomInt(0, 11);
+        current = 0;
         for (int bX=0; bX<2; bX++) {
             for (int bY=0; bY<6; bY++) {
-                chests.add(new Chest(bX - 0.7f, bY - 3.5f, Utils.toColor(96, 64, 32)));
+                chests.add(new Chest(bX - 0.7f, bY - 3.5f, current == heavy, Game.ALLIANCE.NEUTRAL));
+                current++;
             }
         }
         return chests;
@@ -128,7 +124,10 @@ public class PirateField extends Field {
                 field.remove(d);
             }
         }
-        field.addAll(generateChests());
+        for (Chest c : generateChests()) {
+            field.add(c);
+            Main.getInstance().addFriction(c.getPrimary(), c.friction);
+        }
     }
 
     @Override

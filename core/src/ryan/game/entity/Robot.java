@@ -23,7 +23,7 @@ import ryan.game.drive.*;
 import ryan.game.autonomous.pathmagic.RobotStateGenerator;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
-import ryan.game.games.steamworks.robots.*;
+import ryan.game.games.overboard.robots.OverRobotStats;
 import ryan.game.render.Fonts;
 import ryan.game.sensors.Gyro;
 
@@ -45,7 +45,7 @@ public class Robot extends Entity {
     private float middleMotor = 0;
 
     private int statsIndex = 0;
-    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16()};
+    private RobotStats[] statsOptions = {new OverRobotStats()};//{new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16()};
     public RobotStats stats = statsOptions[statsIndex];
 
     private int numberIndex = 0;
@@ -113,7 +113,6 @@ public class Robot extends Entity {
             }
         };
 
-        //scrollOptions = new DriveController[]{new Pursuit(this)};
         state = new RobotState();
         generator = new RobotStateGenerator(state, this);
         generator.start();

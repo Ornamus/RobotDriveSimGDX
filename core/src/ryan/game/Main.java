@@ -23,10 +23,10 @@ import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
-import ryan.game.games.pirate.PirateField;
+import ryan.game.games.overboard.PirateField;
+import ryan.game.games.overboard.robots.OverRobotStats;
 import ryan.game.games.steamworks.SteamResultDisplay;
 import ryan.game.games.steamworks.SteamworksField;
-import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.render.Drawable;
 import ryan.game.render.Fonts;
 
@@ -120,7 +120,7 @@ public class Main extends ApplicationAdapter {
         if (extraRobots > 0) currentRobot = 0;
 
         for (int i=0; i<ControllerManager.getGamepads().size() + extraRobots; i++) {
-            robots.add(Robot.create(new SteamDefault(), 0 + (index * 3), -11));
+            robots.add(Robot.create(new OverRobotStats(), 0 + (index * 3), -11)); //TODO: change
             index++;
         }
 
@@ -253,6 +253,7 @@ public class Main extends ApplicationAdapter {
             minutes++;
         }
 
+        //TODO: game specific, move to steamworks code
         if (minutes == 0 && seconds <= 30 && !didWhoop && matchPlay) {
             ropeDropSound.play(.35f);
             didWhoop = true;
@@ -268,9 +269,11 @@ public class Main extends ApplicationAdapter {
             matchPlay = false;
             didWhoop = false;
             resetField = true;
-            results = new SteamResultDisplay(0, 0);
-            drawables.add(results);
-            isShowingResults = true;
+            if (gameField instanceof SteamworksField) {
+                results = new SteamResultDisplay(0, 0); //TODO: game specific, move to steamworks code or make standardized version
+                drawables.add(results);
+                isShowingResults = true;
+            }
             matchEnd = System.currentTimeMillis();
             gameField.onMatchEnd();
         }

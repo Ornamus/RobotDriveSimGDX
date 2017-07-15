@@ -102,11 +102,13 @@ public class Gamepad {
     }
 
     public boolean isLeftTriggerPressed() {
-        return hasZAxis() && getZ() > 0.1;
+        if (hasZAxis()) return getZ() > 0.1;
+        else return getButton(98).get();
     }
 
     public boolean isRightTriggerPressed() {
-        return hasZAxis() && getZ() < -0.1;
+        if (hasZAxis()) return getZ() < -0.1;
+        else return getButton(99).get();
     }
 
     public boolean hasZAxis() {

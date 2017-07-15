@@ -87,7 +87,8 @@ public abstract class ScoreDisplay extends Drawable {
 
         timerBacking.draw(batch);
 
-        int[] scores = calculateScores();
+        int[] scores = {0, 0};
+        if (Game.isPlaying()) scores = calculateScores();
         int blueScore = scores[0];
         int redScore = scores[1];
 

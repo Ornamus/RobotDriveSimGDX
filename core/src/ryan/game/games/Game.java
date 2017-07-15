@@ -27,4 +27,10 @@ public enum Game {
         }
         return seconds;
     }
+
+    public enum ALLIANCE {
+        BLUE,
+        RED,
+        NEUTRAL
+    }
 }
