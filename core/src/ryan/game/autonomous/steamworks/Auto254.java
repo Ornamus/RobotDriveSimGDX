@@ -51,8 +51,8 @@ public class Auto254 extends Command {
             path.clear();
             path.add(new Path.Waypoint(new Translation2d(270, -120 * blue), 120.0));
             path.add(new Path.Waypoint(new Translation2d(240, -90 * blue), 120.0));
-            path.add(new Path.Waypoint(new Translation2d(425, robot.blue ? 105 : -70), 120.0));
-            path.add(new Path.Waypoint(new Translation2d(robot.blue ? 465 : 475, robot.blue ? 127 : -60), 120.0));
+            path.add(new Path.Waypoint(new Translation2d(425, robot.blue ? 105 : -60), 120.0));
+            path.add(new Path.Waypoint(new Translation2d(robot.blue ? 465 : 475, robot.blue ? 127 : -70), 120.0));
             followPath(c, new Path(path), true);
 
             //Hitting the hopper

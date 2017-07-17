@@ -36,7 +36,6 @@ public class Gear extends Entity {
         if (loadingStation != null && e instanceof Robot && System.currentTimeMillis() - creation <= 150) {
             float diff = Math.abs(e.getAngle() - loadingStation.getAngle());
             if (diff <= 9.5) {
-
                 Robot r = (Robot) e;
                 SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
                 if (r.intake == other && !meta.hasGear) {

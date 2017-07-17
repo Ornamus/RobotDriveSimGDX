@@ -8,8 +8,11 @@ public class Steam1902 extends SteamRobotStats {
 
     public Steam1902() {
         super();
+        maxAccel = (4.572f * 2.8f);
         gearIntake = false;
-        //intakeWidth = robotWidth * .65f; //TODO: reeneable when this is redone when switched to
+        robotWidth = 0.8128f;
+        robotHeight = 0.8128f;
+        intakeWidth = robotWidth * .8f;
         fuelIntake = false;
         shooter = true;
         maxFuel = 20;

@@ -136,10 +136,7 @@ public class Entity extends Drawable {
     public void collideEnd(Entity e, Body self, Body other, Contact contact) {}
 
     public float getAngle() {
-        float smartAngle = getPhysicsAngle();
-        while (smartAngle < 0) smartAngle = 360 + smartAngle;
-        while (smartAngle >= 360) smartAngle -=360;
-        return smartAngle;
+        return Utils.fixAngle(getPhysicsAngle());
     }
 
     @Override
@@ -153,6 +150,10 @@ public class Entity extends Drawable {
 
     public List<Body> getBodies() {
         return new ArrayList<>(bodies);
+    }
+
+    public List<Body> getFrictionlessBodies() {
+        return new ArrayList<>();
     }
 
     public Entity setAngle(float angle) {

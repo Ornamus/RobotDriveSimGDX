@@ -10,7 +10,7 @@ public abstract class RobotStats {
     public float robotWidth = 0.9144f;
     public float robotHeight = robotWidth;
     public float maxMPS = 16 / 3.28084f;
-    public float maxAccel = (4.572f * 3.4f) * (robotWidth / 0.9144f);
+    public float maxAccel = (4.572f * 3.4f) * (robotWidth / 0.9144f); //TODO: recalculate when width changes
     public float intakeWidth = robotWidth;//*.95f;
     public boolean fieldCentric = false;
     public float fieldCentricStrafeMult = .7f;

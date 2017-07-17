@@ -44,6 +44,12 @@ public class Utils {
         return Math.abs(val) / val;
     }
 
+    public static float fixAngle(float angle) {
+        while (angle > 360) angle -= 360;
+        while (angle < 0) angle = 360 + angle;
+        return angle;
+    }
+
     public static double getAngle(Point2D start, Point2D target) {
         float angle = (float) Math.toDegrees(Math.atan2(target.getY() - start.getY(), target.getX() - start.getX()));
 
@@ -54,8 +60,8 @@ public class Utils {
         return angle;
     }
 
-    public static double distance(double x1, double y1, double x2, double y2) {
-        return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+    public static float distance(float x1, float y1, float x2, float y2) {
+        return (float)Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
     }
 
     public static boolean hasDecimal(double d) {

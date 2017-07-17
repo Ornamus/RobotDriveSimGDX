@@ -2,8 +2,11 @@ package ryan.game.games.steamworks;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
+import com.sun.deploy.config.VerboseDefaultConfig;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.controls.Gamepad;
@@ -238,17 +241,28 @@ public class SteamworksMetadata extends RobotMetadata {
     public void shootFuel(Robot r) {
         SteamRobotStats stats = (SteamRobotStats) r.stats;
         if (fuel > 0 && System.currentTimeMillis() - timeOfLastFire >= stats.timePerShoot && stats.shooter) {
-            float distance = 1.25f; //1.75f
-            float xChange = -distance * (float) Math.sin(Math.toRadians(r.getAngle()));
-            float yChange = distance * (float) Math.cos(Math.toRadians(r.getAngle()));
-            //Utils.log("angle: " + getAngle());
 
-            Entity f = new Fuel(r.getX() + xChange, r.getY() + yChange, false);//shootFuel(getX() + xChange, getY() + yChange, 1);
+
+            Vector2 shootPos = new Vector2(r.getX(), r.getY());
+            if (r.hasTurret) {
+                shootPos = r.getTurretPosition();
+            }
+            Fuel f = new Fuel(shootPos.x, shootPos.y, false);//shootFuel(getX() + xChange, getY() + yChange, 1);
             f.setAirMomentum(stats.shootHeight + (Utils.randomFloat(-stats.shootHeightVariance, stats.shootHeightVariance)));
+            f.setShot();
             Main.getInstance().spawnEntity(.2f, f);
             for (Body b : f.getBodies()) {
                 float pow = stats.shootPower + (Utils.randomFloat(-stats.shootPowerVariance, stats.shootPowerVariance));
-                float angle = -r.getAngle() + Utils.randomFloat(-stats.shootAngleVariance, stats.shootAngleVariance);
+
+                float angle;
+                if (r.hasTurret) {
+                    angle = -r.getAngle() - (r.turretAngle+90);//(float)Math.toDegrees(-r.turret.getAngle())-90;
+                } else {
+                    angle = -r.getAngle();
+                }
+                angle += Utils.randomFloat(-stats.shootAngleVariance, stats.shootAngleVariance);
+                angle = Utils.fixAngle(angle);
+
                 float xPow = pow * (float) Math.sin(Math.toRadians(angle));
                 float yPow = pow * (float) Math.cos(Math.toRadians(angle));
                 synchronized (Main.WORLD_USE) {

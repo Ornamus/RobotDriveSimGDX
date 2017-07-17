@@ -21,17 +21,24 @@ import ryan.game.controls.FakeButton;
 import ryan.game.controls.Gamepad;
 import ryan.game.drive.*;
 import ryan.game.autonomous.pathmagic.RobotStateGenerator;
+import ryan.game.entity.steamworks.Boiler;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
 import ryan.game.games.overboard.robots.OverRobotStats;
 import ryan.game.games.steamworks.robots.*;
+import ryan.game.render.Drawable;
 import ryan.game.render.Fonts;
 import ryan.game.sensors.Gyro;
+
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Robot extends Entity {
 
     public final int id;
     public Body left, right, intake = null;
+    public boolean hasTurret = false;
     private int controllerIndex;
     private DriveController[] scrollOptions = {new Arcade(false), new Arcade(true), new Tank(), new CheesyDrive()};
     private FieldCentricStrafe fieldCentric;
@@ -46,7 +53,7 @@ public class Robot extends Entity {
     private float middleMotor = 0;
 
     private int statsIndex = 0;
-    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16()};
+    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118()};
     //private RobotStats[] statsOptions = {new OverRobotStats()};
     public RobotStats stats = statsOptions[statsIndex];
 
@@ -70,14 +77,17 @@ public class Robot extends Entity {
 
     private Sprite intakeSprite;
     private Sprite icon;
+    private Sprite turretSprite = null;
+
+    public float turretAngle = 0;
 
     private static int robots = 0;
 
-    private Robot(RobotStats stats, Body left, Body right) {
+    private Robot(RobotStats stats, Body left, Body right, int id) {
         super(stats.robotWidth, stats.robotHeight, left, right);
         this.stats = stats;
         setName("Robot");
-        id = robots++;
+        this.id =id;
         this.left = left;
         this.right = right;
         controllerIndex = 0;
@@ -139,6 +149,14 @@ public class Robot extends Entity {
         addBody(b);
     }
 
+    public void setTurret(boolean b) {
+        hasTurret = b;
+        if (b) {
+            turretSprite = new Sprite(new Texture(((SteamRobotStats) stats).turretTexture));
+            turretSprite.setPosition(-999, -999);
+        }
+    }
+
     public void updateSprite() {
         Color c;
         if (blue) c = Main.BLUE;
@@ -149,6 +167,8 @@ public class Robot extends Entity {
         //else tex = "core/assets/robot_recolor.png";
         if (tex.contains("254") || tex.contains("1902") || tex.contains("16")) {
             setSprite(Utils.colorImage(tex, null, c));
+        } else if (tex.contains("118")) {
+            setSprite(Utils.colorImage(tex, null, null, c));
         } else {
             setSprite(Utils.colorImage(tex, c));
         }
@@ -265,6 +285,35 @@ public class Robot extends Entity {
             intakeSprite.setOriginCenter();
             intakeSprite.setRotation((float)Math.toDegrees(intake.getAngle()));
         }
+        if (hasTurret) {
+            SteamRobotStats steam = (SteamRobotStats) stats;
+            for (Entity e : Main.getInstance().getEntities()) {
+                if (e instanceof Boiler) {
+                    Boiler b = (Boiler) e;
+                    if (b.blue == blue) {
+                        float dis = Utils.distance(getX(), getY(), b.getX(), b.getY());
+                        if (dis < 15) {
+                            float angleWanted = (float) Utils.getAngle(new Point2D.Float(getX(), getY()), new Point2D.Float(b.getX(), b.getY()));
+                            float currentRealPos = Utils.fixAngle(turretAngle + getPhysicsAngle());
+
+                            float diff = Utils.fixAngle((angleWanted+180) - currentRealPos);
+                            if (diff > 180) diff = -(diff - 180);
+
+                            Utils.log(Utils.roundToPlace(diff, 0) + "");
+                            if (Math.abs(diff) > 0.25) {
+                                turretAngle += ((Math.abs(diff)*.08) * Utils.sign(diff));
+                            }
+                        }
+                    }
+                }
+            }
+            while (turretAngle > 360) turretAngle -= 360;
+            while (turretAngle < 0) turretAngle = 360 + turretAngle;
+            Vector2 pos = getTurretPosition();
+            turretSprite.setBounds(pos.x - turretSprite.getWidth()/2, pos.y - turretSprite.getHeight()/2, steam.turretWidth * 2, steam.turretHeight * 2);
+            turretSprite.setOriginCenter();
+            turretSprite.setRotation(getAngle() + turretAngle);
+        }
         if (ControllerManager.getGamepads().isEmpty()) {
             //TODO: ?????
         } else {
@@ -318,8 +367,22 @@ public class Robot extends Entity {
                 if (statsIndex >= statsOptions.length) {
                     statsIndex = 0;
                 }
+                RobotStats oldStats = stats;
                 stats = statsOptions[statsIndex];
-                updateSprite();
+                state = null;
+                generator.actuallyStop();
+                generator = null;
+                Main.getInstance().removeEntity(this);
+                Main.robots.remove(this);
+                Robot replacement = create(stats, getX()+(oldStats.robotWidth/2), getY(), id);
+                replacement.blue = blue;
+                replacement.statsToggleWasTrue = true;
+                replacement.statsIndex = statsIndex;
+                replacement.numberIndex = numberIndex;
+                replacement.metadata = metadata;
+                replacement.updateSprite();
+                Main.robots.add(replacement);
+                Main.getInstance().spawnEntity(replacement);
             }
             statsToggleWasTrue = val;
 
@@ -349,17 +412,27 @@ public class Robot extends Entity {
         if (metadata != null) metadata.tick(this);
     }
 
+    public Vector2 getTurretPosition() {
+        Vector2 pos = new Vector2(getX(), getY());
+        if (hasTurret) {
+            SteamRobotStats steam = (SteamRobotStats) stats;
+            Vector2 copy = new Vector2(steam.shooterTurretPivot.x, steam.shooterTurretPivot.y);
+            pos.add(copy.rotate(getAngle()));
+        }
+        return pos;
+    }
+
     @Override
     public void draw(SpriteBatch b) {
         super.draw(b);
         if (icon != null) icon.draw(b);
         if (intakeSprite != null) intakeSprite.draw(b);
         if (metadata != null) metadata.draw(b, this);
+        if (hasTurret) turretSprite.draw(b);
 
         Sprite outline = new Sprite(Utils.colorImage("core/assets/whitepixel.png", blue ? Main.BLUE : Main.RED));
         outline.setBounds(getX() - 1, getY() - 1.95f, 2f, .7f);
         outline.setAlpha(getAngle() > 110 && getAngle() < 250 ? .3f : .6f);
-        //Utils.log(getAngle() + "");
         outline.draw(b);
     }
 
@@ -442,6 +515,13 @@ public class Robot extends Entity {
         right.applyForceToCenter(Utils.cap(forceX, accel), Utils.cap(forceY, accel), true);
     }
 
+    @Override
+    public List<Body> getFrictionlessBodies() {
+        List<Body> no = new ArrayList<>();
+        no.add(intake);
+        return no;
+    }
+
     private static void weldJoint(Body a, Body b) {
         synchronized (Main.WORLD_USE) {
             WeldJointDef jointDef = new WeldJointDef();
@@ -451,7 +531,23 @@ public class Robot extends Entity {
         }
     }
 
+    private static void revoluteJoint(Body a, Body b, Vector2 anchor) {
+        synchronized (Main.WORLD_USE) {
+            RevoluteJointDef def = new RevoluteJointDef();
+            def.initialize(a, b, new Vector2(0,0));
+            def.collideConnected = false;
+            def.enableMotor = false;
+            def.localAnchorA.set(anchor.x, anchor.y);
+            def.localAnchorB.set(0,0);
+            Main.getInstance().world.createJoint(def);
+        }
+    }
+
     public static Robot create(RobotStats stats, float x, float y) {
+        return create(stats, x, y, robots++);
+    }
+
+    public static Robot create(RobotStats stats, float x, float y, int id) {
         Body left = createRobotPart(stats, x - stats.robotWidth, y);
         Body right = createRobotPart(stats, x, y);
 
@@ -462,8 +558,15 @@ public class Robot extends Entity {
         weldJoint(left, intake);
         weldJoint(right, intake);
 
-        Robot r = new Robot(stats, left, right);
+        Robot r = new Robot(stats, left, right, id);
         r.setIntake(intake);
+
+        if (stats instanceof SteamRobotStats) {
+            SteamRobotStats steam = (SteamRobotStats) stats;
+            if (steam.shooterIsTurret) {
+                r.setTurret(true);
+            }
+        }
 
         return r;
     }

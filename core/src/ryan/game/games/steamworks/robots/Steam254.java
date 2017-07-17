@@ -8,13 +8,12 @@ public class Steam254 extends SteamRobotStats {
 
     public Steam254() {
         super();
-        //intakeWidth = robotWidth; //TODO: reeneable when this is redone when switched to
+        intakeWidth = robotWidth;
         gearIntake = true;
         fuelIntake = true;
         timePerShoot = 143f;
         shootHeight = 1.15f;
-        shootPower = 21;
-        //shootHeightVariance = .2f;
+        shootPower = 24;
         shootPowerVariance = 2.5f;
         shootAngleVariance = 1;
 

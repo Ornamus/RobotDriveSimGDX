@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Main;
+import ryan.game.Utils;
 import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
@@ -19,6 +20,7 @@ public class Fuel extends Entity {
 
     boolean hopper;
     long creation;
+    long timeOfShoot = 0;
 
     public Fuel(float x, float y, boolean hopper) {
         super(radius, radius, new BodyFactory(x,y).setTypeDynamic().setDensity(density).setShapeCircle(radius).create());
@@ -28,9 +30,20 @@ public class Fuel extends Entity {
         creation = System.currentTimeMillis();
     }
 
+    public void setShot() {
+        timeOfShoot = System.currentTimeMillis();
+    }
+
+    @Override
+    public void collideStart(Entity e, Body self, Body other, Contact contact) {
+        if (System.currentTimeMillis() - timeOfShoot <= 100) {
+            contact.setEnabled(false);
+        }
+    }
+
     @Override
     public void onCollide(Entity e, Body self, Body other, Contact contact) {
-        if (hopper && e instanceof Robot && System.currentTimeMillis() - creation <= 175) {
+        if (hopper && e instanceof Robot && System.currentTimeMillis() - creation <= 900) {
             Robot r = (Robot) e;
             SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
             SteamRobotStats stats = (SteamRobotStats) r.stats;

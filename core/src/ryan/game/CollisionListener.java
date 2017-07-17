@@ -46,19 +46,7 @@ public class CollisionListener implements ContactListener {
     }
 
     @Override
-    public void postSolve(Contact contact, ContactImpulse impulse) {
-        /*
-        Body bA = contact.getFixtureA().getBody();
-        Body bB = contact.getFixtureB().getBody();
-        Entity a = (Entity) bA.getUserData();
-        Entity b = (Entity) bB.getUserData();;
-        colliding.remove(bA);
-        colliding.remove(bB);
-        if (a != null && b != null) {
-            a.collideEnd(b, bA, bB, contact);
-            b.collideEnd(a, bB, bA, contact);
-        }*/
-    }
+    public void postSolve(Contact contact, ContactImpulse impulse) {}
 
     @Override
     public void beginContact(Contact contact) {

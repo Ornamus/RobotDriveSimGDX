@@ -10,6 +10,7 @@ public class BodyFactory {
     BodyDef.BodyType type = null;
     Shape shape = null;
     float density = 0;
+    boolean sensor = false;
 
     public BodyFactory(float x, float y) {
         this.x = x;
@@ -39,6 +40,11 @@ public class BodyFactory {
 
     public BodyFactory setType(BodyDef.BodyType type) {
         this.type = type;
+        return this;
+    }
+
+    public BodyFactory setSensor(boolean b) {
+        sensor = b;
         return this;
     }
 
@@ -79,6 +85,7 @@ public class BodyFactory {
             fixDef.shape = shape;
             fixDef.density = density;
             fixDef.restitution = 0f;
+            fixDef.isSensor = sensor;
 
             Fixture f = body.createFixture(fixDef);
             shape.dispose();

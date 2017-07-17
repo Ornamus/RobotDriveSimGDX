@@ -23,8 +23,6 @@ import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
-import ryan.game.games.overboard.PirateField;
-import ryan.game.games.overboard.robots.OverRobotStats;
 import ryan.game.games.steamworks.SteamResultDisplay;
 import ryan.game.games.steamworks.SteamworksField;
 import ryan.game.games.steamworks.robots.SteamDefault;
@@ -123,7 +121,7 @@ public class Main extends ApplicationAdapter {
         if (extraRobots > 0) currentRobot = 0;
 
         for (int i=0; i<ControllerManager.getGamepads().size() + extraRobots; i++) {
-            robots.add(Robot.create(new SteamDefault(), 2 + (index * 3), -11)); //TODO: make this not reliant somehow
+            robots.add(Robot.create(new SteamDefault(), 2 + (index * 3), -11));
             index++;
         }
 
@@ -132,11 +130,7 @@ public class Main extends ApplicationAdapter {
         gameField.affectRobots();
         drawables.addAll(gameField.generateField());
 
-        for (Robot r : robots) {
-            addFriction(r.left);
-            addFriction(r.right);
-            drawables.add(r);
-        }
+        robots.forEach(this::spawnEntity);
 
         gameField.updateMatchInfo();
 
@@ -383,8 +377,9 @@ public class Main extends ApplicationAdapter {
             if (d instanceof Entity) {
                 Entity e = (Entity) d;
                 synchronized (WORLD_USE) {
+                    List<Body> no = e.getFrictionlessBodies();
                     for (Body b : e.getBodies()) {
-                        addFriction(b, e.friction);
+                        if (!no.contains(b)) addFriction(b, e.friction);
                     }
                 }
             }
