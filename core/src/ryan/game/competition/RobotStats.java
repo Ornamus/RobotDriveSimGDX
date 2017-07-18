@@ -13,6 +13,7 @@ public abstract class RobotStats {
     public float maxAccel = (4.572f * 3.4f) * (robotWidth / 0.9144f); //TODO: recalculate when width changes
     public float intakeWidth = robotWidth;//*.95f;
     public boolean fieldCentric = false;
+    public boolean needsStateGenerator = false;
     public float fieldCentricStrafeMult = .7f;
     public String texture = "core/assets/robot_recolor.png";
 

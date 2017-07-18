@@ -1,11 +1,9 @@
 package ryan.game.games.overboard.robots;
 
-import ryan.game.Utils;
 import ryan.game.autonomous.overboard.Auto254Over;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.competition.RobotStats;
 import ryan.game.entity.Robot;
-import ryan.game.entity.overboard.Chest;
 import ryan.game.games.Game;
 
 public class OverRobotStats extends RobotStats {
@@ -27,6 +25,7 @@ public class OverRobotStats extends RobotStats {
     public OverRobotStats() {
         super(Game.OVERBOARD);
         robotWidth = 0.8128f;
+        needsStateGenerator = true; //TODO: remove this once this class is properly treated as a stats default
     }
 
     @Override

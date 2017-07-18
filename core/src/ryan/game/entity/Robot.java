@@ -14,7 +14,6 @@ import ryan.game.autonomous.pathmagic.RobotState;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.bcnlib_pieces.PIDSource;
 import ryan.game.competition.RobotStats;
-import ryan.game.competition.Team;
 import ryan.game.controls.Button;
 import ryan.game.controls.ControllerManager;
 import ryan.game.controls.FakeButton;
@@ -24,12 +23,9 @@ import ryan.game.autonomous.pathmagic.RobotStateGenerator;
 import ryan.game.entity.steamworks.Boiler;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
-import ryan.game.games.overboard.robots.OverRobotStats;
 import ryan.game.games.steamworks.robots.*;
-import ryan.game.render.Drawable;
 import ryan.game.render.Fonts;
 import ryan.game.sensors.Gyro;
-
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,11 +122,12 @@ public class Robot extends Entity {
             }
         };
 
-        state = new RobotState();
-        generator = new RobotStateGenerator(state, this);
-        generator.start();
-
         if (stats.fieldCentric) fieldCentric = new FieldCentricStrafe(this);
+        if (stats.needsStateGenerator) {
+            state = new RobotState();
+            generator = new RobotStateGenerator(state, this);
+            generator.start();
+        }
     }
 
     public void setupButtons(Gamepad g) {
@@ -383,7 +380,7 @@ public class Robot extends Entity {
                 RobotStats oldStats = stats;
                 stats = statsOptions[statsIndex];
                 state = null;
-                generator.actuallyStop();
+                if (generator != null) generator.actuallyStop();
                 generator = null;
                 Main.getInstance().removeEntity(this);
                 Main.robots.remove(this);
