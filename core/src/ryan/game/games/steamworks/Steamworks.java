@@ -8,12 +8,14 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.competition.Match;
 import ryan.game.competition.Schedule;
 import ryan.game.competition.Team;
 import ryan.game.entity.*;
 import ryan.game.entity.steamworks.*;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
+import ryan.game.games.ScoreDisplay;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
 import ryan.game.render.Drawable;
 import ryan.game.render.ImageDrawer;
@@ -21,7 +23,7 @@ import ryan.game.render.ImageDrawer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SteamworksField extends Field {
+public class Steamworks extends Field {
 
     public static List<HumanPlayer> humanPlayers = new ArrayList<>();
 
@@ -32,24 +34,15 @@ public class SteamworksField extends Field {
 
     public static SteamworksDisplay display;
 
-    public static int blueGears = 0;
-    public static int blueGearsInAuto = 0;
-    public static int redGears = 0;
-    public static int redGearsInAuto = 0;
-    public static int blueGearQueue = 0;
-    public static int redGearQueue = 0;
-    public static int blueFuel = 0;
-    public static int blueFuelInAuto = 0;
-    public static int redFuel = 0;
-    public static int redFuelInAuto = 0;
-    public static int blueFouls = 0;
-    public static int redFouls = 0;
-    public static int blueBonusClimbs = 0;
-    public static int redBonusClimbs = 0;
+    public static AllianceScoreData blue;
+    public static AllianceScoreData red;
+
     boolean addedBonusGears = false;
     boolean didRopeDropWhoop = false;
 
-    public SteamworksField() {
+    public Steamworks() {
+        blue = new AllianceScoreData(true);
+        red = new AllianceScoreData(false);
         humanPlayers.add(new HumanPlayer(true));
         humanPlayers.add(new HumanPlayer(true));
         humanPlayers.add(new HumanPlayer(false));
@@ -170,22 +163,12 @@ public class SteamworksField extends Field {
 
     @Override
     public void onMatchStart() {
-        blueGears = 0;
-        blueGearsInAuto = 0;
-        redGears = 0;
-        redGearsInAuto = 0;
-        blueGearQueue = 0;
-        redGearQueue = 0;
-        blueFuel = 0;
-        blueFuelInAuto = 0;
-        redFuel = 0;
-        redFuelInAuto = 0;
-        blueBonusClimbs = 0;
-        redBonusClimbs = 0;
-        blueFouls = 0;
-        redFouls = 0;
+        blue = new AllianceScoreData(true);
+        red = new AllianceScoreData(false);
+
         addedBonusGears = false;
         didRopeDropWhoop = false;
+
         for (Robot r : Main.robots) {
             r.auto = r.stats.getAutonomous(r);
             SteamworksMetadata m = (SteamworksMetadata) r.metadata;
@@ -197,20 +180,22 @@ public class SteamworksField extends Field {
 
     @Override
     public void onMatchEnd() {
-        Main.schedule.completeCurrentMatch(0, 0); //TODO: pass in scores
-        updateMatchInfo();
-    }
+        if (blue.kPA >= 40) blue.rankingPoints++;
+        if (blue.rotors == 4) blue.rankingPoints++;
+        if (blue.score > red.score) blue.rankingPoints += 2;
 
-    @Override
-    public void updateMatchInfo() {
-        Schedule.Match m = Main.schedule.getCurrentMatch();
-        display.setBlueTeams(m.blue[0].number, m.blue[1].number, m.blue[2].number);
-        display.setRedTeams(m.red[0].number, m.red[1].number, m.red[2].number);
-        if (m.qualifier) {
-            display.setMatchName("Qualification " + m.number + " of " + Main.schedule.matches.size());
-        } else {
-            display.setMatchName("Elimination Match"); //TODO: when the match object provides more elimination data, show it here
+        if (red.kPA >= 40) red.rankingPoints++;
+        if (red.rotors == 4) red.rankingPoints++;
+        if (red.score > blue.score) red.rankingPoints += 2;
+
+        if (red.score == blue.score) {
+            //TODO: full tiebreaker criteria
+            blue.rankingPoints++;
+            red.rankingPoints++;
         }
+
+        Main.schedule.completeCurrentMatch(blue.score, red.score, blue, red);
+        updateMatchInfo();
     }
 
     @Override
@@ -230,6 +215,11 @@ public class SteamworksField extends Field {
         }
     }
 
+    @Override
+    public ScoreDisplay getDisplay() {
+        return display;
+    }
+
     int blueSpinning, redSpinning;
 
     class HumanPlayer {
@@ -246,20 +236,20 @@ public class SteamworksField extends Field {
         super.tick();
         for (HumanPlayer h : humanPlayers) {
             if (h.scoreProgress == null) {
-                if (h.blue && blueGearQueue > 0) {
-                    blueGearQueue--;
+                if (h.blue && blue.gearQueue > 0) {
+                    blue.gearQueue--;
                     h.scoreProgress = System.currentTimeMillis();
-                } else if (!h.blue && redGearQueue > 0) {
-                    redGearQueue--;
+                } else if (!h.blue && red.gearQueue > 0) {
+                    red.gearQueue--;
                     h.scoreProgress = System.currentTimeMillis();
                 }
             } else {
                 if (System.currentTimeMillis() - h.scoreProgress >= hpGearScoreSpeed) {
-                    if (h.blue) blueGears++;
-                    else redGears++;
+                    if (h.blue) blue.gears++;
+                    else red.gears++;
                     if (Game.isAutonomous()) {
-                        if (h.blue) blueGearsInAuto++;
-                        else redGearsInAuto++;
+                        if (h.blue) blue.gearsInAuto++;
+                        else red.gearsInAuto++;
                     }
                     h.scoreProgress = null;
                 }
@@ -268,8 +258,8 @@ public class SteamworksField extends Field {
 
         if (Game.isPlaying()) {
             if (Game.getMatchTime() == 135 && !addedBonusGears) {
-                blueGearQueue++;
-                redGearQueue++;
+                blue.gearQueue++;
+                red.gearQueue++;
                 addedBonusGears = true;
             }
 
@@ -279,14 +269,14 @@ public class SteamworksField extends Field {
             }
         }
         blueSpinning = 0;
-        if (blueGears > 12) blueSpinning = 3;
-        else if (blueGears > 6) blueSpinning = 2;
-        else if (blueGears > 2) blueSpinning = 1;
+        if (blue.gears > 12) blueSpinning = 3;
+        else if (blue.gears > 6) blueSpinning = 2;
+        else if (blue.gears > 2) blueSpinning = 1;
 
         redSpinning = 0;
-        if (redGears > 12) redSpinning = 3;
-        else if (redGears > 6) redSpinning = 2;
-        else if (redGears > 2) redSpinning = 1;
+        if (red.gears > 12) redSpinning = 3;
+        else if (red.gears > 6) redSpinning = 2;
+        else if (red.gears > 2) redSpinning = 1;
     }
 
     @Override
@@ -308,10 +298,6 @@ public class SteamworksField extends Field {
             s.draw(b);
             blue++;
         }
-    }
-
-    public static int[] predictScore(Schedule.Match m) {
-        return new int[]{predictScore(m.blue), predictScore(m.red)};
     }
 
     private static int predictScore(Team[] alliance) {

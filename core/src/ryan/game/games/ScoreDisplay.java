@@ -112,7 +112,7 @@ public abstract class ScoreDisplay extends Drawable {
     }
 
     /**
-     * Calculates the Blue and Red Alliance's scores.
+     * Calculates the Blue and Red AllianceScoreData's scores.
      * @return An int[] of the scores. Index 0 is Blue's score, Index 1 is Red's score.
      */
     public abstract int[] calculateScores();

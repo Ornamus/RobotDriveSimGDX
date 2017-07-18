@@ -14,7 +14,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.FrictionJointDef;
-import org.xguzm.pathfinding.grid.GridCell;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import ryan.game.ai.Pathfinding;
 import ryan.game.competition.Schedule;
 import ryan.game.competition.Team;
@@ -24,7 +25,7 @@ import ryan.game.entity.*;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
 import ryan.game.games.steamworks.SteamResultDisplay;
-import ryan.game.games.steamworks.SteamworksField;
+import ryan.game.games.steamworks.Steamworks;
 import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.render.Drawable;
 import ryan.game.render.Fonts;
@@ -59,11 +60,14 @@ public class Main extends ApplicationAdapter {
     public static boolean playMusic = true;
     public static boolean makeSchedule = false;
     public static String eventName = "FIRST Championship";
+    public static String eventKey = "debug";
 
     public static boolean isShowingResults = false;
 
     FileHandle[] musicChoices;
     Music music = null;
+
+    private static long time = 0;
 
     public static boolean matchPlay = false;
     public static long matchStart = 0;
@@ -94,6 +98,7 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+
         List<Integer> taken = new ArrayList<>();
         for (int i=0; i<62; i++) {
             int num;
@@ -101,6 +106,10 @@ public class Main extends ApplicationAdapter {
             taken.add(num);
             allTeams.add(new Team(num, "null"));
         }
+        //Gson g = new GsonBuilder().setPrettyPrinting().create();
+        //Utils.writeFile("teams.txt", g.toJson(allTeams));
+        //TODO: load teams from "teams.txt"
+
         schedule = new Schedule();
         schedule.generate(allTeams, 8);
         self = this;
@@ -126,7 +135,7 @@ public class Main extends ApplicationAdapter {
         }
 
         //gameField = new PirateField();
-        gameField = new SteamworksField();
+        gameField = new Steamworks();
         gameField.affectRobots();
         drawables.addAll(gameField.generateField());
 
@@ -320,6 +329,7 @@ public class Main extends ApplicationAdapter {
             synchronized (WORLD_USE) {
                 world.step(Constants.TIME_STEP, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
             }
+            time += Constants.TIME_STEP;
             accumulator -= Constants.TIME_STEP;
         }
     }
@@ -337,7 +347,7 @@ public class Main extends ApplicationAdapter {
             matchPlay = false;
             didWhoop = false;
             resetField = true;
-            if (gameField instanceof SteamworksField) {
+            if (gameField instanceof Steamworks) {
                 results = new SteamResultDisplay(0, 0); //TODO: game specific, move to steamworks code or make standardized version
                 drawables.add(results);
                 isShowingResults = true;
@@ -453,6 +463,10 @@ public class Main extends ApplicationAdapter {
             if (d instanceof Entity) ents.add((Entity)d);
         }
         return ents;
+    }
+
+    public static long getTime() {
+        return System.currentTimeMillis();//time;
     }
 	
 	@Override

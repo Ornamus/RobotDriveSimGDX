@@ -11,6 +11,7 @@ import ryan.game.entity.overboard.Chest;
 import ryan.game.entity.overboard.Ship;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
+import ryan.game.games.ScoreDisplay;
 import ryan.game.games.steamworks.SteamworksMetadata;
 import ryan.game.render.Drawable;
 import ryan.game.render.ImageDrawer;
@@ -19,6 +20,7 @@ import java.util.List;
 
 public class PirateField extends Field {
 
+    public PirateDisplay display;
     public static Ship[] ships = new Ship[2];
 
     float width = 51 * .915f;
@@ -59,7 +61,8 @@ public class PirateField extends Field {
             drawables.add(c);
         }
 
-        drawables.add(new PirateDisplay());
+        display = new PirateDisplay();
+        drawables.add(display);
 
         return drawables;
     }
@@ -136,6 +139,11 @@ public class PirateField extends Field {
             field.add(c);
             Main.getInstance().addFriction(c.getPrimary(), c.friction);
         }
+    }
+
+    @Override
+    public ScoreDisplay getDisplay() {
+        return display;
     }
 
     @Override

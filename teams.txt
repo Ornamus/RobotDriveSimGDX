@@ -1,0 +1,242 @@
+[
+  {
+    "number": 811,
+    "name": "Stuanobor"
+  },
+  {
+    "number": 452,
+    "name": "Teh Chezy Grains"
+  },
+  {
+    "number": 123,
+    "name": "LOWROLLERS"
+  },
+  {
+    "number": 1997,
+    "name": "9 Volt Jolt"
+  },
+  {
+    "number": 2061,
+    "name": "5-G Imploding Pork"
+  },
+  {
+    "number": 1296,
+    "name": "Metal Spawn"
+  },
+  {
+    "number": 2562,
+    "name": "Sweat"
+  },
+  {
+    "number": 1111,
+    "name": "Foul"
+  },
+  {
+    "number": 402,
+    "name": "Indigo Resistance"
+  },
+  {
+    "number": 4630,
+    "name": "Walking Boomerang Silverbacks"
+  },
+  {
+    "number": 3383,
+    "name": "Gigantic Novelty"
+  },
+  {
+    "number": 5690,
+    "name": "Street Magicians"
+  },
+  {
+    "number": 5271,
+    "name": "Goon"
+  },
+  {
+    "number": 4805,
+    "name": "Resistance"
+  },
+  {
+    "number": 4625,
+    "name": "Chronic Metal Salamanders"
+  },
+  {
+    "number": 2853,
+    "name": "Nada Pony Farmers"
+  },
+  {
+    "number": 3490,
+    "name": "Spores"
+  },
+  {
+    "number": 5958,
+    "name": "Razors"
+  },
+  {
+    "number": 1764,
+    "name": "White Pandas"
+  },
+  {
+    "number": 3527,
+    "name": "Small Whiz Blisters"
+  },
+  {
+    "number": 1503,
+    "name": "El Frog Corsairs"
+  },
+  {
+    "number": 2348,
+    "name": "Doctors"
+  },
+  {
+    "number": 5487,
+    "name": "Postal Wallabies"
+  },
+  {
+    "number": 1858,
+    "name": "Score Hyenas"
+  },
+  {
+    "number": 1838,
+    "name": "Brass Novelty Dwellers"
+  },
+  {
+    "number": 542,
+    "name": "End Puppets"
+  },
+  {
+    "number": 3150,
+    "name": "Rounders"
+  },
+  {
+    "number": 3756,
+    "name": "Screaming Bug"
+  },
+  {
+    "number": 6192,
+    "name": "Big Voodoo Armageddon"
+  },
+  {
+    "number": 426,
+    "name": "Shooting City Boneheads"
+  },
+  {
+    "number": 4812,
+    "name": "Shooting Whiz Outlaws"
+  },
+  {
+    "number": 4231,
+    "name": "The Corsairs"
+  },
+  {
+    "number": 4377,
+    "name": "Dope"
+  },
+  {
+    "number": 3232,
+    "name": "Karma"
+  },
+  {
+    "number": 4509,
+    "name": "Gentle Goon Porcupines"
+  },
+  {
+    "number": 5783,
+    "name": "Western Axe Vegetables"
+  },
+  {
+    "number": 4589,
+    "name": "Swamp Cockroaches"
+  },
+  {
+    "number": 1439,
+    "name": "Brown Hollyrollers"
+  },
+  {
+    "number": 2623,
+    "name": "Bacon Crawlers"
+  },
+  {
+    "number": 6308,
+    "name": "Killing Scoreless Tamales"
+  },
+  {
+    "number": 5684,
+    "name": "Dudes"
+  },
+  {
+    "number": 3655,
+    "name": "Dastardly Wannabees"
+  },
+  {
+    "number": 2936,
+    "name": "Newts"
+  },
+  {
+    "number": 2355,
+    "name": "Skinny Magenta Hotshots"
+  },
+  {
+    "number": 6178,
+    "name": "Astro Einsteins"
+  },
+  {
+    "number": 1806,
+    "name": "Mysterious Professors"
+  },
+  {
+    "number": 5868,
+    "name": "Magenta Generals"
+  },
+  {
+    "number": 6258,
+    "name": "Voodoo Renegade"
+  },
+  {
+    "number": 1744,
+    "name": "Pony Flux"
+  },
+  {
+    "number": 1457,
+    "name": "Wise Gators"
+  },
+  {
+    "number": 2248,
+    "name": "Beat Opossums"
+  },
+  {
+    "number": 3916,
+    "name": "Air Boxers"
+  },
+  {
+    "number": 4617,
+    "name": "Whirling Chemical Squares"
+  },
+  {
+    "number": 1539,
+    "name": "Puck Imperials"
+  },
+  {
+    "number": 5162,
+    "name": "Mad Nodes"
+  },
+  {
+    "number": 2981,
+    "name": "Tan Humblers"
+  },
+  {
+    "number": 395,
+    "name": "The Milk Stumblers"
+  },
+  {
+    "number": 1241,
+    "name": "Drinking Ducks"
+  },
+  {
+    "number": 6386,
+    "name": "Sprinting Spinners"
+  },
+  {
+    "number": 6204,
+    "name": "Tarts"
+  },
+]

@@ -1,0 +1,59 @@
+{
+  "number": 1,
+  "red": {
+    "teams": [
+      6091,
+      3570,
+      3440
+    ],
+    "score": 40,
+    "winner": false,
+    "breakdown": {
+      "blue": false,
+      "gears": 1,
+      "gearsInAuto": 0,
+      "gearQueue": 0,
+      "fuel": 0,
+      "fuelInAuto": 0,
+      "fouls": 0,
+      "bonusClimbs": 0,
+      "rankingPoints": 0,
+      "score": 40,
+      "rotors": 1,
+      "rotorPoints": 40,
+      "kPA": 0,
+      "climbs": 0,
+      "crosses": 0
+    }
+  },
+  "blue": {
+    "teams": [
+      1447,
+      103,
+      3682
+    ],
+    "score": 199,
+    "winner": true,
+    "breakdown": {
+      "blue": true,
+      "gears": 5,
+      "gearsInAuto": 1,
+      "gearQueue": 0,
+      "fuel": 131,
+      "fuelInAuto": 1,
+      "fouls": 0,
+      "bonusClimbs": 0,
+      "rankingPoints": 3,
+      "score": 199,
+      "rotors": 2,
+      "rotorPoints": 100,
+      "kPA": 44,
+      "climbs": 1,
+      "crosses": 1
+    }
+  },
+  "blueSurrogates": [],
+  "redSurrogates": [],
+  "qualifier": true,
+  "level": "qm"
+}

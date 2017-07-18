@@ -2,11 +2,9 @@ package ryan.game.games.steamworks;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
-import com.sun.deploy.config.VerboseDefaultConfig;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.controls.Gamepad;
@@ -152,13 +150,13 @@ public class SteamworksMetadata extends RobotMetadata {
             Robot otherR = (Robot) e;
             if (r.blue != otherR.blue && Game.isPlaying()) {
                 if (onRope != null && Game.getMatchTime() <= 30 && System.currentTimeMillis() - ropeTouch >= 2000) {
-                    if (r.blue) SteamworksField.blueBonusClimbs++;
-                    else SteamworksField.redBonusClimbs++;
+                    if (r.blue) Steamworks.blue.bonusClimbs++;
+                    else Steamworks.red.bonusClimbs++;
                     ropeTouch = System.currentTimeMillis();
                     //TODO: some sort of foul visual
                 } else if (inLoadingZone && System.currentTimeMillis() - zoneHit >= 2000) {
-                    if (r.blue) SteamworksField.redFouls += 25;
-                    else SteamworksField.blueFouls += 25;
+                    if (r.blue) Steamworks.red.fouls += 25;
+                    else Steamworks.blue.fouls += 25;
                     zoneHit = System.currentTimeMillis();
                     //TODO: some sort of foul visual
                 }
@@ -229,8 +227,8 @@ public class SteamworksMetadata extends RobotMetadata {
             } else {
                 hasGear = false;
                 if (Main.matchPlay) {
-                    if (r.blue) SteamworksField.blueGearQueue++;
-                    else SteamworksField.redGearQueue++;
+                    if (r.blue) Steamworks.blue.gearQueue++;
+                    else Steamworks.red.gearQueue++;
                 }
             }
         }

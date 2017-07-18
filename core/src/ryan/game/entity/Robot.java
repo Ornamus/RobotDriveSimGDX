@@ -448,11 +448,11 @@ public class Robot extends Entity {
     }
 
     public void drawUnscaled(SpriteBatch b) {
-        Team t;
-        if (blue) t = Main.schedule.getCurrentMatch().blue[numberIndex];
-        else t = Main.schedule.getCurrentMatch().red[numberIndex];
+        int t;
+        if (blue) t = Main.schedule.getCurrentMatch().blue.teams[numberIndex];
+        else t = Main.schedule.getCurrentMatch().red.teams[numberIndex];
         Fonts.fmsWhiteSmall.setColor(255, 255, 255, getAngle() > 110 && getAngle() < 250 ? .3f : 1);
-        Fonts.drawCentered(t.number + "", getX() * Main.meterToPixelWidth, (getY()*Main.meterToPixelHeight) + (Main.meterToPixelHeight*2.7f), Fonts.fmsWhiteSmall, b);
+        Fonts.drawCentered(t + "", getX() * Main.meterToPixelWidth, (getY()*Main.meterToPixelHeight) + (Main.meterToPixelHeight*2.7f), Fonts.fmsWhiteSmall, b);
         Fonts.fmsWhiteSmall.setColor(255, 255, 255, 1);
     }
 

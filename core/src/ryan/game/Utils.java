@@ -7,6 +7,10 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.awt.geom.Point2D;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Random;
 
 public class Utils {
@@ -184,5 +188,29 @@ public class Utils {
 
     public static Color toColor(int r, int g, int b) {
         return new Color(r / 255f, g / 255f, b / 255f, 1);
+    }
+
+    //TODO: fix problem where this gets angry if any folders don't exist
+    public static void writeFile(String fileName, String content) {
+        BufferedWriter bw = null;
+        try {
+            File file = new File(fileName);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fw = new FileWriter(file);
+            bw = new BufferedWriter(fw);
+            bw.write(content);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } finally {
+            try {
+                if (bw != null)
+                    bw.close();
+            } catch (Exception ex) {
+                Utils.log("Error in closing the BufferedWriter" + ex);
+            }
+        }
+        Utils.log("wrote file");
     }
 }

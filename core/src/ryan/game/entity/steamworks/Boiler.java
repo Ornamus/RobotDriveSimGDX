@@ -1,13 +1,11 @@
 package ryan.game.entity.steamworks;
 
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.Array;
 import ryan.game.Main;
-import ryan.game.Utils;
 import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.games.Game;
-import ryan.game.games.steamworks.SteamworksField;
+import ryan.game.games.steamworks.Steamworks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,11 +52,11 @@ public class Boiler extends Entity {
             if (System.currentTimeMillis() - timeSinceLast >= 200) {
                 fuelToCount--;
                 if (Game.isAutonomous()) {
-                    if (blue) SteamworksField.blueFuelInAuto++;
-                    else SteamworksField.redFuelInAuto++;
+                    if (blue) Steamworks.blue.fuelInAuto++;
+                    else Steamworks.red.fuelInAuto++;
                 } else {
-                    if (blue) SteamworksField.blueFuel++;
-                    else SteamworksField.redFuel++;
+                    if (blue) Steamworks.blue.fuel++;
+                    else Steamworks.red.fuel++;
                 }
                 timeSinceLast = System.currentTimeMillis();
             }

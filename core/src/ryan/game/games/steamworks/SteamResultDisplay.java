@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import ryan.game.Main;
+import ryan.game.competition.Match;
 import ryan.game.competition.Schedule;
 import ryan.game.competition.Team;
 import ryan.game.render.Fonts;
@@ -58,17 +59,17 @@ public class SteamResultDisplay extends ImageDrawer {
     public void draw(SpriteBatch b) {
         super.draw(b);
 
-        Fonts.drawCentered(SteamworksField.display.getMatchName(), getCenterX(), getCenterY() + 305, Fonts.fmsBlack, b);
-        Fonts.drawCentered(SteamworksField.display.getEventName(), getCenterX(), getCenterY() + 280, blackSmall, b);
+        Fonts.drawCentered(Steamworks.display.getMatchName(), getCenterX(), getCenterY() + 305, Fonts.fmsBlack, b);
+        Fonts.drawCentered(Steamworks.display.getEventName(), getCenterX(), getCenterY() + 280, blackSmall, b);
         //drawCentered("Scoring System powered by Hopes and Dreams", getCenterX(), getCenterY() + 252, blackSmall, b);
 
         String blueAlliance = "", redAlliance = "";
-        Schedule.Match m = Main.schedule.getCurrentMatch();
-        for (Team t : m.blue) {
-            blueAlliance += "-" + t.number;
+        Match m = Main.schedule.getCurrentMatch();
+        for (int t : m.blue.teams) {
+            blueAlliance += "-" + t;
         }
-        for (Team t : m.red) {
-            redAlliance += "-" + t.number;
+        for (int t : m.red.teams) {
+            redAlliance += "-" + t;
         }
         blueAlliance = blueAlliance.substring(1, blueAlliance.length());
         redAlliance = redAlliance.substring(1, redAlliance.length());
@@ -76,45 +77,41 @@ public class SteamResultDisplay extends ImageDrawer {
         whiteNormal.draw(b, redAlliance, getCenterX() - 365, getCenterY() + 164);
         whiteNormal.draw(b, blueAlliance, getCenterX() + 150, getCenterY() + 164);
 
-        SteamworksDisplay display = SteamworksField.display;
 
         Fonts.fmsBlack.draw(b, "Auto Mobility\nPressure\nRotor\nReady for Takeoff\nBlue Penalty", getCenterX() - 430, getCenterY() - 0);
         Fonts.fmsBlack.draw(b,
-                        (display.redCrosses*5) + "\n" +
-                        display.redKPA + "\n" +
-                        display.redRotorPoints + "\n" +
-                        (display.redClimbs*50) + "\n" +
-                        SteamworksField.blueFouls,
+                        (Steamworks.red.crosses*5) + "\n" +
+                        Steamworks.red.kPA + "\n" +
+                        Steamworks.red.rotorPoints + "\n" +
+                        (Steamworks.red.climbs*50) + "\n" +
+                        Steamworks.blue.fouls,
                 (getCenterX() - 430) + 310,  getCenterY());
 
         String bonusText;
         if (m.qualifier) {
-            int rp = 0;
-            if (display.redKPA >= 40) rp++;
-            if (display.redRots == 4) rp++;
-            bonusText = rp + " RP";
+            bonusText = Steamworks.red.rankingPoints + " RP";
         } else {
             int points = 0;
-            if (display.redKPA >= 40) points += 20;
-            if (display.redRots == 4) points += 100;
+            if (Steamworks.red.kPA >= 40) points += 20;
+            if (Steamworks.red.rotors == 4) points += 100;
             bonusText = points + "";
         }
         Fonts.fmsBlack.draw(b, bonusText, (getCenterX() - 430) + 310,  getCenterY() + 70);
-        if (display.redKPA < 40) {
+        if (Steamworks.red.kPA < 40) {
             redX.setPosition(getCenterX() - 435, getCenterY() + 30);
             redX.draw(b);
         }
-        if (display.redRots < 4) {
+        if (Steamworks.red.rotors < 4) {
             redX.setPosition(getCenterX() - 310, getCenterY() + 30);
             redX.draw(b);
         }
 
         float adjust = -225;
-        if (display.blueKPA < 40) {
+        if (Steamworks.blue.kPA < 40) {
             redX.setPosition(getCenterX() + 310 + adjust, getCenterY() + 30);
             redX.draw(b);
         }
-        if (display.blueRots < 4) {
+        if (Steamworks.blue.rotors < 4) {
             redX.setPosition(getCenterX() + 435 +adjust, getCenterY() + 30);
             redX.draw(b);
         }
@@ -122,33 +119,30 @@ public class SteamResultDisplay extends ImageDrawer {
         adjust = 85;
         Fonts.fmsBlack.draw(b, "Auto Mobility\nPressure\nRotor\nReady for Takeoff\nRed Penalty", getCenterX() + adjust, getCenterY() - 0);
         Fonts.fmsBlack.draw(b,
-                (display.blueCrosses*5) + "\n" +
-                        display.blueKPA + "\n" +
-                        display.blueRotorPoints + "\n" +
-                        (display.blueClimbs*50) + "\n" +
-                        SteamworksField.redFouls,
+                (Steamworks.blue.crosses*5) + "\n" +
+                        Steamworks.blue.kPA + "\n" +
+                        Steamworks.blue.rotorPoints + "\n" +
+                        (Steamworks.blue.climbs*50) + "\n" +
+                        Steamworks.red.fouls,
                 (getCenterX() + adjust) + 310,  getCenterY());
 
         if (m.qualifier) {
-            int rp = 0;
-            if (display.blueKPA >= 40) rp++;
-            if (display.blueRots == 4) rp++;
-            bonusText = rp + " RP";
+            bonusText = Steamworks.blue.rankingPoints + " RP";
         } else {
             int points = 0;
-            if (display.blueKPA >= 40) points += 20;
-            if (display.blueRots == 4) points += 100;
+            if (Steamworks.blue.kPA >= 40) points += 20;
+            if (Steamworks.blue.rotors == 4) points += 100;
             bonusText = points + "";
         }
         Fonts.fmsBlack.draw(b, bonusText, (getCenterX() + adjust) + 310,  getCenterY() + 70);
 
-        Fonts.drawCentered(display.redScore + "", getCenterX() - 106, getCenterY() - 235, Fonts.fmsScore, b);
-        Fonts.drawCentered(display.blueScore + "", getCenterX() + 106, getCenterY() - 235, Fonts.fmsScore, b);
+        Fonts.drawCentered(Steamworks.red.score + "", getCenterX() - 106, getCenterY() - 235, Fonts.fmsScore, b);
+        Fonts.drawCentered(Steamworks.blue.score + "", getCenterX() + 106, getCenterY() - 235, Fonts.fmsScore, b);
 
         blueWin.setBounds(getCenterX() + 206, getCenterY() - 295, 294, 77);
-        if (display.blueScore > display.redScore) blueWin.draw(b);
+        if (Steamworks.blue.score > Steamworks.red.score) blueWin.draw(b);
 
         redWin.setBounds(getCenterX() - 206 - 294, getCenterY() - 295, 294, 77);
-        if (display.redScore > display.blueScore)redWin.draw(b);
+        if (Steamworks.red.score > Steamworks.blue.score)redWin.draw(b);
     }
 }

@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import ryan.game.Main;
 import ryan.game.Utils;
-import ryan.game.competition.Schedule;
+import ryan.game.competition.Match;
 import ryan.game.entity.steamworks.Gear;
 import ryan.game.entity.Robot;
 import ryan.game.games.Game;
@@ -24,13 +24,6 @@ public class SteamworksDisplay extends ScoreDisplay {
 
     Sprite blueBlob, redBlob;
 
-    public int blueScore = 0, redScore = 0;
-    public int blueRots = 0, redRots = 0;
-    public int blueRotorPoints = 0, redRotorPoints = 0;
-    public int blueKPA = 0, redKPA = 0;
-    public int blueClimbs = 0, redClimbs = 0;
-    public int blueCrosses = 0, redCrosses = 0;
-
     public SteamworksDisplay() {
         super("core/assets/score_display.png");
         blueBlob = new Sprite(new Texture("core/assets/blob_blue.png"));
@@ -47,59 +40,49 @@ public class SteamworksDisplay extends ScoreDisplay {
     @Override
     public void draw(SpriteBatch batch) {
         if (!Main.isShowingResults) {
-            blueScore = 0;
-            redScore = 0;
-            blueRots = 0;
-            redRots = 0;
-            blueRotorPoints = 0;
-            redRotorPoints = 0;
-            blueKPA = 0;
-            redKPA = 0;
-            blueClimbs = 0;
-            redClimbs = 0;
-            blueCrosses = 0;
-            redCrosses = 0;
+            Steamworks.blue.scoreUpdateReset();
+            Steamworks.red.scoreUpdateReset();
         }
 
         super.draw(batch);
 
-        Fonts.drawCentered(blueKPA + "", 257.5f, getY() + 35f, Fonts.fmsBlack, batch); //blue kpa
-        Fonts.drawCentered(redKPA + "", -257.5f, getY() + 35f, Fonts.fmsBlack, batch); //red kpa
+        Fonts.drawCentered(Steamworks.blue.kPA + "", 257.5f, getY() + 35f, Fonts.fmsBlack, batch); //blue kpa
+        Fonts.drawCentered(Steamworks.red.kPA + "", -257.5f, getY() + 35f, Fonts.fmsBlack, batch); //red kpa
 
-        Fonts.drawCentered(blueRots + "", 360.5f, getY() + 36f, Fonts.fmsBlack, batch); //blue rotors
-        Fonts.drawCentered(redRots + "", -360.5f, getY() + 36f, Fonts.fmsBlack, batch); //red rotors
+        Fonts.drawCentered(Steamworks.blue.rotors + "", 360.5f, getY() + 36f, Fonts.fmsBlack, batch); //blue rotors
+        Fonts.drawCentered(Steamworks.red.rotors + "", -360.5f, getY() + 36f, Fonts.fmsBlack, batch); //red rotors
 
-        Fonts.drawCentered(blueClimbs + "", 455, getY() + 36f, Fonts.fmsBlack, batch); //blue climbs
-        Fonts.drawCentered(redClimbs + "", -455, getY() + 36f, Fonts.fmsBlack, batch); //red climbs
+        Fonts.drawCentered(Steamworks.blue.climbs + "", 455, getY() + 36f, Fonts.fmsBlack, batch); //blue climbs
+        Fonts.drawCentered(Steamworks.red.climbs + "", -455, getY() + 36f, Fonts.fmsBlack, batch); //red climbs
 
         if (Main.matchPlay) {
-            drawGearDisplay(232.5f, 45, SteamworksField.blueGears, SteamworksField.blueGears > 12 ? Color.YELLOW : Color.WHITE, batch);
-            drawGearDisplay(-287.5f, 45, SteamworksField.redGears, SteamworksField.redGears > 12 ? Color.YELLOW : Color.WHITE, batch);
+            drawGearDisplay(232.5f, 45, Steamworks.blue.gears, Steamworks.blue.gears > 12 ? Color.YELLOW : Color.WHITE, batch);
+            drawGearDisplay(-287.5f, 45, Steamworks.red.gears, Steamworks.red.gears > 12 ? Color.YELLOW : Color.WHITE, batch);
 
             List<Long> blueProgresses = new ArrayList<>();
             List<Long> redProgresses = new ArrayList<>();
-            SteamworksField.humanPlayers.stream().filter(h -> h.scoreProgress != null).forEach(h -> {
+            Steamworks.humanPlayers.stream().filter(h -> h.scoreProgress != null).forEach(h -> {
                 if (h.blue) blueProgresses.add(h.scoreProgress);
                 else redProgresses.add(h.scoreProgress);
             });
-            int loops = blueProgresses.size()+SteamworksField.blueGearQueue;
+            int loops = blueProgresses.size()+ Steamworks.blue.gearQueue;
             final float spacing = 22f;
             float hpX = 215.5f;
             float hpY = 45 + (spacing * (loops/2f));
             for (int i=0; i<loops; i++) {
                 long progress = System.currentTimeMillis();
                 if (i <= blueProgresses.size()-1) progress = blueProgresses.get(i);
-                Utils.drawUnscaledProgressBar(hpX + 40, hpY - (spacing * i), 60, 15, (System.currentTimeMillis()-progress)/SteamworksField.hpGearScoreSpeed, batch);
+                Utils.drawUnscaledProgressBar(hpX + 40, hpY - (spacing * i), 60, 15, (System.currentTimeMillis()-progress)/ Steamworks.hpGearScoreSpeed, batch);
                 batch.draw(Gear.TEXTURE, hpX-12, hpY-4 - (spacing * i), 20f, 20f);
             }
 
-            loops = redProgresses.size()+SteamworksField.redGearQueue;
+            loops = redProgresses.size()+ Steamworks.red.gearQueue;
             hpX = -287.5f-(232.5f-215.5f);
             hpY = 45 + (spacing * (loops/2f));
             for (int i=0; i<loops; i++) {
                 long progress = System.currentTimeMillis();
                 if (i <= redProgresses.size()-1) progress = redProgresses.get(i);
-                Utils.drawUnscaledProgressBar(hpX + 40, hpY - (spacing * i), 60, 15, (System.currentTimeMillis()-progress)/SteamworksField.hpGearScoreSpeed, batch);
+                Utils.drawUnscaledProgressBar(hpX + 40, hpY - (spacing * i), 60, 15, (System.currentTimeMillis()-progress)/ Steamworks.hpGearScoreSpeed, batch);
                 batch.draw(Gear.TEXTURE, hpX-12, hpY-4 - (spacing * i), 20f, 20f);
             }
             drawFuelProgress(274, -273, true, batch);
@@ -116,7 +99,7 @@ public class SteamworksDisplay extends ScoreDisplay {
 
         int ballsNeeded = 0;
         if (Game.isPlaying()) {
-            int fuel = (blue ? SteamworksField.blueFuel : SteamworksField.redFuel);
+            int fuel = (blue ? Steamworks.blue.fuel : Steamworks.red.fuel);
             float percentIncomplete = (fuel / 3f) - ((float)Math.floor(fuel / 3));
             if (percentIncomplete > .65) ballsNeeded = 6;
             else if (percentIncomplete > .32) ballsNeeded = 3;
@@ -159,104 +142,72 @@ public class SteamworksDisplay extends ScoreDisplay {
         }
     }
 
-    @Override
-    public int[] calculateScores() {
+    public int calculateScore(AllianceScoreData a) {
         if (Main.matchPlay) {
-            Schedule.Match current = Main.schedule.getCurrentMatch();
-            blueScore = 0;
-            redScore = 0;
-            if (SteamworksField.blueGearsInAuto > 0) {
-                blueRotorPoints += 20;
+            Match current = Main.schedule.getCurrentMatch();
+            a.score = 0;
+            if (a.gearsInAuto > 0) {
+                a.rotorPoints += 20;
             }
-            if (SteamworksField.blueGearsInAuto > 2) {
-                blueRotorPoints += 20;
+            if (a.gearsInAuto > 2) {
+                a.rotorPoints += 20;
             }
-            if (SteamworksField.blueGears > 0) {
-                blueRotorPoints += 40;
-                blueRots++;
+            if (a.gears > 0) {
+                a.rotorPoints += 40;
+                a.rotors++;
             }
-            if (SteamworksField.blueGears > 2) {
-                blueRotorPoints += 40;
-                blueRots++;
+            if (a.gears > 2) {
+                a.rotorPoints += 40;
+                a.rotors++;
             }
-            if (SteamworksField.blueGears > 6) {
-                blueRotorPoints += 40;
-                blueRots++;
+            if (a.gears > 6) {
+                a.rotorPoints += 40;
+                a.rotors++;
             }
-            if (SteamworksField.blueGears > 12) {
-                blueRotorPoints += 40;
-                blueRots++;
+            if (a.gears > 12) {
+                a.rotorPoints += 40;
+                a.rotors++;
                 if (!current.qualifier) {
-                    blueScore += 100;
+                    a.score += 100;
                 }
             }
 
-            if (SteamworksField.redGearsInAuto > 0) {
-                redRotorPoints += 20;
-            }
-            if (SteamworksField.redGearsInAuto > 2) {
-                redRotorPoints += 20;
-            }
-            if (SteamworksField.redGears > 0) {
-                redRotorPoints += 40;
-                redRots++;
-            }
-            if (SteamworksField.redGears > 2) {
-                redRotorPoints += 40;
-                redRots++;
-            }
-            if (SteamworksField.redGears > 6) {
-                redScore += 40;
-                redRots++;
-            }
-            if (SteamworksField.redGears > 12) {
-                redRotorPoints += 40;
-                redRots++;
-                if (!current.qualifier) {
-                    redScore += 100;
-                }
-            }
-            blueScore += blueRotorPoints;
-            redScore += redRotorPoints;
+            a.score += a.rotorPoints;
 
-            blueKPA = (int)Math.round(Math.floor(SteamworksField.blueFuel / 3.0));
-            redKPA = (int)Math.round(Math.floor(SteamworksField.redFuel / 3.0));
-            blueKPA += SteamworksField.blueFuelInAuto;
-            redKPA += SteamworksField.redFuelInAuto;
-            blueScore += blueKPA;
-            redScore += redKPA;
-            if (!current.qualifier) {
-                if (blueKPA >= 40) blueScore += 20;
-                if (redKPA >= 40) redScore += 20;
-            }
+            a.kPA = (int)Math.round(Math.floor(a.fuel / 3.0));
+            a.kPA += a.fuelInAuto;
+            a.score += a.kPA;
+            if (!current.qualifier && a.kPA >= 40) a.score += 20;
 
             for (Robot r : Main.robots) {
-                SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
-                SteamRobotStats stats = (SteamRobotStats) r.stats;
-                if (meta.crossedBaseline) {
-                    if (r.blue) blueCrosses++;
-                    else redCrosses++;
-                }
-                if (meta.onRope != null && System.currentTimeMillis() - meta.onRope > (stats.climbSpeed * 1000)) {
-                    if (r.blue) blueClimbs++;
-                    else redClimbs++;
+                if (a.blue == r.blue) {
+                    SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
+                    SteamRobotStats stats = (SteamRobotStats) r.stats;
+                    if (meta.crossedBaseline) {
+                        a.crosses++;
+                    }
+                    if (meta.onRope != null && System.currentTimeMillis() - meta.onRope > (stats.climbSpeed * 1000)) {
+                        a.climbs++;
+                    }
                 }
             }
-            blueScore += (blueCrosses * 5);
-            redScore += (redCrosses * 5);
+            a.score += (a.crosses * 5);
 
-            blueScore += SteamworksField.redFouls;
-            redScore += SteamworksField.blueFouls;
+            //TODO: reenable fouls
+            //blueScore += Steamworks.redFouls;
+            //redScore += Steamworks.blueFouls;
             if (seconds <= 30) {
-                blueClimbs += SteamworksField.blueBonusClimbs;
-                if (blueClimbs > 3) blueClimbs = 3;
-                redClimbs += SteamworksField.redBonusClimbs;
-                if (redClimbs > 3) redClimbs = 3;
-                blueScore += blueClimbs * 50;
-                redScore += redClimbs * 50;
+                a.climbs += a.bonusClimbs;
+                if (a.climbs > 3) a.climbs = 3;
+                a.score += a.climbs * 50;
             }
         }
-        return new int[]{blueScore, redScore};
+        return a.score;
+    }
+
+    @Override
+    public int[] calculateScores() {
+        return new int[]{calculateScore(Steamworks.blue), calculateScore(Steamworks.red)};
     }
 
     public void drawGearDisplay(float x, float y, int gears, Color c, SpriteBatch b) {
