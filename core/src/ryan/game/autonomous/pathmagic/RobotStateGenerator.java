@@ -61,7 +61,6 @@ public class RobotStateGenerator extends Thread  {
 
             lastLoop = System.currentTimeMillis();
         }
-        Utils.log("ded");
     }
 
     public void actuallyStop() {
