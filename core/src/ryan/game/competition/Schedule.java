@@ -70,8 +70,8 @@ public class Schedule {
                 e.printStackTrace();
             }
         } else {
-            Team[] red = new Team[]{new Team(1902, "Exploding Bacon"), new Team(254, "The Cheesy Poofs"), new Team(987, "HIGHROLLERS")};
-            Team[] blue = new Team[]{new Team(118, "The Robonauts"), new Team(16, "Bomb Squad"), new Team(1678, "Citrus Circuits")};
+            Team[] blue = new Team[]{new Team(1902, "Exploding Bacon"), new Team(254, "The Cheesy Poofs"), new Team(987, "HIGHROLLERS")};
+            Team[] red = new Team[]{new Team(118, "The Robonauts"), new Team(16, "Bomb Squad"), new Team(1678, "Citrus Circuits")};
             Match m = new Match(1, blue, red);
             m.qualifier = false;
             matches.add(m);

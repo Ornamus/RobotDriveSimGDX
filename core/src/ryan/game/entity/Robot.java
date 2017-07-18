@@ -41,7 +41,7 @@ public class Robot extends Entity {
     public boolean hasTurret = false;
     private int controllerIndex;
     private DriveController[] scrollOptions = {new Arcade(false), new Arcade(true), new Tank(), new CheesyDrive()};
-    private FieldCentricStrafe fieldCentric;
+    private FieldCentricStrafe fieldCentric = null;
 
     private Gyro gyro = null;
     private PIDSource leftEncoder = null;
@@ -78,6 +78,7 @@ public class Robot extends Entity {
     private Sprite intakeSprite;
     private Sprite icon;
     private Sprite turretSprite = null;
+    private Sprite outline = null;
 
     public float turretAngle = 0;
 
@@ -129,7 +130,7 @@ public class Robot extends Entity {
         generator = new RobotStateGenerator(state, this);
         generator.start();
 
-        fieldCentric = new FieldCentricStrafe(this);
+        if (stats.fieldCentric) fieldCentric = new FieldCentricStrafe(this);
     }
 
     public void setupButtons(Gamepad g) {
@@ -175,6 +176,8 @@ public class Robot extends Entity {
 
         intakeSprite = new Sprite(Utils.colorImage("core/assets/robot_intake.png", c));
         intakeSprite.setPosition(-999, -999);
+
+        outline = new Sprite(Utils.colorImage("core/assets/whitepixel.png", blue ? Main.BLUE : Main.RED));
     }
 
     @Override
@@ -244,6 +247,7 @@ public class Robot extends Entity {
     public void tick() {
         super.tick();
 
+
         float angle = (float) Math.toRadians(getPhysicsAngle());
 
         Vector2 leftPos = left.getPosition();
@@ -285,6 +289,8 @@ public class Robot extends Entity {
             intakeSprite.setOriginCenter();
             intakeSprite.setRotation((float)Math.toDegrees(intake.getAngle()));
         }
+        outline.setBounds(getX() - 1, getY() - 1.95f, 2f, .7f);
+        outline.setAlpha(getAngle() > 110 && getAngle() < 250 ? .3f : .6f);
         if (hasTurret) {
             SteamRobotStats steam = (SteamRobotStats) stats;
             for (Entity e : Main.getInstance().getEntities()) {
@@ -299,7 +305,6 @@ public class Robot extends Entity {
                             float diff = Utils.fixAngle((angleWanted+180) - currentRealPos);
                             if (diff > 180) diff = -(diff - 180);
 
-                            Utils.log(Utils.roundToPlace(diff, 0) + "");
                             if (Math.abs(diff) > 0.25) {
                                 turretAngle += ((Math.abs(diff)*.08) * Utils.sign(diff));
                             }
@@ -307,6 +312,7 @@ public class Robot extends Entity {
                     }
                 }
             }
+            turretAngle = Utils.fixAngle(turretAngle);
             while (turretAngle > 360) turretAngle -= 360;
             while (turretAngle < 0) turretAngle = 360 + turretAngle;
             Vector2 pos = getTurretPosition();
@@ -319,6 +325,13 @@ public class Robot extends Entity {
         } else {
             Gamepad g = getController();
             setupButtons(g);
+
+            /*
+            if (g != null) {
+                for (Button b : g.getButtons()) {
+                    if (b.get()) Utils.log(b.id + " pressed");
+                }
+            }*/
 
             boolean val = changeControls.get();
             if (val && !changeControlsWasTrue) {
@@ -377,6 +390,7 @@ public class Robot extends Entity {
                 Robot replacement = create(stats, getX()+(oldStats.robotWidth/2), getY(), id);
                 replacement.blue = blue;
                 replacement.statsToggleWasTrue = true;
+                replacement.controllerIndex = controllerIndex;
                 replacement.statsIndex = statsIndex;
                 replacement.numberIndex = numberIndex;
                 replacement.metadata = metadata;
@@ -425,14 +439,11 @@ public class Robot extends Entity {
     @Override
     public void draw(SpriteBatch b) {
         super.draw(b);
+
         if (icon != null) icon.draw(b);
         if (intakeSprite != null) intakeSprite.draw(b);
         if (metadata != null) metadata.draw(b, this);
         if (hasTurret) turretSprite.draw(b);
-
-        Sprite outline = new Sprite(Utils.colorImage("core/assets/whitepixel.png", blue ? Main.BLUE : Main.RED));
-        outline.setBounds(getX() - 1, getY() - 1.95f, 2f, .7f);
-        outline.setAlpha(getAngle() > 110 && getAngle() < 250 ? .3f : .6f);
         outline.draw(b);
     }
 
@@ -459,7 +470,6 @@ public class Robot extends Entity {
     public void updateMotors(float l, float r) {
         float lAngle = -left.getAngle();
         float rAngle = -right.getAngle();
-
 
         float leftX = (stats.maxMPS * l) * (float) Math.sin(lAngle);
         float leftY = (stats.maxMPS * l) * (float) Math.cos(lAngle);

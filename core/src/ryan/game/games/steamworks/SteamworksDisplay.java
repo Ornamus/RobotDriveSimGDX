@@ -76,36 +76,29 @@ public class SteamworksDisplay extends ScoreDisplay {
             drawGearDisplay(232.5f, 45, SteamworksField.blueGears, SteamworksField.blueGears > 12 ? Color.YELLOW : Color.WHITE, batch);
             drawGearDisplay(-287.5f, 45, SteamworksField.redGears, SteamworksField.redGears > 12 ? Color.YELLOW : Color.WHITE, batch);
 
-            List<Long> progresses = new ArrayList<>();
-            for (SteamworksField.HumanPlayer h : SteamworksField.humanPlayers) {
-                if (h.blue && h.scoreProgress != null) {
-                    progresses.add(h.scoreProgress);
-                }
-            }
-            int loops = progresses.size()+SteamworksField.blueGearQueue;
+            List<Long> blueProgresses = new ArrayList<>();
+            List<Long> redProgresses = new ArrayList<>();
+            SteamworksField.humanPlayers.stream().filter(h -> h.scoreProgress != null).forEach(h -> {
+                if (h.blue) blueProgresses.add(h.scoreProgress);
+                else redProgresses.add(h.scoreProgress);
+            });
+            int loops = blueProgresses.size()+SteamworksField.blueGearQueue;
             final float spacing = 22f;
             float hpX = 215.5f;
             float hpY = 45 + (spacing * (loops/2f));
             for (int i=0; i<loops; i++) {
                 long progress = System.currentTimeMillis();
-                if (i <= progresses.size()-1) progress = progresses.get(i);
+                if (i <= blueProgresses.size()-1) progress = blueProgresses.get(i);
                 Utils.drawUnscaledProgressBar(hpX + 40, hpY - (spacing * i), 60, 15, (System.currentTimeMillis()-progress)/SteamworksField.hpGearScoreSpeed, batch);
                 batch.draw(Gear.TEXTURE, hpX-12, hpY-4 - (spacing * i), 20f, 20f);
             }
 
-
-            progresses = new ArrayList<>();
-            for (SteamworksField.HumanPlayer h : SteamworksField.humanPlayers) {
-                if (!h.blue && h.scoreProgress != null) {
-                    progresses.add(h.scoreProgress);
-                }
-            }
-            loops = progresses.size()+SteamworksField.redGearQueue;
+            loops = redProgresses.size()+SteamworksField.redGearQueue;
             hpX = -287.5f-(232.5f-215.5f);
             hpY = 45 + (spacing * (loops/2f));
             for (int i=0; i<loops; i++) {
                 long progress = System.currentTimeMillis();
-                if (i <= progresses.size()-1) progress = progresses.get(i);
+                if (i <= redProgresses.size()-1) progress = redProgresses.get(i);
                 Utils.drawUnscaledProgressBar(hpX + 40, hpY - (spacing * i), 60, 15, (System.currentTimeMillis()-progress)/SteamworksField.hpGearScoreSpeed, batch);
                 batch.draw(Gear.TEXTURE, hpX-12, hpY-4 - (spacing * i), 20f, 20f);
             }
@@ -151,6 +144,7 @@ public class SteamworksDisplay extends ScoreDisplay {
         //s.setPosition(startX, startY);
         //s.draw(b);
         int skipStart = blue ? 7 : 9;
+
         while (angle < 360) {
             if (ballsMade != skipStart && ballsMade != skipStart + 1 && ballsMade != skipStart + 2) {
                 if (show.length > ballsMade && show[ballsMade]) {
@@ -238,9 +232,14 @@ public class SteamworksDisplay extends ScoreDisplay {
 
             for (Robot r : Main.robots) {
                 SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
+                SteamRobotStats stats = (SteamRobotStats) r.stats;
                 if (meta.crossedBaseline) {
                     if (r.blue) blueCrosses++;
                     else redCrosses++;
+                }
+                if (meta.onRope != null && System.currentTimeMillis() - meta.onRope > (stats.climbSpeed * 1000)) {
+                    if (r.blue) blueClimbs++;
+                    else redClimbs++;
                 }
             }
             blueScore += (blueCrosses * 5);
@@ -249,14 +248,6 @@ public class SteamworksDisplay extends ScoreDisplay {
             blueScore += SteamworksField.redFouls;
             redScore += SteamworksField.blueFouls;
             if (seconds <= 30) {
-                for (Robot r : Main.robots) {
-                    SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
-                    SteamRobotStats stats = (SteamRobotStats) r.stats;
-                    if (meta.onRope != null && System.currentTimeMillis() - meta.onRope > (stats.climbSpeed * 1000)) {
-                        if (r.blue) blueClimbs++;
-                        else redClimbs++;
-                    }
-                }
                 blueClimbs += SteamworksField.blueBonusClimbs;
                 if (blueClimbs > 3) blueClimbs = 3;
                 redClimbs += SteamworksField.redBonusClimbs;

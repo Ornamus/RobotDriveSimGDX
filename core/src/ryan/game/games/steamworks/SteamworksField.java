@@ -47,6 +47,7 @@ public class SteamworksField extends Field {
     public static int blueBonusClimbs = 0;
     public static int redBonusClimbs = 0;
     boolean addedBonusGears = false;
+    boolean didRopeDropWhoop = false;
 
     public SteamworksField() {
         humanPlayers.add(new HumanPlayer(true));
@@ -184,6 +185,7 @@ public class SteamworksField extends Field {
         blueFouls = 0;
         redFouls = 0;
         addedBonusGears = false;
+        didRopeDropWhoop = false;
         for (Robot r : Main.robots) {
             r.auto = r.stats.getAutonomous(r);
             SteamworksMetadata m = (SteamworksMetadata) r.metadata;
@@ -241,6 +243,7 @@ public class SteamworksField extends Field {
 
     @Override
     public void tick() {
+        super.tick();
         for (HumanPlayer h : humanPlayers) {
             if (h.scoreProgress == null) {
                 if (h.blue && blueGearQueue > 0) {
@@ -263,10 +266,17 @@ public class SteamworksField extends Field {
             }
         }
 
-        if (Game.isPlaying() && Game.getMatchTime() == 135 && !addedBonusGears) {
-            blueGearQueue++;
-            redGearQueue++;
-            addedBonusGears = true;
+        if (Game.isPlaying()) {
+            if (Game.getMatchTime() == 135 && !addedBonusGears) {
+                blueGearQueue++;
+                redGearQueue++;
+                addedBonusGears = true;
+            }
+
+            if (Game.getMatchTime() == 30 && !didRopeDropWhoop) {
+                Main.getInstance().ropeDropSound.play(.35f);
+                didRopeDropWhoop = true;
+            }
         }
         blueSpinning = 0;
         if (blueGears > 12) blueSpinning = 3;

@@ -52,8 +52,6 @@ public class SteamworksMetadata extends RobotMetadata {
         gear.setBounds(-999, -999, 1f, 1f);
     }
 
-    long timeOfLastIntake = 0;
-
     @Override
     public void tick(Robot r) {
         Gamepad gamepad = r.getController();

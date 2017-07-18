@@ -71,7 +71,7 @@ public class Main extends ApplicationAdapter {
 
     Sound matchStartSound;
     public Sound teleopStartSound;
-    Sound ropeDropSound;
+    public Sound ropeDropSound;
     Sound matchEndSound;
     Sound foghornSound;
     Pathfinding pathfinding;
@@ -159,21 +159,15 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void resize(int width, int height) {
-        // Lets check aspect ratio of our visible window
         float screenAR = width / (float) height;
-        // Our camera needs to be created with new aspect ratio
-        // Our visible gameworld width is still 20m but we need to
-        // calculate what height keeps the AR correct.
+
         meterToPixelHeight = 630f/((world_height * 2) /screenAR);
         camera = new OrthographicCamera(world_width, (world_height * 2) /screenAR);
-        // Finally set camera position so that (0,0) is at bottom left
-        //camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
+
         camera.position.set(0, camera_y, 0);
         camera.update();
 
-        // If we use spritebatch to draw lets update it here for new camera
         batch = new SpriteBatch();
-        // This line says:"Camera lower left corner is 0,0. Width is 20 and height is 20/AR. Draw there!"
         batch.setProjectionMatrix(camera.combined);
     }
 
@@ -245,38 +239,7 @@ public class Main extends ApplicationAdapter {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         doPhysicsStep(Gdx.graphics.getDeltaTime());
-
-        int seconds = Game.getMatchTime();
-        int minutes = 0;
-        while (seconds >= 60) {
-            seconds-=60;
-            minutes++;
-        }
-
-        //TODO: game specific, move to steamworks code
-        if (minutes == 0 && seconds <= 30 && !didWhoop && matchPlay) {
-            ropeDropSound.play(.35f);
-            didWhoop = true;
-        }
-
-        if (minutes == 0 && seconds <= 0 && matchPlay) {
-            matchEndSound.play(.6f);
-            if (playMusic && music != null) {
-                if (music.isPlaying()) music.stop();
-                music.dispose();
-                music = null;
-            }
-            matchPlay = false;
-            didWhoop = false;
-            resetField = true;
-            if (gameField instanceof SteamworksField) {
-                results = new SteamResultDisplay(0, 0); //TODO: game specific, move to steamworks code or make standardized version
-                drawables.add(results);
-                isShowingResults = true;
-            }
-            matchEnd = System.currentTimeMillis();
-            gameField.onMatchEnd();
-        }
+        //long start = System.currentTimeMillis();
 
         batch.begin();
         for (Drawable e : drawables) {
@@ -299,6 +262,7 @@ public class Main extends ApplicationAdapter {
             points = pathfinding.findPath(2, 0, -4, 0);
             points.add(new Point2D.Float(2, 0));
         }*/
+        /*
         shape.begin();
         if (points != null) {
             shape.setColor(Color.GREEN);
@@ -338,9 +302,11 @@ public class Main extends ApplicationAdapter {
                 }
             }
         }
-        shape.end();
+        shape.end();*/
 
         if (DEBUG_RENDER) debugRenderer.render(world, camera.combined);
+        //long time = System.currentTimeMillis() - start;
+        //if (time > 8) Utils.log(time + "ms");
 	}
 
     private float accumulator = 0;
@@ -361,17 +327,36 @@ public class Main extends ApplicationAdapter {
     Long upHeld = null;
 
     private void tick() {
+        if (Game.isPlaying() && Game.getMatchTime() <= 0) {
+            matchEndSound.play(.6f);
+            if (playMusic && music != null) {
+                if (music.isPlaying()) music.stop();
+                music.dispose();
+                music = null;
+            }
+            matchPlay = false;
+            didWhoop = false;
+            resetField = true;
+            if (gameField instanceof SteamworksField) {
+                results = new SteamResultDisplay(0, 0); //TODO: game specific, move to steamworks code or make standardized version
+                drawables.add(results);
+                isShowingResults = true;
+            }
+            matchEnd = System.currentTimeMillis();
+            gameField.onMatchEnd();
+        }
+
         for (Drawable e : new ArrayList<>(drawablesRemove)) {
             drawables.remove(e);
             drawablesRemove.remove(e);
+            /*
             if (e instanceof Entity) {
-                /*
                 synchronized (WORLD_USE) {
                     for (Body b : ((Entity) e).getBodies()) {
                         world.destroyBody(b);
                     }
-                }*/
-            }
+                }
+            }*/
         }
         for (Drawable d : new ArrayList<>(drawablesAdd)) {
             if (d instanceof Entity) {
@@ -446,7 +431,7 @@ public class Main extends ApplicationAdapter {
         }
         if (ControllerManager.getGamepads().size() != robots.size() && ControllerManager.getGamepads().size() == 1) {
             Gamepad one = ControllerManager.getGamepad(0);
-            if (one.getButton(8).get()) {
+            if (one.getButton(10).get()) {
                 if (!wasHeld) {
                     currentRobot++;
                     if (currentRobot == robots.size()) {

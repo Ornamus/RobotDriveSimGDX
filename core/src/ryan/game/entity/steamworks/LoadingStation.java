@@ -35,7 +35,7 @@ public class LoadingStation extends Entity {
                     val = left ? g.isLeftTriggerPressed() : g.isRightTriggerPressed();
                     wasHeld.putIfAbsent(g.id, false);
                     if (val && !wasHeld.get(g.id)) {
-
+                        wasHeld.put(g.id, val);
                         float distance = 1.85f;
                         float xChange = distance * (float) Math.sin(Math.toRadians(getAngle()));
                         float yChange = -distance * (float) Math.cos(Math.toRadians(getAngle()));
@@ -45,8 +45,10 @@ public class LoadingStation extends Entity {
                         synchronized (Main.WORLD_USE) {
                             gear.getPrimary().applyForceToCenter(xChange * 50, yChange * 50, true);
                         }
+                        break;
+                    } else {
+                        wasHeld.put(g.id, val);
                     }
-                    wasHeld.put(g.id, val);
                 }
             }
         }
