@@ -8,7 +8,7 @@ public class Steam1902 extends SteamRobotStats {
 
     public Steam1902() {
         super();
-        maxAccel = (4.572f * 2.8f);
+        maxAccel = (4.572f * 3.2f);
         gearIntake = false;
         robotWidth = 0.8128f;
         robotHeight = 0.8128f;

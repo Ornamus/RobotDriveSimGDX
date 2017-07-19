@@ -22,14 +22,14 @@ public class DefaultRankings extends Rankings<DefaultRankings.TeamData> {
         for (TeamData t : original) {
             if (t.matchesPlayed == 0) d.remove(t);
         }
-        d.sort((o1, o2) -> (o2.rankingPoints / o2.matchesPlayed) - (o1.rankingPoints / o1.matchesPlayed));
+        d.sort((o1, o2) -> Math.round(((o2.rankingPoints / o2.matchesPlayed) - (o1.rankingPoints / o1.matchesPlayed)))*1000);
         return d;
     }
 
     class TeamData {
         int team;
-        int rankingPoints = 0;
-        int matchesPlayed = 0;
+        float rankingPoints = 0;
+        float matchesPlayed = 0;
 
         TeamData(int t) {
             team = t;

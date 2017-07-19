@@ -97,7 +97,7 @@ public class Main extends ApplicationAdapter {
 	public void create () {
 
         List<Integer> taken = new ArrayList<>();
-        for (int i=0; i<62; i++) {
+        for (int i=0; i<6; i++) {
             int num;
             while (taken.contains((num = Utils.randomInt(1, 6499)))) {}
             taken.add(num);
@@ -108,7 +108,7 @@ public class Main extends ApplicationAdapter {
         //TODO: load teams from "teams.txt"
 
         schedule = new Schedule(new SteamRankings());
-        schedule.generate(allTeams, 8);
+        schedule.generate(allTeams, 3);
         self = this;
         Fonts.init();
         ControllerManager.init();
@@ -173,6 +173,12 @@ public class Main extends ApplicationAdapter {
 
         batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
+
+        /*
+        nonScaledCamera = new OrthographicCamera(width, height);
+        nonScaledCamera.update();
+        nonScaled = new SpriteBatch();
+        nonScaled.setProjectionMatrix(nonScaledCamera.combined);*/
     }
 
     public void addFriction(Body b) {

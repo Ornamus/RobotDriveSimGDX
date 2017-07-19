@@ -20,67 +20,71 @@ public class Schedule {
     public void generate(List<Team> teams, int rounds) {
         this.teams = teams;
         if (Main.makeSchedule) {
-            try {
-                final Process p = Runtime.getRuntime().exec("\"core/assets/matchmaker\" -t " + teams.size() + " -r " + rounds + " > matches_temp.txt");
+            if (teams.size() >= 6) {
+                try {
+                    final Process p = Runtime.getRuntime().exec("\"core/assets/matchmaker\" -t " + teams.size() + " -r " + rounds + " -o");
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-                String data = "";
-                String out;
-                while ((out = reader.readLine()) != null) {
-                    data += out + "\n";
-                }
-                p.waitFor();
-                data = data.substring(data.indexOf("--------------"), data.indexOf("Schedule Statistics"));
-                String[] lines = data.split("\n");
-                for (String s : lines) {
-                    if (s.contains(":")) {
-                        String info = s;
-                        while (info.contains("  ")) info = info.replace("  ", " ");
-                        String[] parts = info.split(" ");
-
-                        int matchNum = Integer.parseInt(parts[1].replace(":", ""));
-
-                        Team[] blue = new Team[3];
-                        Team[] red = new Team[3];
-                        List<Integer> blueSurrs = new ArrayList<>();
-                        List<Integer> redSurrs = new ArrayList<>();
-                        for (int i = 2; i < 5; i++) {
-                            String part = parts[i];
-                            if (part.contains("*")) {
-                                blueSurrs.add(i - 2);
-                                part = part.replace("*", "");
-                            }
-                            blue[i - 2] = teams.get(Integer.parseInt(part) - 1);
-                        }
-
-                        for (int i = 5; i < 8; i++) {
-                            String part = parts[i];
-                            if (part.contains("*")) {
-                                redSurrs.add(i - 5);
-                                part = part.replace("*", "");
-                            }
-                            red[i - 5] = teams.get(Integer.parseInt(part) - 1);
-                        }
-                        int[] blueNums = new int[3];
-                        for (int i=0; i<blue.length; i++) blueNums[i] = blue[i].number;
-
-                        int[] redNums = new int[3];
-                        for (int i=0; i<red.length; i++) redNums[i] = red[i].number;
-
-                        Match m = new Match(matchNum, blueNums, redNums);
-                        m.setBlueSurrogates(blueSurrs);
-                        m.setRedSurrogates(redSurrs);
-                        matches.add(m);
-                        //Utils.log(m.toString());
+                    String data = "";
+                    String out;
+                    while ((out = reader.readLine()) != null) {
+                        data += out + "\n";
                     }
-                }
+                    p.waitFor();
+                    data = data.substring(data.indexOf("--------------"), data.indexOf("Schedule Statistics"));
+                    String[] lines = data.split("\n");
+                    for (String s : lines) {
+                        if (s.contains(":")) {
+                            String info = s;
+                            while (info.contains("  ")) info = info.replace("  ", " ");
+                            String[] parts = info.split(" ");
 
-            } catch (Exception e) {
-                e.printStackTrace();
+                            int matchNum = Integer.parseInt(parts[1].replace(":", ""));
+
+                            Team[] blue = new Team[3];
+                            Team[] red = new Team[3];
+                            List<Integer> blueSurrs = new ArrayList<>();
+                            List<Integer> redSurrs = new ArrayList<>();
+                            for (int i = 2; i < 5; i++) {
+                                String part = parts[i];
+                                if (part.contains("*")) {
+                                    blueSurrs.add(i - 2);
+                                    part = part.replace("*", "");
+                                }
+                                blue[i - 2] = teams.get(Integer.parseInt(part) - 1);
+                            }
+
+                            for (int i = 5; i < 8; i++) {
+                                String part = parts[i];
+                                if (part.contains("*")) {
+                                    redSurrs.add(i - 5);
+                                    part = part.replace("*", "");
+                                }
+                                red[i - 5] = teams.get(Integer.parseInt(part) - 1);
+                            }
+                            int[] blueNums = new int[3];
+                            for (int i = 0; i < blue.length; i++) blueNums[i] = blue[i].number;
+
+                            int[] redNums = new int[3];
+                            for (int i = 0; i < red.length; i++) redNums[i] = red[i].number;
+
+                            Match m = new Match(matchNum, blueNums, redNums);
+                            m.setBlueSurrogates(blueSurrs);
+                            m.setRedSurrogates(redSurrs);
+                            matches.add(m);
+                            //Utils.log(m.toString());
+                        }
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                //TODO: error: need 6 teams minimum
             }
         } else {
-            Match m = new Match(1, new int[]{1902, 254, 987}, new int[]{118, 16, 1678});
+            Match m = new Match(1, new int[]{1902, 254, 987}, new int[]{118, 811, 254});
             m.qualifier = false;
             matches.add(m);
         }
