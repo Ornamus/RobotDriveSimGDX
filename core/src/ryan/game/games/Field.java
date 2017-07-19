@@ -25,7 +25,7 @@ public abstract class Field extends Drawable {
         d.setBlueTeams(m.blue.teams[0], m.blue.teams[1], m.blue.teams[2]);
         d.setRedTeams(m.red.teams[0], m.red.teams[1], m.red.teams[2]);
         if (m.qualifier) {
-            d.setMatchName("Qualification " + m.number + " of " + Main.schedule.matches.size());
+            d.setMatchName("Qualification " + m.number + " of " + Main.schedule.getQualifiers().size());
         } else {
             //TODO: When eliminations is further supported, finish this
             String type = "Elimination";

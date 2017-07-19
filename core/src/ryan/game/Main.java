@@ -24,6 +24,7 @@ import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
+import ryan.game.games.steamworks.SteamRankings;
 import ryan.game.games.steamworks.SteamResultDisplay;
 import ryan.game.games.steamworks.Steamworks;
 import ryan.game.games.steamworks.robots.SteamDefault;
@@ -73,15 +74,11 @@ public class Main extends ApplicationAdapter {
     public static long matchStart = 0;
     public static long matchEnd = 0;
 
-    Sound matchStartSound;
-    public Sound teleopStartSound;
-    public Sound ropeDropSound;
-    Sound matchEndSound;
-    Sound foghornSound;
+    public Sound matchStartSound, teleopStartSound, ropeDropSound, matchEndSound, foghornSound;
     Pathfinding pathfinding;
     List<Point2D.Float> points;
 
-    List<Team> allTeams = new ArrayList<>();
+    public List<Team> allTeams = new ArrayList<>();
     public static Schedule schedule;
 
     private static Main self = null;
@@ -110,7 +107,7 @@ public class Main extends ApplicationAdapter {
         //Utils.writeFile("teams.txt", g.toJson(allTeams));
         //TODO: load teams from "teams.txt"
 
-        schedule = new Schedule();
+        schedule = new Schedule(new SteamRankings());
         schedule.generate(allTeams, 8);
         self = this;
         Fonts.init();
@@ -142,8 +139,6 @@ public class Main extends ApplicationAdapter {
         robots.forEach(this::spawnEntity);
 
         gameField.updateMatchInfo();
-
-        //drawables.add(new SteamResultDisplay(0,0));
 
 		batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
@@ -248,7 +243,6 @@ public class Main extends ApplicationAdapter {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         doPhysicsStep(Gdx.graphics.getDeltaTime());
-        //long start = System.currentTimeMillis();
 
         batch.begin();
         for (Drawable e : drawables) {
@@ -314,8 +308,6 @@ public class Main extends ApplicationAdapter {
         shape.end();*/
 
         if (DEBUG_RENDER) debugRenderer.render(world, camera.combined);
-        //long time = System.currentTimeMillis() - start;
-        //if (time > 8) Utils.log(time + "ms");
 	}
 
     private float accumulator = 0;

@@ -1,17 +1,24 @@
 package ryan.game.competition;
 
 import ryan.game.Main;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Schedule {
 
+    private List<Team> teams = new ArrayList<>();
     private int current = 0;
     public List<Match> matches = new ArrayList<>();
+    private Rankings r;
+
+    public Schedule(Rankings r) {
+        this.r = r;
+        r.s = this;
+    }
 
     public void generate(List<Team> teams, int rounds) {
+        this.teams = teams;
         if (Main.makeSchedule) {
             try {
                 final Process p = Runtime.getRuntime().exec("\"core/assets/matchmaker\" -t " + teams.size() + " -r " + rounds + " > matches_temp.txt");
@@ -95,6 +102,14 @@ public class Schedule {
         }
     }
 
+    public List<Match> getQualifiers() {
+        List<Match> m = new ArrayList<>();
+        for (Match match : matches) {
+            if (match.qualifier) m.add(match);
+        }
+        return m;
+    }
+
     public void completeCurrentMatch(int blueScore, int redScore, Object blueBreakdown, Object redBreakdown) {
         completeMatch(current, blueScore, redScore, blueBreakdown, redBreakdown);
     }
@@ -111,9 +126,17 @@ public class Schedule {
             m.red.winner = redScore > blueScore;
             m.red.breakdown = redBreakdown;
 
+            m.complete = true;
+
             m.save();
 
             current++;
+
+            r.calculate();
         }
+    }
+
+    public List<Team> getTeams() {
+        return new ArrayList<>(teams);
     }
 }

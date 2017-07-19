@@ -17,11 +17,36 @@ public class Match implements Serializable {
     public List<Integer> redSurrogates = new ArrayList<>();
     public boolean qualifier = true;
     public String level = "qm"; //qm, qf, sf, f
+    public boolean complete = false;
 
     public Match(int number, int[] b, int[] r) {
         this.number = number;
         blue = new MatchAlliance(b);
         red = new MatchAlliance(r);
+    }
+
+    public MatchAlliance getAlliance(int team) {
+        for (int i=0; i<blue.teams.length; i++) {
+            if (blue.teams[i] == team) {
+                return blue;
+            }
+        }
+        for (int i=0; i<red.teams.length; i++) {
+            if (red.teams[i] == team) {
+                return red;
+            }
+        }
+        return null;
+    }
+
+    public MatchAlliance getOther(MatchAlliance a) {
+        if (a == blue) return red;
+        if (a == red) return blue;
+        return null;
+    }
+
+    public boolean isSurrogate(int team) {
+        return blueSurrogates.contains(team) || redSurrogates.contains(team);
     }
 
     public void setBlueSurrogates(List<Integer> indexes) {
