@@ -135,6 +135,7 @@ public class Schedule {
             m.save();
             r.calculate();
         } else {
+            Match newMatch = new Match(current+2, m.blue.teams, m.red.teams);
             newMatch.qualifier = false;
             matches.add(newMatch);
         }
