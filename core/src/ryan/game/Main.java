@@ -99,7 +99,7 @@ public class Main extends ApplicationAdapter {
 	public void create () {
 
         List<Integer> taken = new ArrayList<>();
-        for (int i=0; i<6; i++) {
+        for (int i=0; i<8; i++) {
             int num;
             while (taken.contains((num = Utils.randomInt(1, 6499)))) {}
             taken.add(num);
@@ -110,7 +110,7 @@ public class Main extends ApplicationAdapter {
         //TODO: load teams from "teams.txt"
 
         schedule = new Schedule(new SteamRankings());
-        schedule.generate(allTeams, 3);
+        schedule.generate(allTeams, 20);
         self = this;
         Fonts.init();
         ControllerManager.init();

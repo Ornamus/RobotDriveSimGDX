@@ -44,13 +44,13 @@ public abstract class Rankings<T extends Rankings.RankData> {
             }
         }
         currentRanks = rank(new ArrayList<>(data.values()));
-        /*
+
         Utils.log("=========");
         int rank = 1;
         for (T t : currentRanks) {
             Utils.log(rank + ": " + t.toString());
             rank++;
-        }*/
+        }
     }
 
     public interface RankData {

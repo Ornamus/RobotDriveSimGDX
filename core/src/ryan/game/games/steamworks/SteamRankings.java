@@ -1,5 +1,6 @@
 package ryan.game.games.steamworks;
 
+import ryan.game.Utils;
 import ryan.game.competition.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,10 @@ public class SteamRankings extends Rankings<TeamData> {
         AllianceScoreData scoreInfo = (AllianceScoreData) alliance.breakdown;
         data.rankingPoints += (alliance.winner ? 2 : (other.winner ? 0 : 1));
         data.rankingPoints += scoreInfo.rankingPoints;
+        data.scores += alliance.score;
+        data.rotorPoints += scoreInfo.rotorPoints;
+        data.climbPoints += (scoreInfo.climbs * 50);
+        data.kPa += scoreInfo.kPA;
         data.matchesPlayed++;
     }
 
@@ -25,7 +30,18 @@ public class SteamRankings extends Rankings<TeamData> {
         for (TeamData t : original) {
             if (t.matchesPlayed == 0) d.remove(t);
         }
-        d.sort((o1, o2) -> Math.round(((o2.rankingPoints / o2.matchesPlayed) - (o1.rankingPoints / o1.matchesPlayed)))*1000);
+        d.sort((o1, o2) -> {
+            int o1RP = Math.round(Utils.roundToPlace(o1.rankingPoints / o1.matchesPlayed, 2) * 100);
+            int o2RP = Math.round(Utils.roundToPlace(o2.rankingPoints / o2.matchesPlayed, 2) * 100);
+            int result = o2RP-o1RP;
+            if (result == 0) result = o2.scores - o1.scores;
+            //TODO: auto points tiebreaker
+            if (result == 0) result = o2.rotorPoints - o1.rotorPoints;
+            if (result == 0) result = o2.climbPoints - o1.climbPoints;
+            if (result == 0) result = o2.kPa - o1.kPa;
+            if (result == 0) result = Utils.randomInt(0, 1);
+            return result;
+        });
         return d;
     }
 }
@@ -33,7 +49,12 @@ public class SteamRankings extends Rankings<TeamData> {
 class TeamData implements Rankings.RankData {
     int team;
     float rankingPoints = 0;
+    int scores = 0;
+    int rotorPoints = 0;
+    int climbPoints = 0;
+    int kPa = 0;
     float matchesPlayed = 0;
+
 
     TeamData(int t) {
         team = t;
