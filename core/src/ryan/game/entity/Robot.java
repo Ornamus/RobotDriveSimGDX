@@ -49,7 +49,7 @@ public class Robot extends Entity {
     private float middleMotor = 0;
 
     private int statsIndex = 0;
-    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118()};
+    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(), new SteamRookie()};
     //private RobotStats[] statsOptions = {new OverRobotStats()};
     public RobotStats stats = statsOptions[statsIndex];
 
@@ -165,8 +165,10 @@ public class Robot extends Entity {
         else if (stats.recolorIndex == 1) setSprite(Utils.colorImage(tex, null, c));
         else if (stats.recolorIndex == 2) setSprite(Utils.colorImage(tex, null, null, c));
 
-        intakeSprite = new Sprite(Utils.colorImage("core/assets/robot_intake.png", c));
-        intakeSprite.setPosition(-999, -999);
+        if (intake != null) {
+            intakeSprite = new Sprite(Utils.colorImage("core/assets/robot_intake.png", c));
+            intakeSprite.setPosition(-999, -999);
+        }
 
         outline = new Sprite(Utils.colorImage("core/assets/whitepixel.png", blue ? Main.BLUE : Main.RED));
     }
@@ -274,7 +276,7 @@ public class Robot extends Entity {
             iconAlpha -= 0.01;
             if (iconAlpha <= 0) icon = null;
         }
-        if (intakeSprite != null) {
+        if (intakeSprite != null && intake != null) {
             Vector2 pos = intake.getPosition();
             intakeSprite.setBounds(pos.x - intakeSprite.getWidth()/2, pos.y - intakeSprite.getHeight()/2, stats.intakeWidth * 2, stats.robotHeight / 2);
             intakeSprite.setOriginCenter();
@@ -432,7 +434,7 @@ public class Robot extends Entity {
         super.draw(b);
 
         if (icon != null) icon.draw(b);
-        if (intakeSprite != null) intakeSprite.draw(b);
+        if (intake != null && intakeSprite != null) intakeSprite.draw(b);
         if (metadata != null) metadata.draw(b, this);
         if (hasTurret) turretSprite.draw(b);
         outline.draw(b);
@@ -442,9 +444,9 @@ public class Robot extends Entity {
         int t;
         if (blue) t = Main.schedule.getCurrentMatch().blue.teams[numberIndex];
         else t = Main.schedule.getCurrentMatch().red.teams[numberIndex];
-        Fonts.fmsWhiteSmall.setColor(255, 255, 255, getAngle() > 110 && getAngle() < 250 ? .3f : 1);
-        Fonts.drawCentered(t + "", getX() * Main.meterToPixelWidth, (getY()*Main.meterToPixelHeight) + (Main.meterToPixelHeight*2.7f), Fonts.fmsWhiteSmall, b);
-        Fonts.fmsWhiteSmall.setColor(255, 255, 255, 1);
+        Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, getAngle() > 110 && getAngle() < 250 ? .3f : 1);
+        Fonts.drawCentered(t + "", getX() * Main.meterToPixelWidth, (getY()*Main.meterToPixelHeight) + (Main.meterToPixelHeight*2.7f), Fonts.fmsWhiteVerySmall, b);
+        Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, 1);
     }
 
     final float k = 10.0f; //2.25
@@ -519,7 +521,7 @@ public class Robot extends Entity {
     @Override
     public List<Body> getFrictionlessBodies() {
         List<Body> no = new ArrayList<>();
-        no.add(intake);
+        if (intake != null) no.add(intake);
         return no;
     }
 
@@ -552,15 +554,18 @@ public class Robot extends Entity {
         Body left = createRobotPart(stats, x - stats.robotWidth, y);
         Body right = createRobotPart(stats, x, y);
 
-        float width = stats.intakeWidth, height = stats.robotHeight / 4;
-        Body intake = BodyFactory.getRectangleDynamic(x - (stats.robotWidth/2), y + stats.robotHeight * 1.25f, width, height, width*height);
-
         weldJoint(left, right);
-        weldJoint(left, intake);
-        weldJoint(right, intake);
+
+        Body intake = null;
+        if (stats.hasIntake) {
+            float width = stats.intakeWidth, height = stats.robotHeight / 4;
+            intake = BodyFactory.getRectangleDynamic(x - (stats.robotWidth/2), y + stats.robotHeight * 1.25f, width, height, width*height);
+            weldJoint(left, intake);
+            weldJoint(right, intake);
+        }
 
         Robot r = new Robot(stats, left, right, id);
-        r.setIntake(intake);
+        if (stats.hasIntake) r.setIntake(intake);
 
         if (stats instanceof SteamRobotStats) {
             SteamRobotStats steam = (SteamRobotStats) stats;

@@ -169,8 +169,9 @@ public class Steamworks extends Field {
         for (Robot r : Main.robots) {
             r.auto = r.stats.getAutonomous(r);
             SteamworksMetadata m = (SteamworksMetadata) r.metadata;
-            m.hasGear = true;
-            m.fuel = 10;
+            SteamRobotStats stats = (SteamRobotStats) r.stats;
+            m.hasGear = stats.gearHPStation || stats.gearIntake;
+            m.fuel = stats.shooter ? 10 : 0;;
             m.crossedBaseline = false;
         }
     }

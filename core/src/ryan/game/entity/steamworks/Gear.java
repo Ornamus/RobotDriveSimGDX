@@ -7,7 +7,9 @@ import ryan.game.Main;
 import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
+import ryan.game.games.steamworks.Steamworks;
 import ryan.game.games.steamworks.SteamworksMetadata;
+import ryan.game.games.steamworks.robots.SteamRobotStats;
 
 public class Gear extends Entity {
 
@@ -38,7 +40,8 @@ public class Gear extends Entity {
             if (diff <= 9.5) {
                 Robot r = (Robot) e;
                 SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
-                if (r.intake == other && !meta.hasGear) {
+                SteamRobotStats stats = (SteamRobotStats) r.stats;
+                if (r.intake == other && !meta.hasGear && stats.gearHPStation) {
                     meta.hasGear = true;
                     Main.getInstance().removeEntity(this);
                 }

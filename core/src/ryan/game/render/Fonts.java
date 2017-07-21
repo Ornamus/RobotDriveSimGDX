@@ -15,7 +15,9 @@ public class Fonts {
     public static BitmapFont monoWhiteSmall = null;
     public static BitmapFont fmsScore = null;
     public static BitmapFont fmsBlack = null;
+    public static BitmapFont fmsWhiteVerySmall = null;
     public static BitmapFont fmsWhiteSmall = null;
+    public static BitmapFont fmsWhiteNormal = null;
 
     private Fonts() {}
 
@@ -37,13 +39,6 @@ public class Fonts {
 
         generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/Kozuka.otf"));
         param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 52;
-        param.borderColor = Color.BLACK;
-        param.color = Color.WHITE;
-        param.borderWidth = 2f;
-        fmsScore = generator.generateFont(param);
-
-        param = new FreeTypeFontGenerator.FreeTypeFontParameter();
         param.size = 20;
         param.color = Color.BLACK;
         param.shadowColor = Color.BLACK;
@@ -53,11 +48,36 @@ public class Fonts {
         generator.dispose();
 
 
-        generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/Kozuka.otf"));
+        generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/segoe-ui.ttf")); //generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/Kozuka.otf"));
+        param = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        param.size = 52;
+        param.borderColor = Color.BLACK;
+        param.color = Color.WHITE;
+        param.borderWidth = 2f;
+
+        fmsScore = generator.generateFont(param);
+
         param.size = 15;
         param.color = Color.WHITE;
         param.borderWidth = 1.5f;
         param.borderColor = Color.BLACK;
+
+        fmsWhiteVerySmall = generator.generateFont(param);
+
+        param = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        param.size = 30;
+        param.color = Color.WHITE;
+        param.borderWidth = 1f;
+        param.borderColor = Color.BLACK;
+
+        fmsWhiteNormal = generator.generateFont(param);
+
+        param = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        param.size = 20;
+        param.color = Color.WHITE;
+        param.borderWidth = 1f;
+        param.borderColor = Color.BLACK;
+
         fmsWhiteSmall = generator.generateFont(param);
 
         generator.dispose();

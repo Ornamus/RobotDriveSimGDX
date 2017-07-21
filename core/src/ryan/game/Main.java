@@ -138,6 +138,14 @@ public class Main extends ApplicationAdapter {
         gameField.affectRobots();
         drawables.addAll(gameField.generateField());
 
+        /*
+        Match fake = new Match(5, new int[]{1114,2056,1902}, new int[]{987,1557,180});
+        fake.qualifier = true;
+        fake.blue.breakdown = new AllianceScoreData(true);
+        fake.red.breakdown = new AllianceScoreData(false);
+        drawables.add(new SteamResultDisplay(fake));
+        */
+
         robots.forEach(this::spawnEntity);
 
         gameField.updateMatchInfo();

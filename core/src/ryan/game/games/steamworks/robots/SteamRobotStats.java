@@ -6,6 +6,7 @@ import ryan.game.games.Game;
 
 public abstract class SteamRobotStats extends RobotStats {
 
+    public boolean gearHPStation = true;
     public boolean gearIntake = true;
     public float gearIntakeRate = 650;
     public float gearIntakeStrength = 10f;

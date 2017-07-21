@@ -19,8 +19,6 @@ import ryan.game.render.ImageDrawer;
 
 public class SteamResultDisplay extends ImageDrawer {
 
-    public BitmapFont whiteSmall;
-    public BitmapFont whiteNormal;
     public BitmapFont blackSmall;
     Sprite blueWin, redWin;
     Sprite redX;
@@ -49,22 +47,6 @@ public class SteamResultDisplay extends ImageDrawer {
         param.borderColor = Color.BLACK;
 
         blackSmall = generator.generateFont(param);
-
-        param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 30;
-        param.color = Color.WHITE;
-        param.borderWidth = 1f;
-        param.borderColor = Color.BLACK;
-
-        whiteNormal = generator.generateFont(param);
-
-        param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 20;
-        param.color = Color.WHITE;
-        param.borderWidth = 1f;
-        param.borderColor = Color.BLACK;
-
-        whiteSmall = generator.generateFont(param);
 
         generator.dispose();
     }
@@ -95,8 +77,8 @@ public class SteamResultDisplay extends ImageDrawer {
             Rankings r = Main.getInstance().schedule.getRankings();
             for (int i = 0; i < a.teams.length; i++) {
                 float increment = (i * 39);
-                whiteNormal.draw(b, a.teams[i] + "", x + 53, teamY - increment);
-                Fonts.drawCentered(r.getRank(a.teams[i]) + "", x + 243, teamY - increment, whiteNormal, b);
+                Fonts.fmsWhiteNormal.draw(b, a.teams[i] + "", x + 53, teamY - increment);
+                Fonts.drawCentered(r.getRank(a.teams[i]) + "", x + 243, teamY - increment, Fonts.fmsWhiteNormal, b);
             }
         } else {
             String teams = "";
@@ -104,13 +86,13 @@ public class SteamResultDisplay extends ImageDrawer {
                 teams += "-" + t;
             }
             teams = teams.substring(1, teams.length());
-            whiteSmall.draw(b, teams, x+70, y + 156);
+            Fonts.fmsWhiteSmall.draw(b, teams, x+70, y + 156);
             blackSmall.draw(b, match.blue == a ? "8" : "1", x+22.5f, y + 156); //TODO: handle seeds
         }
 
         AllianceScoreData d = (AllianceScoreData) a.breakdown;
 
-        Fonts.fmsBlack.draw(b, "Auto Mobility\nPressure\nRotor\nReady for Takeoff\nBlue Penalty", x, y);
+        Fonts.fmsBlack.draw(b, "Auto Mobility\nPressure\nRotor\nReady for Takeoff\n" + (blue ? "Red" : "Blue") + " Penalty", x, y);
         Fonts.fmsBlack.draw(b,
                 (d.crosses*5) + "\n" +
                         d.kPA + "\n" +
