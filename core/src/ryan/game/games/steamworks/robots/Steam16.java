@@ -16,7 +16,9 @@ public class Steam16 extends SteamRobotStats {
         maxFuel = 35;
         fieldCentric = true;
         fieldCentricStrafeMult = 1;
+
         texture = "core/assets/16.png";
+        recolorIndex = 1;
     }
 
     @Override

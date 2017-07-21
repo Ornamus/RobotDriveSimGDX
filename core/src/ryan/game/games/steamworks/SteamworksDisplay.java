@@ -39,10 +39,10 @@ public class SteamworksDisplay extends ScoreDisplay {
 
     @Override
     public void draw(SpriteBatch batch) {
-        if (!Main.isShowingResults) {
+        //if (!Main.isShowingResults) {
             Steamworks.blue.scoreUpdateReset();
             Steamworks.red.scoreUpdateReset();
-        }
+        //}
 
         super.draw(batch);
 

@@ -43,7 +43,7 @@ public class Fuel extends Entity {
 
     @Override
     public void onCollide(Entity e, Body self, Body other, Contact contact) {
-        if (hopper && e instanceof Robot && System.currentTimeMillis() - creation <= 900) {
+        if (hopper && e instanceof Robot && System.currentTimeMillis() - creation <= 75) {
             Robot r = (Robot) e;
             SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
             SteamRobotStats stats = (SteamRobotStats) r.stats;

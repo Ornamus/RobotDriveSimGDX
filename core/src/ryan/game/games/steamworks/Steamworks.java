@@ -163,9 +163,6 @@ public class Steamworks extends Field {
 
     @Override
     public void onMatchStart() {
-        blue = new AllianceScoreData(true);
-        red = new AllianceScoreData(false);
-
         addedBonusGears = false;
         didRopeDropWhoop = false;
 
@@ -182,20 +179,20 @@ public class Steamworks extends Field {
     public void onMatchEnd() {
         if (blue.kPA >= 40) blue.rankingPoints++;
         if (blue.rotors == 4) blue.rankingPoints++;
-        if (blue.score > red.score) blue.rankingPoints += 2;
 
         if (red.kPA >= 40) red.rankingPoints++;
         if (red.rotors == 4) red.rankingPoints++;
-        if (red.score > blue.score) red.rankingPoints += 2;
 
-        if (red.score == blue.score) {
-            //TODO: full tiebreaker criteria
-            blue.rankingPoints++;
-            red.rankingPoints++;
-        }
-
+        Match current = Main.schedule.getCurrentMatch();
         Main.schedule.completeCurrentMatch(blue.score, red.score, blue, red);
+
+        Main.getInstance().results = new SteamResultDisplay(current);
+        Main.getInstance().addDrawable(Main.getInstance().results);
+        Main.getInstance().isShowingResults = true;
+
         updateMatchInfo();
+        blue = new AllianceScoreData(true);
+        red = new AllianceScoreData(false);
     }
 
     @Override

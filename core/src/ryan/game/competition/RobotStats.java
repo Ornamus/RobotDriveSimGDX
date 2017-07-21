@@ -15,6 +15,8 @@ public abstract class RobotStats {
     public boolean fieldCentric = false;
     public boolean needsStateGenerator = false;
     public float fieldCentricStrafeMult = .7f;
+    public int recolorIndex = 0;
+
     public String texture = "core/assets/robot_recolor.png";
 
     public RobotStats(Game g) {

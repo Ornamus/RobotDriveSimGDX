@@ -119,28 +119,34 @@ public class Schedule {
     }
 
     public void completeMatch(int index, int blueScore, int redScore, Object blueBreakdown, Object redBreakdown) {
+        Match m = getMatch(index);
+
+        m.blue.score = blueScore;
+        m.blue.winner = blueScore > redScore;
+        m.blue.breakdown = blueBreakdown;
+
+        m.red.score = redScore;
+        m.red.winner = redScore > blueScore;
+        m.red.breakdown = redBreakdown;
+
+        m.complete = true;
+
         if (Main.makeSchedule) {
-            Match m = getMatch(index);
-
-            m.blue.score = blueScore;
-            m.blue.winner = blueScore > redScore;
-            m.blue.breakdown = blueBreakdown;
-
-            m.red.score = redScore;
-            m.red.winner = redScore > blueScore;
-            m.red.breakdown = redBreakdown;
-
-            m.complete = true;
-
             m.save();
-
-            current++;
-
             r.calculate();
+        } else {
+            newMatch.qualifier = false;
+            matches.add(newMatch);
         }
+
+        current++;
     }
 
     public List<Team> getTeams() {
         return new ArrayList<>(teams);
+    }
+
+    public Rankings getRankings() {
+        return r;
     }
 }

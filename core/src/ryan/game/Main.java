@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.joints.FrictionJointDef;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ryan.game.ai.Pathfinding;
+import ryan.game.competition.Match;
 import ryan.game.competition.Schedule;
 import ryan.game.competition.Team;
 import ryan.game.controls.ControllerManager;
@@ -24,6 +25,7 @@ import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
+import ryan.game.games.steamworks.AllianceScoreData;
 import ryan.game.games.steamworks.SteamRankings;
 import ryan.game.games.steamworks.SteamResultDisplay;
 import ryan.game.games.steamworks.Steamworks;
@@ -44,7 +46,7 @@ public class Main extends ApplicationAdapter {
     public static final Color BLUE = Utils.toColor(50, 50, 245);//Utils.toColor(63, 72, 204);
     public static final Color RED = Utils.toColor(237, 28, 36);
 
-    SteamResultDisplay results = null;
+    public Drawable results = null;
 	SpriteBatch batch;
     SpriteBatch nonScaled;
     ShapeRenderer shape;
@@ -345,11 +347,6 @@ public class Main extends ApplicationAdapter {
             matchPlay = false;
             didWhoop = false;
             resetField = true;
-            if (gameField instanceof Steamworks) {
-                results = new SteamResultDisplay(0, 0); //TODO: game specific, move to steamworks code or make standardized version
-                drawables.add(results);
-                isShowingResults = true;
-            }
             matchEnd = System.currentTimeMillis();
             gameField.onMatchEnd();
         }

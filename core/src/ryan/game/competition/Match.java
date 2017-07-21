@@ -57,8 +57,34 @@ public class Match implements Serializable {
         redSurrogates = indexes;
     }
 
+    public String getName() {
+        if (qualifier) {
+            return "Qualification " + number + " of " + Main.schedule.getQualifiers().size();
+        } else {
+            //TODO: When eliminations is further supported, finish this
+            String type = "Elimination";
+            int total = -1;
+            if (level.equalsIgnoreCase("qf")) {
+                type = "Quarterfinal";
+                total = 8;
+            } else if (level.equalsIgnoreCase("sf")) {
+                type = "Semifinal";
+                total = 4;
+            } else if (level.equalsIgnoreCase("f")) {
+                type = "Final";
+                total = -1;
+            }
+            if (total == -1) {
+                return type + " " + number;
+            } else {
+                return type + " " + number + " of " + total;
+            }
+        }
+    }
+
     @Override
     public String toString() {
+
         String blueString = "", redString = "";
         for (int i=0; i<blue.teams.length; i++) {
             int t = blue.teams[i];

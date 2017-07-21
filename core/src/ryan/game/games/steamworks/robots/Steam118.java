@@ -17,7 +17,9 @@ public class Steam118 extends SteamRobotStats {
         shootPower = 23;
         shootPowerVariance = 2.5f;
         shootAngleVariance = 1;
+
         texture = "core/assets/118.png";
+        recolorIndex = 2;
     }
 
     @Override

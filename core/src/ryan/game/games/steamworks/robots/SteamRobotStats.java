@@ -13,6 +13,7 @@ public abstract class SteamRobotStats extends RobotStats {
     public boolean fuelIntake = true;
     public float fuelIntakeRate = 250;
     public float fuelIntakeStrength = 1f;
+
     public boolean shooter = true;
     public float timePerShoot = 166f;
     public boolean shooterIsTurret = false;
@@ -28,11 +29,12 @@ public abstract class SteamRobotStats extends RobotStats {
     public float shootAngleVariance = 2;
     public float maxFuel = 45;
 
+    public boolean climber = true;
     public float climbSpeed = 2f;
+    public float climbSuccess = 1f;
 
     public float gearScoreSuccess = 1f;
     public float gearDropOnCollide = 0f;
-    public float climbSuccess = 1f;
 
     public SteamRobotStats() {
         super(Game.STEAMWORKS);

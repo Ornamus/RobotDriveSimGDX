@@ -3,7 +3,7 @@ package ryan.game.competition;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultRankings extends Rankings<DefaultRankings.TeamData> {
+public class DefaultRankings extends Rankings<TeamData> {
 
     @Override
     public TeamData generate(Team team) {
@@ -25,19 +25,24 @@ public class DefaultRankings extends Rankings<DefaultRankings.TeamData> {
         d.sort((o1, o2) -> Math.round(((o2.rankingPoints / o2.matchesPlayed) - (o1.rankingPoints / o1.matchesPlayed)))*1000);
         return d;
     }
+}
 
-    class TeamData {
-        int team;
-        float rankingPoints = 0;
-        float matchesPlayed = 0;
+class TeamData implements Rankings.RankData {
+    int team;
+    float rankingPoints = 0;
+    float matchesPlayed = 0;
 
-        TeamData(int t) {
-            team = t;
-        }
+    TeamData(int t) {
+        team = t;
+    }
 
-        @Override
-        public String toString() {
-            return team + " - " + (rankingPoints/matchesPlayed) + " RP";
-        }
+    @Override
+    public int getTeam() {
+        return team;
+    }
+
+    @Override
+    public String toString() {
+        return team + " - " + (rankingPoints / matchesPlayed) + " RP";
     }
 }

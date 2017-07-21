@@ -161,15 +161,9 @@ public class Robot extends Entity {
         else c = Main.RED;
         String tex;
         tex = stats.texture;
-        //if (dozer) tex = "core/assets/dozer_recolor.png";
-        //else tex = "core/assets/robot_recolor.png";
-        if (tex.contains("254") || tex.contains("1902") || tex.contains("16")) {
-            setSprite(Utils.colorImage(tex, null, c));
-        } else if (tex.contains("118")) {
-            setSprite(Utils.colorImage(tex, null, null, c));
-        } else {
-            setSprite(Utils.colorImage(tex, c));
-        }
+        if (stats.recolorIndex == 0) setSprite(Utils.colorImage(tex, c));
+        else if (stats.recolorIndex == 1) setSprite(Utils.colorImage(tex, null, c));
+        else if (stats.recolorIndex == 2) setSprite(Utils.colorImage(tex, null, null, c));
 
         intakeSprite = new Sprite(Utils.colorImage("core/assets/robot_intake.png", c));
         intakeSprite.setPosition(-999, -999);

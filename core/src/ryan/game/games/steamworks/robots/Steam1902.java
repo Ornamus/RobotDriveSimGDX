@@ -18,7 +18,9 @@ public class Steam1902 extends SteamRobotStats {
         maxFuel = 20;
         timePerShoot = 300;
         fieldCentric = true;
+
         texture = "core/assets/1902.png";
+        recolorIndex = 1;
     }
 
     @Override

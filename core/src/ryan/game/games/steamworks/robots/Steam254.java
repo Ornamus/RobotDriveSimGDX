@@ -17,7 +17,9 @@ public class Steam254 extends SteamRobotStats {
         shootPowerVariance = 2.5f;
         shootAngleVariance = 1;
         needsStateGenerator = true;
+
         texture = "core/assets/254.png";
+        recolorIndex = 1;
     }
 
     @Override

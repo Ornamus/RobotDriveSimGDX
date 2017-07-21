@@ -4,7 +4,7 @@ import ryan.game.competition.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SteamRankings extends Rankings<SteamRankings.TeamData> {
+public class SteamRankings extends Rankings<TeamData> {
 
     @Override
     public TeamData generate(Team team) {
@@ -15,7 +15,7 @@ public class SteamRankings extends Rankings<SteamRankings.TeamData> {
     public void update(TeamData data, Match.MatchAlliance alliance, Match.MatchAlliance other) {
         AllianceScoreData scoreInfo = (AllianceScoreData) alliance.breakdown;
         data.rankingPoints += (alliance.winner ? 2 : (other.winner ? 0 : 1));
-        data.rankingPoints += (scoreInfo.rotors == 4 ? 1 : 0) + (scoreInfo.kPA >= 40 ? 1 : 0);
+        data.rankingPoints += scoreInfo.rankingPoints;
         data.matchesPlayed++;
     }
 
@@ -28,19 +28,24 @@ public class SteamRankings extends Rankings<SteamRankings.TeamData> {
         d.sort((o1, o2) -> Math.round(((o2.rankingPoints / o2.matchesPlayed) - (o1.rankingPoints / o1.matchesPlayed)))*1000);
         return d;
     }
+}
 
-    class TeamData {
-        int team;
-        float rankingPoints = 0;
-        float matchesPlayed = 0;
+class TeamData implements Rankings.RankData {
+    int team;
+    float rankingPoints = 0;
+    float matchesPlayed = 0;
 
-        TeamData(int t) {
-            team = t;
-        }
+    TeamData(int t) {
+        team = t;
+    }
 
-        @Override
-        public String toString() {
-            return team + " - " + (rankingPoints/matchesPlayed) + " RP";
-        }
+    @Override
+    public int getTeam() {
+        return team;
+    }
+
+    @Override
+    public String toString() {
+        return team + " - " + (rankingPoints/matchesPlayed) + " RP";
     }
 }

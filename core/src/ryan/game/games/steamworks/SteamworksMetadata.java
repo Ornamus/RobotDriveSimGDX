@@ -120,6 +120,7 @@ public class SteamworksMetadata extends RobotMetadata {
 
     @Override
     public void collideStart(Robot r, Entity e, Body self, Body other, Contact contact) {
+        SteamRobotStats stats = (SteamRobotStats) r.stats;
         if (self == r.intake) {
             if (e.getName().equalsIgnoreCase("peg")) {
                 peg = e;
@@ -138,7 +139,7 @@ public class SteamworksMetadata extends RobotMetadata {
             }
         }
         if (e instanceof Rope) {
-            if (((Rope)e).blue == r.blue) {
+            if (((Rope)e).blue == r.blue && stats.climber && (Game.getMatchTime() <= 30 || !Game.isPlaying())) {
                 if (onRope == null) onRope = System.currentTimeMillis();
             }
         }
@@ -195,7 +196,7 @@ public class SteamworksMetadata extends RobotMetadata {
             batch.draw(fuel == stats.maxFuel ? Fuel.TEXTURE_MAX : Fuel.TEXTURE, r.getX() - (size / 2), r.getY() - (size / 2), size, size);
         }
         if (hasGear) gear.draw(batch);
-        if (onRope != null && Game.getMatchTime() <= 30) {
+        if (onRope != null && (Game.getMatchTime() <= 30 || !Game.isPlaying())) {
             Utils.drawProgressBar(r.getX(), r.getY() + 1f, 2f, .5f, ((System.currentTimeMillis() - onRope)/((stats.climbSpeed*1000))), batch);
         }
     }
