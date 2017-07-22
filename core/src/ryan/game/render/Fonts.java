@@ -15,6 +15,7 @@ public class Fonts {
     public static BitmapFont monoWhiteSmall = null;
     public static BitmapFont fmsScore = null;
     public static BitmapFont fmsBlack = null;
+    public static BitmapFont fmsBlackSmall = null;
     public static BitmapFont fmsWhiteVerySmall = null;
     public static BitmapFont fmsWhiteSmall = null;
     public static BitmapFont fmsWhiteNormal = null;
@@ -44,9 +45,19 @@ public class Fonts {
         param.shadowColor = Color.BLACK;
         param.borderWidth = .5f;
         param.borderColor = Color.BLACK;
-        fmsBlack = generator.generateFont(param);
-        generator.dispose();
 
+        fmsBlack = generator.generateFont(param);
+
+        param = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        param.size = 15;
+        param.color = Color.BLACK;
+        param.shadowColor = Color.BLACK;
+        param.borderWidth = .5f;
+        param.borderColor = Color.BLACK;
+
+        fmsBlackSmall = generator.generateFont(param);
+
+        generator.dispose();
 
         generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/segoe-ui.ttf")); //generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/Kozuka.otf"));
         param = new FreeTypeFontGenerator.FreeTypeFontParameter();

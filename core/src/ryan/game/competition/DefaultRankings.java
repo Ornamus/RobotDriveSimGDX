@@ -27,7 +27,7 @@ public class DefaultRankings extends Rankings<TeamData> {
     }
 }
 
-class TeamData implements Rankings.RankData {
+class TeamData extends RankData {
     int team;
     float rankingPoints = 0;
     float matchesPlayed = 0;

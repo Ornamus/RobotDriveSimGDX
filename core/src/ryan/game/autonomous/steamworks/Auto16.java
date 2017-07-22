@@ -1,5 +1,6 @@
 package ryan.game.autonomous.steamworks;
 
+import ryan.game.Main;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.bcnlib_pieces.Motor;
 import ryan.game.bcnlib_pieces.PIDController;
@@ -22,8 +23,8 @@ public class Auto16 extends Command {
     public void onInit() {
         SteamworksMetadata meta = (SteamworksMetadata) robot.metadata;
         try {
-            long start = System.currentTimeMillis();
-            while (System.currentTimeMillis() - start < 3000) {
+            long start = Main.getTime();
+            while (Main.getTime()- start < 3000) {
                 meta.shootFuel(robot);
             }
             robot.setMotors(.5f, .5f);

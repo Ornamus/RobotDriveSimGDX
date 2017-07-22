@@ -1,5 +1,6 @@
 package ryan.game.autonomous.pathmagic;
 
+import ryan.game.Main;
 import ryan.game.bcnlib_pieces.Motor;
 import ryan.game.bcnlib_pieces.PIDController;
 import ryan.game.drive.DriveOrder;
@@ -39,7 +40,7 @@ public class PursuitControl {
             if (!left.isEnabled()) left.enable();
             if (!right.isEnabled()) right.enable();
             RigidTransform2d robot_pose = r.state.getLatestFieldToVehicle().getValue();
-            RigidTransform2d.Delta command = pathFollower.update(robot_pose, System.currentTimeMillis()); //TODO: was Timer.getFPGA
+            RigidTransform2d.Delta command = pathFollower.update(robot_pose, Main.getTime()); //TODO: was Timer.getFPGA
             Kinematics.DriveVelocity setpoint = Kinematics.inverseKinematics(command);
 
             // Scale the command to respect the max velocity limits

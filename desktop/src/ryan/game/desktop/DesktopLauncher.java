@@ -26,6 +26,12 @@ public class DesktopLauncher {
 			if (s.equalsIgnoreCase("schedule")) {
 				Main.makeSchedule = true;
 			}
+			if (s.equalsIgnoreCase("custom_teams")) {
+				Main.customTeams = true;
+			}
+			if (s.startsWith("rounds=")) {
+				Main.scheduleRounds = Integer.parseInt(s.replace("rounds=", ""));
+			}
 			if (s.startsWith("event_name=")) {
                 Main.eventName = s.replace("event_name=", "");
 			}

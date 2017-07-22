@@ -36,20 +36,20 @@ public class Boiler extends Entity {
                 Main.getInstance().removeEntity(e);
                 fuelInRange.remove(e);
                 if (Main.matchPlay) {
-                    queue.add(System.currentTimeMillis());
+                    queue.add(Main.getTime());
                 }
             }
         }
 
         for (Long l : new ArrayList<>(queue)) {
-            if (System.currentTimeMillis() - l >= 1000) {
+            if (Main.getTime() - l >= 1000) {
                 queue.remove(l);
                 fuelToCount++;
             }
         }
 
         if (fuelToCount > 0) {
-            if (System.currentTimeMillis() - timeSinceLast >= 200) {
+            if (Main.getTime() - timeSinceLast >= 200) {
                 fuelToCount--;
                 if (Game.isAutonomous()) {
                     if (blue) Steamworks.blue.fuelInAuto++;
@@ -58,7 +58,7 @@ public class Boiler extends Entity {
                     if (blue) Steamworks.blue.fuel++;
                     else Steamworks.red.fuel++;
                 }
-                timeSinceLast = System.currentTimeMillis();
+                timeSinceLast = Main.getTime();
             }
         }
     }

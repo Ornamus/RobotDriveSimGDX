@@ -70,9 +70,9 @@ public class SteamworksDisplay extends ScoreDisplay {
             float hpX = 215.5f;
             float hpY = 45 + (spacing * (loops/2f));
             for (int i=0; i<loops; i++) {
-                long progress = System.currentTimeMillis();
+                long progress = Main.getTime();
                 if (i <= blueProgresses.size()-1) progress = blueProgresses.get(i);
-                Utils.drawUnscaledProgressBar(hpX + 40, hpY - (spacing * i), 60, 15, (System.currentTimeMillis()-progress)/ Steamworks.hpGearScoreSpeed, batch);
+                Utils.drawUnscaledProgressBar(hpX + 40, hpY - (spacing * i), 60, 15, (Main.getTime()-progress)/ Steamworks.hpGearScoreSpeed, batch);
                 batch.draw(Gear.TEXTURE, hpX-12, hpY-4 - (spacing * i), 20f, 20f);
             }
 
@@ -80,9 +80,9 @@ public class SteamworksDisplay extends ScoreDisplay {
             hpX = -287.5f-(232.5f-215.5f);
             hpY = 45 + (spacing * (loops/2f));
             for (int i=0; i<loops; i++) {
-                long progress = System.currentTimeMillis();
+                long progress = Main.getTime();
                 if (i <= redProgresses.size()-1) progress = redProgresses.get(i);
-                Utils.drawUnscaledProgressBar(hpX + 40, hpY - (spacing * i), 60, 15, (System.currentTimeMillis()-progress)/ Steamworks.hpGearScoreSpeed, batch);
+                Utils.drawUnscaledProgressBar(hpX + 40, hpY - (spacing * i), 60, 15, (Main.getTime()-progress)/ Steamworks.hpGearScoreSpeed, batch);
                 batch.draw(Gear.TEXTURE, hpX-12, hpY-4 - (spacing * i), 20f, 20f);
             }
             drawFuelProgress(274, -273, true, batch);
@@ -186,7 +186,7 @@ public class SteamworksDisplay extends ScoreDisplay {
                     if (meta.crossedBaseline) {
                         a.crosses++;
                     }
-                    if (meta.onRope != null && System.currentTimeMillis() - meta.onRope > (stats.climbSpeed * 1000)) {
+                    if (meta.onRope != null && Main.getTime() - meta.onRope > (stats.climbSpeed * 1000)) {
                         a.climbs++;
                     }
                 }

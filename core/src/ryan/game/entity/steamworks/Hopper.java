@@ -43,7 +43,7 @@ public class Hopper extends Entity {
     public void tick() {
         super.tick();
         if (dumping) {
-            if (System.currentTimeMillis() - timeOfLastDump > dumpRate) {
+            if (Main.getTime() - timeOfLastDump > dumpRate) {
                 for (int i=0; 2>i; i++) {
                     Entity e = new Fuel(x + (i == 0 ? 2 : -2), y + (dropDown ? -1 : 1), true);
                     synchronized (Main.WORLD_USE) {
@@ -56,7 +56,7 @@ public class Hopper extends Entity {
                         break;
                     }
                 }
-                timeOfLastDump = System.currentTimeMillis();
+                timeOfLastDump = Main.getTime();
                 if (fuelInHopper <= 0) {
                     dumping = false;
                     dumped = true;
@@ -70,7 +70,7 @@ public class Hopper extends Entity {
     public void onCollide(Entity e, Body self, Body other, Contact contact) {
         if (e instanceof Robot && !dumped) {
             dumping = true;
-            timeOfLastDump = System.currentTimeMillis();
+            timeOfLastDump = Main.getTime();
         }
     }
 }

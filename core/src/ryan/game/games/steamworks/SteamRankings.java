@@ -13,8 +13,11 @@ public class SteamRankings extends Rankings<TeamData> {
     }
 
     @Override
-    public void update(TeamData data, Match.MatchAlliance alliance, Match.MatchAlliance other) {
+    public void update(TeamData data, Match.MatchAlliance alliance, Match.MatchAlliance other) {;
         AllianceScoreData scoreInfo = (AllianceScoreData) alliance.breakdown;
+        if (scoreInfo == null) Utils.log("Score info is null");
+        if (data == null) Utils.log("Data is null");
+        if (alliance == null) Utils.log("alliance is null (wat)");
         data.rankingPoints += (alliance.winner ? 2 : (other.winner ? 0 : 1));
         data.rankingPoints += scoreInfo.rankingPoints;
         data.scores += alliance.score;
@@ -46,7 +49,7 @@ public class SteamRankings extends Rankings<TeamData> {
     }
 }
 
-class TeamData implements Rankings.RankData {
+class TeamData extends RankData {
     int team;
     float rankingPoints = 0;
     int scores = 0;

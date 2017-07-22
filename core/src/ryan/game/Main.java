@@ -23,6 +23,7 @@ import ryan.game.competition.Team;
 import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
+import ryan.game.games.AllianceSelection;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
 import ryan.game.games.steamworks.AllianceScoreData;
@@ -62,15 +63,18 @@ public class Main extends ApplicationAdapter {
 
     public static boolean playMusic = true;
     public static boolean makeSchedule = false;
+    public static boolean customTeams = false;
+    public static int scheduleRounds = 8;
     public static String eventName = "FIRST Championship";
     public static String eventKey = "debug";
 
     public static boolean isShowingResults = false;
+    public static Drawable allianceSelection = null;
 
     FileHandle[] musicChoices;
     Music music = null;
 
-    private static long time = 0;
+    private static float time = 0;
 
     public static boolean matchPlay = false;
     public static long matchStart = 0;
@@ -91,26 +95,12 @@ public class Main extends ApplicationAdapter {
     public static float meterToPixelWidth = 1100f/world_width;
     public static float meterToPixelHeight = 630f/world_height;
 
-    private Field gameField;
+    public Field gameField;
 
     public static int currentRobot = -1;
 
 	@Override
 	public void create () {
-
-        List<Integer> taken = new ArrayList<>();
-        for (int i=0; i<8; i++) {
-            int num;
-            while (taken.contains((num = Utils.randomInt(1, 6499)))) {}
-            taken.add(num);
-            allTeams.add(new Team(num, "null"));
-        }
-        //Gson g = new GsonBuilder().setPrettyPrinting().create();
-        //Utils.writeFile("teams.txt", g.toJson(allTeams));
-        //TODO: load teams from "teams.txt"
-
-        schedule = new Schedule(new SteamRankings());
-        schedule.generate(allTeams, 20);
         self = this;
         Fonts.init();
         ControllerManager.init();
@@ -137,6 +127,9 @@ public class Main extends ApplicationAdapter {
         gameField = new Steamworks();
         gameField.affectRobots();
         drawables.addAll(gameField.generateField());
+
+        //schedule.getRankings().addFakeRankings();
+        //drawables.add(new AllianceSelection());
 
         /*
         Match fake = new Match(5, new int[]{1114,2056,1902}, new int[]{987,1557,180});
@@ -168,8 +161,9 @@ public class Main extends ApplicationAdapter {
         shape.setAutoShapeType(true);
         shape.setProjectionMatrix(camera.combined);
 
-        Utils.log("Making pathfinder");
-	}
+        schedule = new Schedule(new SteamRankings());
+        schedule.generate(scheduleRounds);
+    }
 
     @Override
     public void resize(int width, int height) {
@@ -355,7 +349,7 @@ public class Main extends ApplicationAdapter {
             matchPlay = false;
             didWhoop = false;
             resetField = true;
-            matchEnd = System.currentTimeMillis();
+            matchEnd = getTime();
             gameField.onMatchEnd();
         }
 
@@ -399,20 +393,20 @@ public class Main extends ApplicationAdapter {
         for (Gamepad g : ControllerManager.getGamepads()) {
             if (g.getDPad() == .25) {
                 anyHeld = true;
-                if (upHeld == null) upHeld = System.currentTimeMillis();
-                else if (System.currentTimeMillis() - upHeld >= 2000) {
+                if (upHeld == null) upHeld = getTime();
+                else if (getTime() - upHeld >= 2000) {
                     controllerStartMatch = true;
                 }
                 break;
             }
         }
         if (!anyHeld) upHeld = null;
-        if ((controllerStartMatch || Gdx.input.isKeyPressed(Input.Keys.P)) && !matchPlay && !isShowingResults) {
+        if ((controllerStartMatch || Gdx.input.isKeyPressed(Input.Keys.P)) && !matchPlay && !isShowingResults && allianceSelection == null) {
             matchEnd = 0;
             gameField.onMatchStart();
             resetField = true;
             matchPlay = true;
-            matchStart = System.currentTimeMillis();
+            matchStart = getTime();
             matchStartSound.play(.45f);
             if (playMusic) {
                 music = Gdx.audio.newMusic(musicChoices[Utils.randomInt(0, musicChoices.length - 1)]);
@@ -432,6 +426,22 @@ public class Main extends ApplicationAdapter {
                 drawables.remove(results);
                 results = null;
                 isShowingResults = false;
+                if (schedule.getCurrentMatch() == null) {
+                    if (!schedule.elims) {
+                        allianceSelection = new AllianceSelection();
+                        addDrawable(allianceSelection);
+                    } else {
+                        schedule.elimsUpdate();
+                    }
+                }
+            } else if (allianceSelection != null) {
+                AllianceSelection a = (AllianceSelection) allianceSelection;
+                if (a.done) {
+                    removeDrawable(a);
+                    Main.schedule.startElims(a.alliances);
+                    gameField.updateMatchInfo();
+                    allianceSelection = null;
+                }
             }
             upHeld = null;
         }
@@ -469,7 +479,8 @@ public class Main extends ApplicationAdapter {
     }
 
     public static long getTime() {
-        return System.currentTimeMillis();//time;
+        return Math.round(time*1000);
+        //return System.currentTimeMillis();
     }
 	
 	@Override

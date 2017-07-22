@@ -27,23 +27,23 @@ public class Fuel extends Entity {
         this.hopper = hopper;
         setSprite(TEXTURE);
         setName("Fuel");
-        creation = System.currentTimeMillis();
+        creation = Main.getTime();
     }
 
     public void setShot() {
-        timeOfShoot = System.currentTimeMillis();
+        timeOfShoot = Main.getTime();
     }
 
     @Override
     public void collideStart(Entity e, Body self, Body other, Contact contact) {
-        if (System.currentTimeMillis() - timeOfShoot <= 100) {
+        if (Main.getTime() - timeOfShoot <= 100) {
             contact.setEnabled(false);
         }
     }
 
     @Override
     public void onCollide(Entity e, Body self, Body other, Contact contact) {
-        if (hopper && e instanceof Robot && System.currentTimeMillis() - creation <= 75) {
+        if (hopper && e instanceof Robot && Main.getTime() - creation <= 75) {
             Robot r = (Robot) e;
             SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
             SteamRobotStats stats = (SteamRobotStats) r.stats;

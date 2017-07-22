@@ -30,12 +30,12 @@ public class Gear extends Entity {
         setName("Gear");
         setSprite(TEXTURE);
         loadingStation = loading;
-        creation = System.currentTimeMillis();
+        creation = Main.getTime();
     }
 
     @Override
     public void onCollide(Entity e, Body self, Body other, Contact contact) {
-        if (loadingStation != null && e instanceof Robot && System.currentTimeMillis() - creation <= 150) {
+        if (loadingStation != null && e instanceof Robot && Main.getTime() - creation <= 150) {
             float diff = Math.abs(e.getAngle() - loadingStation.getAngle());
             if (diff <= 9.5) {
                 Robot r = (Robot) e;

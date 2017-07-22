@@ -163,6 +163,9 @@ public class Steamworks extends Field {
 
     @Override
     public void onMatchStart() {
+        blue = new AllianceScoreData(true);
+        red = new AllianceScoreData(false);
+
         addedBonusGears = false;
         didRopeDropWhoop = false;
 
@@ -236,13 +239,13 @@ public class Steamworks extends Field {
             if (h.scoreProgress == null) {
                 if (h.blue && blue.gearQueue > 0) {
                     blue.gearQueue--;
-                    h.scoreProgress = System.currentTimeMillis();
+                    h.scoreProgress = Main.getTime();
                 } else if (!h.blue && red.gearQueue > 0) {
                     red.gearQueue--;
-                    h.scoreProgress = System.currentTimeMillis();
+                    h.scoreProgress = Main.getTime();
                 }
             } else {
-                if (System.currentTimeMillis() - h.scoreProgress >= hpGearScoreSpeed) {
+                if (Main.getTime() - h.scoreProgress >= hpGearScoreSpeed) {
                     if (h.blue) blue.gears++;
                     else red.gears++;
                     if (Game.isAutonomous()) {
@@ -266,15 +269,8 @@ public class Steamworks extends Field {
                 didRopeDropWhoop = true;
             }
         }
-        blueSpinning = 0;
-        if (blue.gears > 12) blueSpinning = 3;
-        else if (blue.gears > 6) blueSpinning = 2;
-        else if (blue.gears > 2) blueSpinning = 1;
-
-        redSpinning = 0;
-        if (red.gears > 12) redSpinning = 3;
-        else if (red.gears > 6) redSpinning = 2;
-        else if (red.gears > 2) redSpinning = 1;
+        blueSpinning = Math.round(Utils.deadzone(blue.rotors-1, .1f));
+        redSpinning = Math.round(Utils.deadzone(red.rotors-1, .1f));
     }
 
     @Override
@@ -296,18 +292,5 @@ public class Steamworks extends Field {
             s.draw(b);
             blue++;
         }
-    }
-
-    private static int predictScore(Team[] alliance) {
-        int gears = 0;
-        int climbs = 0;
-        int fuel = 0;
-        for (Team t : alliance) {
-            if (t.stats != null && t.stats instanceof SteamRobotStats) {
-                SteamRobotStats stats = (SteamRobotStats) t.stats;
-                //TODO
-            }
-        }
-        return 0; //TODO
     }
 }

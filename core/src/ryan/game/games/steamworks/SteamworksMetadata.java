@@ -75,12 +75,12 @@ public class SteamworksMetadata extends RobotMetadata {
                 }
 
                 if (!hasGear && intakeableGear != null && !startedIntakingWithGear && gearIntake) {
-                    if (gearIntakeStart == null) gearIntakeStart = System.currentTimeMillis();
+                    if (gearIntakeStart == null) gearIntakeStart = Main.getTime();
                     double a = Math.toRadians(Utils.getAngle(new Point2D.Float(intakeableGear.getX(), intakeableGear.getY()), new Point2D.Float(r.getX(), r.getY())));
                     synchronized (Main.WORLD_USE) {
                         intakeableGear.getPrimary().applyForceToCenter(stats.gearIntakeStrength * (float) Math.cos(a), stats.gearIntakeStrength * (float) Math.sin(a), true);
                     }
-                    if (System.currentTimeMillis() - gearIntakeStart >= stats.gearIntakeRate) {
+                    if (Main.getTime() - gearIntakeStart >= stats.gearIntakeRate) {
                         Main.getInstance().removeEntity(intakeableGear);
                         intakeableGear = null;
                         hasGear = true;
@@ -91,12 +91,12 @@ public class SteamworksMetadata extends RobotMetadata {
                 if ( fuelIntake) {
                     for (Entity e : new ArrayList<>(intakeableFuel)) {
                         if (!intakeableFuel.isEmpty() && fuel < stats.maxFuel) {
-                            fuelIntakeTimes.putIfAbsent(e, System.currentTimeMillis());
+                            fuelIntakeTimes.putIfAbsent(e, Main.getTime());
                             double a = Math.toRadians(Utils.getAngle(new Point2D.Float(e.getX(), e.getY()), new Point2D.Float(r.getX(), r.getY())));
                             synchronized (Main.WORLD_USE) {
                                 e.getPrimary().applyForceToCenter(stats.fuelIntakeStrength * (float) Math.cos(a), stats.fuelIntakeStrength * (float) Math.sin(a), true);
                             }
-                            if (System.currentTimeMillis() - fuelIntakeTimes.get(e) >= stats.fuelIntakeRate) {
+                            if (Main.getTime() - fuelIntakeTimes.get(e) >= stats.fuelIntakeRate) {
                                 Main.getInstance().removeEntity(e);
                                 intakeableFuel.remove(e);
                                 fuelIntakeTimes.remove(e);
@@ -140,7 +140,7 @@ public class SteamworksMetadata extends RobotMetadata {
         }
         if (e instanceof Rope) {
             if (((Rope)e).blue == r.blue && stats.climber && (Game.getMatchTime() <= 30 || !Game.isPlaying())) {
-                if (onRope == null) onRope = System.currentTimeMillis();
+                if (onRope == null) onRope = Main.getTime();
             }
         }
     }
@@ -150,15 +150,15 @@ public class SteamworksMetadata extends RobotMetadata {
         if (e instanceof Robot) {
             Robot otherR = (Robot) e;
             if (r.blue != otherR.blue && Game.isPlaying()) {
-                if (onRope != null && Game.getMatchTime() <= 30 && System.currentTimeMillis() - ropeTouch >= 2000) {
+                if (onRope != null && Game.getMatchTime() <= 30 && Main.getTime() - ropeTouch >= 2000) {
                     if (r.blue) Steamworks.blue.bonusClimbs++;
                     else Steamworks.red.bonusClimbs++;
-                    ropeTouch = System.currentTimeMillis();
+                    ropeTouch = Main.getTime();
                     //TODO: some sort of foul visual
-                } else if (inLoadingZone && System.currentTimeMillis() - zoneHit >= 2000) {
+                } else if (inLoadingZone && Main.getTime() - zoneHit >= 2000) {
                     if (r.blue) Steamworks.red.fouls += 25;
                     else Steamworks.blue.fouls += 25;
-                    zoneHit = System.currentTimeMillis();
+                    zoneHit = Main.getTime();
                     //TODO: some sort of foul visual
                 }
             }
@@ -197,7 +197,7 @@ public class SteamworksMetadata extends RobotMetadata {
         }
         if (hasGear) gear.draw(batch);
         if (onRope != null && (Game.getMatchTime() <= 30 || !Game.isPlaying())) {
-            Utils.drawProgressBar(r.getX(), r.getY() + 1f, 2f, .5f, ((System.currentTimeMillis() - onRope)/((stats.climbSpeed*1000))), batch);
+            Utils.drawProgressBar(r.getX(), r.getY() + 1f, 2f, .5f, ((Main.getTime() - onRope)/((stats.climbSpeed*1000))), batch);
         }
     }
 
@@ -237,7 +237,7 @@ public class SteamworksMetadata extends RobotMetadata {
 
     public void shootFuel(Robot r) {
         SteamRobotStats stats = (SteamRobotStats) r.stats;
-        if (fuel > 0 && System.currentTimeMillis() - timeOfLastFire >= stats.timePerShoot && stats.shooter) {
+        if (fuel > 0 && Main.getTime() - timeOfLastFire >= stats.timePerShoot && stats.shooter) {
 
 
             Vector2 shootPos = new Vector2(r.getX(), r.getY());
@@ -267,7 +267,7 @@ public class SteamworksMetadata extends RobotMetadata {
                 }
             }
             fuel--;
-            timeOfLastFire = System.currentTimeMillis();
+            timeOfLastFire = Main.getTime();
         }
     }
 }

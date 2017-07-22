@@ -16,13 +16,35 @@ public class Match implements Serializable {
     public List<Integer> blueSurrogates = new ArrayList<>();
     public List<Integer> redSurrogates = new ArrayList<>();
     public boolean qualifier = true;
-    public String level = "qm"; //qm, qf, sf, f
+    private String level = "qm"; //qm, qf, sf, f
     public boolean complete = false;
 
     public Match(int number, int[] b, int[] r) {
         this.number = number;
         blue = new MatchAlliance(b);
         red = new MatchAlliance(r);
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public Match setQuarterfinal() {
+        return setLevel("qf");
+    }
+
+    public Match setSemifinal() {
+        return setLevel("sf");
+    }
+
+    public Match setFinal() {
+        return setLevel("f");
+    }
+
+    public Match setLevel(String s) {
+        level = s;
+        if (!s.equalsIgnoreCase("qm")) qualifier = false;
+        return this;
     }
 
     public MatchAlliance getAlliance(int team) {
@@ -43,6 +65,16 @@ public class Match implements Serializable {
         if (a == blue) return red;
         if (a == red) return blue;
         return null;
+    }
+
+    public boolean isInMatch(int team) {
+        for (int i : blue.teams) {
+            if (i == team) return true;
+        }
+        for (int i : red.teams) {
+            if (i == team) return true;
+        }
+        return false;
     }
 
     public boolean isSurrogate(int team) {
@@ -103,7 +135,7 @@ public class Match implements Serializable {
 
     public void save() {
         Gson g = new GsonBuilder().setPrettyPrinting().create();
-        Utils.writeFile("matches/" + Main.eventKey + "_" + level + "_" + number, g.toJson(this));
+        Utils.writeFile(Main.eventKey + "/matches/" + level + "_" + number, g.toJson(this));
     }
 
     public static Match loadMatch(String level, int number) {

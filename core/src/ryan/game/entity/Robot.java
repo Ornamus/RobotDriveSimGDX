@@ -13,6 +13,7 @@ import ryan.game.Utils;
 import ryan.game.autonomous.pathmagic.RobotState;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.bcnlib_pieces.PIDSource;
+import ryan.game.competition.Match;
 import ryan.game.competition.RobotStats;
 import ryan.game.controls.Button;
 import ryan.game.controls.ControllerManager;
@@ -442,11 +443,14 @@ public class Robot extends Entity {
 
     public void drawUnscaled(SpriteBatch b) {
         int t;
-        if (blue) t = Main.schedule.getCurrentMatch().blue.teams[numberIndex];
-        else t = Main.schedule.getCurrentMatch().red.teams[numberIndex];
-        Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, getAngle() > 110 && getAngle() < 250 ? .3f : 1);
-        Fonts.drawCentered(t + "", getX() * Main.meterToPixelWidth, (getY()*Main.meterToPixelHeight) + (Main.meterToPixelHeight*2.7f), Fonts.fmsWhiteVerySmall, b);
-        Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, 1);
+        Match m = Main.schedule.getCurrentMatch();
+        if (m != null) {
+            if (blue) t = Main.schedule.getCurrentMatch().blue.teams[numberIndex];
+            else t = Main.schedule.getCurrentMatch().red.teams[numberIndex];
+            Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, getAngle() > 110 && getAngle() < 250 ? .3f : 1);
+            Fonts.drawCentered(t + "", getX() * Main.meterToPixelWidth, (getY() * Main.meterToPixelHeight) + (Main.meterToPixelHeight * 2.7f), Fonts.fmsWhiteVerySmall, b);
+            Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, 1);
+        }
     }
 
     final float k = 10.0f; //2.25
@@ -565,7 +569,10 @@ public class Robot extends Entity {
         }
 
         Robot r = new Robot(stats, left, right, id);
-        if (stats.hasIntake) r.setIntake(intake);
+        if (stats.hasIntake) {
+            r.setIntake(intake);
+            r.updateSprite();
+        }
 
         if (stats instanceof SteamRobotStats) {
             SteamRobotStats steam = (SteamRobotStats) stats;

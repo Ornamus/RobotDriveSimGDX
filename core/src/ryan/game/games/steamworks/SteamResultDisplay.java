@@ -1,27 +1,18 @@
 package ryan.game.games.steamworks;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import ryan.game.Main;
-import ryan.game.Utils;
 import ryan.game.competition.Match;
 import ryan.game.competition.Rankings;
-import ryan.game.competition.Schedule;
-import ryan.game.competition.Team;
-import ryan.game.games.Game;
 import ryan.game.render.Fonts;
 import ryan.game.render.ImageDrawer;
 
 public class SteamResultDisplay extends ImageDrawer {
 
-    public BitmapFont blackSmall;
     Sprite blueWin, redWin;
-    Sprite redX;
+    Sprite arrowUp, arrowDown;
     Match match;
 
     public SteamResultDisplay(Match m) {
@@ -31,24 +22,15 @@ public class SteamResultDisplay extends ImageDrawer {
         sprite.setPosition(0-sprite.getWidth() /2, 0-sprite.getHeight()/2);
         setDrawScaled(false);
 
-        redX = new Sprite(new Texture("core/assets/redx.png"));
-        redX.setSize(90, 90);
-        redX.setOriginCenter();
-
         blueWin = new Sprite(new Texture("core/assets/winner_blue.png"));
         redWin = new Sprite(new Texture("core/assets/winner_red.png"));
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/Kozuka.otf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 15;
-        param.color = Color.BLACK;
-        param.shadowColor = Color.BLACK;
-        param.borderWidth = .5f;
-        param.borderColor = Color.BLACK;
+        arrowUp = new Sprite(new Texture("core/assets/arrow.png"));
+        arrowUp.setSize(28,28);
 
-        blackSmall = generator.generateFont(param);
-
-        generator.dispose();
+        arrowDown = new Sprite(new Texture("core/assets/arrow.png"));
+        arrowDown.flip(false, true);
+        arrowDown.setSize(28,28);
     }
 
     @Override
@@ -57,8 +39,8 @@ public class SteamResultDisplay extends ImageDrawer {
 
         float adjust = 15;
         Fonts.drawCentered(match.getName(), getCenterX(), getCenterY() + 305-adjust, Fonts.fmsBlack, b);
-        Fonts.drawCentered(Steamworks.display.getEventName(), getCenterX(), getCenterY() + 280-adjust, blackSmall, b);
-        Fonts.drawCentered("Scoring System powered by Bacon", getCenterX(), getCenterY() + 252-adjust, blackSmall, b);
+        Fonts.drawCentered(Steamworks.display.getEventName(), getCenterX(), getCenterY() + 280-adjust, Fonts.fmsBlackSmall, b);
+        Fonts.drawCentered("Scoring System powered by Bacon", getCenterX(), getCenterY() + 252-adjust, Fonts.fmsBlackSmall, b);
 
         drawAlliance(getCenterX() - 430, getCenterY(), match.red, b);
         drawAlliance(getCenterX() + 85, getCenterY(), match.blue, b);
@@ -76,9 +58,20 @@ public class SteamResultDisplay extends ImageDrawer {
         if (match.qualifier) {
             Rankings r = Main.getInstance().schedule.getRankings();
             for (int i = 0; i < a.teams.length; i++) {
-                float increment = (i * 39);
-                Fonts.fmsWhiteNormal.draw(b, a.teams[i] + "", x + 53, teamY - increment);
-                Fonts.drawCentered(r.getRank(a.teams[i]) + "", x + 243, teamY - increment, Fonts.fmsWhiteNormal, b);
+                int team = a.teams[i];
+                float increment = (i * 40);
+                Fonts.fmsWhiteNormal.draw(b, team + "", x + 53, teamY - increment);
+                Fonts.drawCentered(r.getRank(team) + "", x + 243, teamY - increment, Fonts.fmsWhiteNormal, b);
+
+                boolean first = r.getPreviousRank(team) == -1;
+                if (!first) {
+                    int rankDiff = r.getRank(team) - r.getPreviousRank(team);
+                    if (rankDiff != 0) {
+                        Sprite s = rankDiff < 0 ? arrowUp : arrowDown;
+                        s.setPosition(x + 263 + 5, teamY - increment - 24);
+                        s.draw(b);
+                    }
+                }
             }
         } else {
             String teams = "";
@@ -87,7 +80,7 @@ public class SteamResultDisplay extends ImageDrawer {
             }
             teams = teams.substring(1, teams.length());
             Fonts.fmsWhiteSmall.draw(b, teams, x+70, y + 156);
-            blackSmall.draw(b, match.blue == a ? "8" : "1", x+22.5f, y + 156); //TODO: handle seeds
+            Fonts.fmsBlackSmall.draw(b, match.blue == a ? "8" : "1", x+22.5f, y + 156); //TODO: handle seeds
         }
 
         AllianceScoreData d = (AllianceScoreData) a.breakdown;

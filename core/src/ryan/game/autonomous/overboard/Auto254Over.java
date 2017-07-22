@@ -1,6 +1,7 @@
 package ryan.game.autonomous.overboard;
 
 
+import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.autonomous.pathmagic.PursuitControl;
 import ryan.game.autonomous.pathmagic.RobotStateGenerator;
@@ -33,7 +34,7 @@ public class Auto254Over extends Command {
             robot.getRightEncoder().reset();
             if (robot.generator != null) robot.generator.actuallyStop();
             robot.generator = null;
-            robot.state.reset(System.currentTimeMillis(), new RigidTransform2d());
+            robot.state.reset(Main.getTime(), new RigidTransform2d());
             robot.generator = new RobotStateGenerator(robot.state, robot);
             robot.generator.start();
 

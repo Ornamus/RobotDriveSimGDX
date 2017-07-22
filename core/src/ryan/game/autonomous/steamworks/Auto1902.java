@@ -1,5 +1,6 @@
 package ryan.game.autonomous.steamworks;
 
+import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.bcnlib_pieces.Motor;
@@ -28,8 +29,8 @@ public class Auto1902 extends Command {
             robot.setMotors(1, 1);
             Thread.sleep(600);
             robot.setMotors(0, 0);
-            long start = System.currentTimeMillis();
-            while (System.currentTimeMillis() - start < 3000) {
+            long start = Main.getTime();
+            while (Main.getTime() - start < 3000) {
                 meta.shootFuel(robot);
             }
             robot.setMotors(-1, -1);

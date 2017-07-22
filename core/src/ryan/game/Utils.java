@@ -5,12 +5,10 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.google.gson.Gson;
 
 import java.awt.geom.Point2D;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Random;
 
 public class Utils {
@@ -190,14 +188,34 @@ public class Utils {
         return new Color(r / 255f, g / 255f, b / 255f, 1);
     }
 
+    public static <T> T fromJSON(String fileName, Class<T> clazz) {
+        Gson g = new Gson();
+        try {
+            return g.fromJson(new FileReader(fileName), clazz);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static <T> T fromJSON(File f, Class<T> clazz) {
+        Gson g = new Gson();
+        try {
+            return g.fromJson(new FileReader(f), clazz);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     //TODO: fix problem where this gets angry if any folders don't exist
     public static void writeFile(String fileName, String content) {
         BufferedWriter bw = null;
         try {
             File file = new File(fileName);
-            if (!file.exists()) {
-                file.createNewFile();
-            }
+            file.mkdirs();
+            file.delete();
+            file.createNewFile();
             FileWriter fw = new FileWriter(file);
             bw = new BufferedWriter(fw);
             bw.write(content);
