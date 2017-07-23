@@ -9,10 +9,7 @@ import ryan.game.games.steamworks.AllianceScoreData;
 import ryan.game.team254.utils.Path;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Schedule {
 
@@ -25,7 +22,7 @@ public class Schedule {
     public int[][] alliances = new int[8][3];
     int[][] remainingAlliances = new int[8][3];
 
-    public HashMap<Integer, int[]> seeds = new HashMap<>();
+    private HashMap<Integer, List<Double>> seeds = new HashMap<>();
 
     public Schedule(Rankings r) {
         this.r = r;
@@ -40,7 +37,7 @@ public class Schedule {
             Utils.log("Loaded " + teams.size() + " teams");
         } else {
             List<Integer> taken = new ArrayList<>();
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 24; i++) {
                 int num;
                 while (taken.contains((num = Utils.randomInt(1, 6499)))) {
                 }
@@ -60,8 +57,6 @@ public class Schedule {
                 for (File matchFile : matchFiles) {
                     Gson g = new Gson();
                     Match m = Utils.fromJSON(matchFile, Match.class);
-
-                    Utils.log(m.blue.toString());
 
                     //TODO: This is Steamworks-specific unfortunately
                     if (m.complete && m.blue.breakdown != null && m.red.breakdown != null) {
@@ -88,6 +83,7 @@ public class Schedule {
                 }
                 r.calculate();
                 if (found) {
+                    Main.getInstance().gameField.updateMatchInfo();
                     Utils.log("Left off at qualifier index " + index + ", restarting there.");
                 } else if (!found) { //All qualifiers completed
                     f = new File(Main.eventKey + "/alliance_selection.json");
@@ -95,6 +91,10 @@ public class Schedule {
                         Utils.log("Found alliance selection data");
                         elims = true;
                         alliances = Utils.fromJSON(f, alliances.getClass());
+                        seeds = Utils.fromJSON(Main.eventKey + "/seeds.json", seeds.getClass());
+                        /*for (Integer[] i : seeds.values()) {
+                            Utils.log(i.toString());
+                        }*/
                         remainingAlliances = Utils.fromJSON(Main.eventKey + "/remainingAlliances.json", remainingAlliances.getClass());
                         String[] levelsToDelete = {"qm"};
                         if (remainingAlliances.length == 2) levelsToDelete = new String[]{"qm", "qf", "sf"};
@@ -119,6 +119,7 @@ public class Schedule {
                             }
                             index++;
                         }
+                        Utils.log(index + " of " + matches.size());
                         Main.getInstance().gameField.updateMatchInfo();
                     } else { //We need to start/restart alliance selection
                         Utils.log("Did not find alliance selection data, starting alliance selections.");
@@ -184,13 +185,13 @@ public class Schedule {
                                 //Utils.log(m.toString());
                             }
                         }
-
+                        Main.getInstance().gameField.updateMatchInfo();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 } else {
                     Utils.log("[ERROR] A schedule requires at least 6 teams!");
-                    //TODO: error: need 6 teams minimum
+                    //error: need 6 teams minimum
                 }
             }
         } else {
@@ -205,16 +206,21 @@ public class Schedule {
         alliances = a;
         int seed = 1;
         for (int[] all : alliances) {
-            seeds.put(seed, all);
+            List<Double> proper = new ArrayList<>();
+            for (int i=0; i<all.length; i++) {
+                proper.add(all[i] * 1.0);
+            }
+            seeds.put(seed, proper);
             seed++;
         }
-        remainingAlliances = alliances;
         Gson g = new GsonBuilder().setPrettyPrinting().create();
+        Utils.writeFile(Main.eventKey + "/seeds.json", g.toJson(seeds));
+
+        remainingAlliances = alliances;
         Utils.writeFile(Main.eventKey + "/remainingAlliances.json", g.toJson(remainingAlliances));
         generateNextElimMatches();
     }
 
-    //TODO: tiebreaker matches when sets are 1-1
     public void elimsUpdate() {
         HashMap<int[], Boolean> wonSet = new HashMap<>();
         for (int[] a : remainingAlliances) {
@@ -232,31 +238,66 @@ public class Schedule {
             }
             if (wins == 2) wonSet.put(a, true);
         }
-        if (remainingAlliances.length > 2) { //we're in quarters or semis
-            int[][] newAll = new int[remainingAlliances.length / 2][alliances[0].length];
 
-            if (newAll.length == 8) { //ending quarterfinals
-                newAll[0] = wonSet.get(seeds.get(1)) ? seeds.get(1) : seeds.get(8);
-                newAll[1] = wonSet.get(seeds.get(2)) ? seeds.get(2) : seeds.get(7);
-                newAll[2] = wonSet.get(seeds.get(3)) ? seeds.get(3) : seeds.get(6);
-                newAll[3] = wonSet.get(seeds.get(4)) ? seeds.get(4) : seeds.get(5);
-            } else if (newAll.length == 4) { //ending semifinals
-                newAll[0] = wonSet.get(0) ? remainingAlliances[0] : remainingAlliances[3];
-                newAll[1] = wonSet.get(1) ? remainingAlliances[1] : remainingAlliances[2];
+        List<MatchSet> wonSets = new ArrayList<>();
+        List<MatchSet> sets = MatchSet.getSets(matches);
+        for (MatchSet s : new ArrayList<>(sets)) {
+            if (s.getWinner() != null) {
+                sets.remove(s);
             }
-            remainingAlliances = newAll;
-            Gson g = new GsonBuilder().setPrettyPrinting().create();
-            Utils.writeFile(Main.eventKey + "/remainingAlliances.json", g.toJson(remainingAlliances));
-            Main.getInstance().gameField.updateMatchInfo();
+        }
+        Utils.log(sets.size() + " set(s) are not complete");
+        if (sets.isEmpty()) { //This round is complete
+            if (remainingAlliances.length > 2) { //we're in quarters or semis
+                int[][] newAll = new int[remainingAlliances.length / 2][alliances[0].length];
+
+                if (newAll.length == 4) { //ending quarterfinals
+                    newAll[0] = wonSet.get(getAlliance(1)) ? getAlliance(1) : getAlliance(8);
+                    newAll[1] = wonSet.get(seeds.get(2)) ? getAlliance(2) : getAlliance(7);
+                    newAll[2] = wonSet.get(seeds.get(3)) ? getAlliance(3) : getAlliance(6);
+                    newAll[3] = wonSet.get(seeds.get(4)) ? getAlliance(4) : getAlliance(5);
+                } else if (newAll.length == 2) { //ending semifinals
+                    Utils.log("Ending semis");
+                    if (remainingAlliances == null) Utils.log("remaining is null");
+                    if (newAll == null) Utils.log("newALl is null");
+                    if (wonSet == null) Utils.log("wonset is null");
+                    Utils.log(remainingAlliances[0] + "");
+                    Utils.log(remainingAlliances[1] + "");
+                    Utils.log(remainingAlliances[2] + "");
+                    Utils.log(remainingAlliances[3] + "");
+                    //Utils.log(remainingAlliances[0][0] + " is captain of 1");
+                    //Utils.log(remainingAlliances[1][0] + " is captain of 2");
+                    newAll[0] = wonSet.get(remainingAlliances[0]) ? remainingAlliances[0] : remainingAlliances[3];
+                    newAll[1] = wonSet.get(remainingAlliances[1]) ? remainingAlliances[1] : remainingAlliances[2];
+                }
+                remainingAlliances = newAll;
+
+                Gson g = new GsonBuilder().setPrettyPrinting().create();
+                Utils.writeFile(Main.eventKey + "/remainingAlliances.json", g.toJson(remainingAlliances));
+
+                generateNextElimMatches();
+                Main.getInstance().gameField.updateMatchInfo();
+            } else {
+                //TODO: properly end the game
+                Utils.log((wonSet.get(remainingAlliances[0]) ? arrayToString(remainingAlliances[0]) : arrayToString(remainingAlliances[1])) + " wins!");
+            }
         } else {
-            Utils.log((wonSet.get(0) ? arrayToString(remainingAlliances[0]) : arrayToString(remainingAlliances[1])) + " wins!");
+            for (MatchSet s : sets) {
+                Utils.log("Generating a set tiebreaker...");
+                Match sample = s.getMatches().get(0);
+                Match m = new Match(s.getMatches().size() + (sample.getLevel().equals("f") ? 1 : -1), sample.blue.teams, sample.red.teams).setLevel(sample.getLevel());
+                m.tiebreaker = true;
+                m.save();
+                matches.add(m);
+            }
+            Main.getInstance().gameField.updateMatchInfo();
         }
     }
 
     public String arrayToString(int[] a) {
         String s = "";
         for (int i : a) {
-            s += a + " - ";
+            s += i + " - ";
         }
         s = s.substring(0, s.length()-3);
         return s;
@@ -285,7 +326,30 @@ public class Schedule {
         }
     }
 
-    private boolean arraysEqual(int[] a, int[] b) {
+    public int[] getAlliance(int seed) {
+        return convert(seeds.get(seed));
+    }
+
+    public int[] convert(List<Double> a) {
+        int[] converted = new int[a.size()];
+        for (int i=0; i<a.size(); i++) {
+            converted[i] = (int) Math.round(a.get(i));
+        }
+        return converted;
+    }
+
+    public int getSeed(int[] a) {
+        int seed = 1;
+        for (List<Double> b : seeds.values()) {
+            if (Arrays.equals(a, convert(b))) {
+                return seed;
+            }
+            seed++;
+        }
+        return -1;
+    }
+
+    public boolean arraysEqual(int[] a, int[] b) {
         for (int i : b) {
             if (!contains(a, i)) return false;
         }
@@ -323,23 +387,20 @@ public class Schedule {
         return m;
     }
 
-    public void completeCurrentMatch(int blueScore, int redScore, Object blueBreakdown, Object redBreakdown) {
-        completeMatch(current, blueScore, redScore, blueBreakdown, redBreakdown);
+    //-1 = tie, 0 = blue, 1 = red
+    public void completeCurrentMatch(int blueScore, int redScore, Object blueBreakdown, Object redBreakdown, int winner) {
+        completeMatch(current, blueScore, redScore, blueBreakdown, redBreakdown, winner);
     }
 
-    public void completeMatch(int index, int blueScore, int redScore, Object blueBreakdown, Object redBreakdown) {
+    public void completeMatch(int index, int blueScore, int redScore, Object blueBreakdown, Object redBreakdown, int winner) {
         Match m = getMatch(index);
 
-        if (redScore == blueScore) {
-            
-        }
-
         m.blue.score = blueScore;
-        m.blue.winner = blueScore > redScore;
+        m.blue.winner = winner == 0;
         m.blue.breakdown = blueBreakdown;
 
         m.red.score = redScore;
-        m.red.winner = redScore > blueScore;
+        m.red.winner = winner == 1;
         m.red.breakdown = redBreakdown;
 
         m.complete = true;

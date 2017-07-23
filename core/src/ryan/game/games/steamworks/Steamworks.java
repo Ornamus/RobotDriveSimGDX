@@ -188,7 +188,30 @@ public class Steamworks extends Field {
         if (red.rotors == 4) red.rankingPoints++;
 
         Match current = Main.schedule.getCurrentMatch();
-        Main.schedule.completeCurrentMatch(blue.score, red.score, blue, red);
+
+
+        int winner = -1;
+        if (blue.score > red.score) winner = 0;
+        else if (red.score > blue.score) winner = 1;
+        else {
+            //TODO: add auto points here
+            if (blue.fouls < red.fouls) winner = 0;
+            else if (red.fouls < blue.fouls) winner = 1;
+            else {
+                if (blue.rotorPoints > red.rotorPoints) winner = 0;
+                else if (red.rotorPoints > blue.rotorPoints) winner = 1;
+                else {
+                    if (blue.climbs > red.climbs) winner = 0;
+                    else if (red.climbs > blue.climbs) winner = 1;
+                    else {
+                        if (blue.kPA > red.kPA) winner = 0;
+                        else if (red.kPA > blue.kPA) winner = 1;
+                    }
+                }
+            }
+        }
+
+        Main.schedule.completeCurrentMatch(blue.score, red.score, blue, red, winner);
 
         Main.getInstance().results = new SteamResultDisplay(current);
         Main.getInstance().addDrawable(Main.getInstance().results);

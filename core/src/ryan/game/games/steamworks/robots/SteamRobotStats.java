@@ -24,7 +24,7 @@ public abstract class SteamRobotStats extends RobotStats {
     public String turretTexture = "core/assets/118_turret.png";
 
     public float shootHeight = 1f;
-    public float shootHeightVariance = .1f;
+    public float shootHeightVariance = .09f;
     public float shootPower = 24;
     public float shootPowerVariance = 3;
     public float shootAngleVariance = 2;

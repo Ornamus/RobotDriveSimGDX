@@ -105,10 +105,12 @@ public abstract class ScoreDisplay extends Drawable {
         Fonts.drawCentered(redTeams[0] + "", -166, getY() + 92f, Fonts.fmsBlack, batch);
         Fonts.drawCentered(redTeams[1] + "", -166, getY() + 71f, Fonts.fmsBlack, batch);
         Fonts.drawCentered(redTeams[2] + "", -166, getY() + 71f - 21f, Fonts.fmsBlack, batch);
+        if (Main.schedule.elims) Fonts.drawCentered(Main.schedule.getSeed(redTeams) + "", -166, getY() + 71f - 21f - 25f, Fonts.fmsBlackSmall, batch);
 
         Fonts.drawCentered(blueTeams[0] + "", 166, getY() + 92f, Fonts.fmsBlack, batch);
         Fonts.drawCentered(blueTeams[1] + "", 166, getY() + 71f, Fonts.fmsBlack, batch);
         Fonts.drawCentered(blueTeams[2] + "", 166, getY() + 71f - 21f, Fonts.fmsBlack, batch);
+        if (Main.schedule.elims) Fonts.drawCentered(Main.schedule.getSeed(blueTeams) + "", 166, getY() + 71f - 21f - 25f, Fonts.fmsBlackSmall, batch);
     }
 
     /**

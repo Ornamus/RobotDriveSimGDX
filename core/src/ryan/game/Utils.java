@@ -9,7 +9,11 @@ import com.google.gson.Gson;
 
 import java.awt.geom.Point2D;
 import java.io.*;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Utils {
 
@@ -230,5 +234,14 @@ public class Utils {
             }
         }
         Utils.log("wrote file");
+    }
+
+    public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
+        for (Map.Entry<T, E> entry : map.entrySet()) {
+            if (Objects.equals(value, entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 }

@@ -4,10 +4,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import ryan.game.Main;
+import ryan.game.Utils;
 import ryan.game.competition.Match;
 import ryan.game.competition.Rankings;
+import ryan.game.competition.Schedule;
 import ryan.game.render.Fonts;
 import ryan.game.render.ImageDrawer;
+
+import java.util.Arrays;
 
 public class SteamResultDisplay extends ImageDrawer {
 
@@ -80,7 +84,8 @@ public class SteamResultDisplay extends ImageDrawer {
             }
             teams = teams.substring(1, teams.length());
             Fonts.fmsWhiteSmall.draw(b, teams, x+70, y + 156);
-            Fonts.fmsBlackSmall.draw(b, match.blue == a ? "8" : "1", x+22.5f, y + 156); //TODO: handle seeds
+
+            Fonts.fmsBlackSmall.draw(b, "" + (match.blue == a ? Main.schedule.getSeed(match.blue.teams) : Main.schedule.getSeed(match.red.teams)), x+22.5f, y + 156); //TODO: handle seeds
         }
 
         AllianceScoreData d = (AllianceScoreData) a.breakdown;

@@ -18,6 +18,7 @@ public class Match implements Serializable {
     public boolean qualifier = true;
     private String level = "qm"; //qm, qf, sf, f
     public boolean complete = false;
+    public boolean tiebreaker = false;
 
     public Match(int number, int[] b, int[] r) {
         this.number = number;
@@ -93,7 +94,6 @@ public class Match implements Serializable {
         if (qualifier) {
             return "Qualification " + number + " of " + Main.schedule.getQualifiers().size();
         } else {
-            //TODO: When eliminations is further supported, finish this
             String type = "Elimination";
             int total = -1;
             if (level.equalsIgnoreCase("qf")) {
@@ -106,8 +106,8 @@ public class Match implements Serializable {
                 type = "Final";
                 total = -1;
             }
-            if (total == -1) {
-                return type + " " + number;
+            if (total == -1 || tiebreaker) {
+                return type + (tiebreaker && !type.equals("Final") ? (" Tiebreaker ") : " ") + number;
             } else {
                 return type + " " + number + " of " + total;
             }
@@ -135,7 +135,7 @@ public class Match implements Serializable {
 
     public void save() {
         Gson g = new GsonBuilder().setPrettyPrinting().create();
-        Utils.writeFile(Main.eventKey + "/matches/" + level + "_" + number, g.toJson(this));
+        Utils.writeFile(Main.eventKey + "/matches/" + level + (tiebreaker ?  "_tb" : "") + "_" + number, g.toJson(this));
     }
 
     public static Match loadMatch(String level, int number) {
