@@ -35,6 +35,9 @@ public class DesktopLauncher {
 			if (s.startsWith("event_name=")) {
                 Main.eventName = s.replace("event_name=", "");
 			}
+			if (s.startsWith("event_key=")) {
+				Main.eventKey = s.replace("event_key=", "");
+			}
 			if (s.equalsIgnoreCase("debug_view")) {
 				Main.DEBUG_RENDER = true;
 			}
