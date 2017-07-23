@@ -25,7 +25,7 @@ public class AutoStrykeForce extends Command {
         try {
             robot.getGyro().reset();
             robot.setMotors(.57f, .57f);
-            Thread.sleep(1800);
+            Thread.sleep(1550);
             robot.setMotors(0, 0);
             double target;
             if (robot.getY() > 0) {
