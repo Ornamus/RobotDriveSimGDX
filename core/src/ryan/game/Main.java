@@ -65,6 +65,7 @@ public class Main extends ApplicationAdapter {
     public static boolean makeSchedule = false;
     public static boolean customTeams = false;
     public static int scheduleRounds = 8;
+    public static int randomTeams = 24;
     public static String eventName = "FIRST Championship";
     public static String eventKey = "debug";
 

@@ -37,7 +37,7 @@ public class Schedule {
             Utils.log("Loaded " + teams.size() + " teams");
         } else {
             List<Integer> taken = new ArrayList<>();
-            for (int i = 0; i < 24; i++) {
+            for (int i = 0; i < Main.randomTeams; i++) {
                 int num;
                 while (taken.contains((num = Utils.randomInt(1, 6499)))) {
                 }

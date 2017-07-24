@@ -32,6 +32,9 @@ public class DesktopLauncher {
 			if (s.startsWith("rounds=")) {
 				Main.scheduleRounds = Integer.parseInt(s.replace("rounds=", ""));
 			}
+			if (s.startsWith("teams=")) {
+				Main.randomTeams = Integer.parseInt(s.replace("teams=", ""));
+			}
 			if (s.startsWith("event_name=")) {
                 Main.eventName = s.replace("event_name=", "");
 			}

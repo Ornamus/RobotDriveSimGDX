@@ -11,6 +11,10 @@ public class AutoSideGear extends Command {
 
     Motor pidOutput;
     PIDController rotatePID;
+    float driveForwardSpeedOne = .5f;
+    long driveForwardTimeOne = 1800;
+    float driveForwardSpeedTwo = .7f;
+    long driveForwardTimeTwo = 3500;
 
     public AutoSideGear(Robot r) {
         super(r);
@@ -24,8 +28,8 @@ public class AutoSideGear extends Command {
         SteamworksMetadata meta = (SteamworksMetadata) robot.metadata;
         try {
             robot.getGyro().reset();
-            robot.setMotors(.5f, .5f);
-            Thread.sleep(1800);
+            robot.setMotors(driveForwardSpeedOne, driveForwardSpeedOne);
+            Thread.sleep(driveForwardTimeOne);
             robot.setMotors(0, 0);
             double target;
             if (robot.getY() > 0) {
@@ -59,8 +63,8 @@ public class AutoSideGear extends Command {
                     rotatePID.disable();
                     robot.setMotors(0, 0);
                     Thread.sleep(300);
-                    robot.setMotors(.7f, .7f);
-                    Thread.sleep(3500);
+                    robot.setMotors(driveForwardSpeedTwo, driveForwardSpeedTwo);
+                    Thread.sleep(driveForwardTimeTwo);
                 }
             }
             robot.setMotors(0, 0);
