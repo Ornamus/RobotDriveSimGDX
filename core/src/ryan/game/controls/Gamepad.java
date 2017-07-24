@@ -2,7 +2,6 @@ package ryan.game.controls;
 
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
-
 import java.util.ArrayList;
 import java.util.List;
 

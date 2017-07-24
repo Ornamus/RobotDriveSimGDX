@@ -1,5 +1,6 @@
 package ryan.game.autonomous.steamworks;
 
+import ryan.game.Utils;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.bcnlib_pieces.Motor;
 import ryan.game.bcnlib_pieces.PIDController;
@@ -24,21 +25,27 @@ public class Auto118 extends Command {
         SteamworksMetadata m = (SteamworksMetadata) robot.metadata;
         try {
             robot.getGyro().reset();
-            robot.setMotors(1f, 1f);
-            Thread.sleep(robot.blue ? 1350 : 1100);
-            rotatePID.setTarget(robot.blue ? 270 : 90);
-            rotatePID.enable();
-            while (!rotatePID.isDone() && Game.isAutonomous()) {
-                robot.setMotors(pidOutput.getPower(), -pidOutput.getPower());
-                Thread.sleep(10);
+            robot.getLeftEncoder().reset();
+            while (robot.getLeftEncoder().getForPID() < (robot.blue ? 6500 : 4500) && Game.isAutonomous()) {
+                robot.setMotors(1f, 1f);
+                Thread.sleep(5);
             }
-            rotatePID.disable();
-            robot.setMotors(1f, 1f);
-            Thread.sleep(750);
             robot.setMotors(0, 0);
-            Thread.sleep(200);
-            while (Game.isAutonomous()) {
-                m.shootFuel(robot);
+            if (Game.isAutonomous()) {
+                rotatePID.setTarget(robot.blue ? 270 : 90);
+                rotatePID.enable();
+                while (!rotatePID.isDone() && Game.isAutonomous()) {
+                    robot.setMotors(pidOutput.getPower(), -pidOutput.getPower());
+                    Thread.sleep(10);
+                }
+                rotatePID.disable();
+                robot.setMotors(1f, 1f);
+                Thread.sleep(750);
+                robot.setMotors(0, 0);
+                Thread.sleep(200);
+                while (Game.isAutonomous()) {
+                    m.shootFuel(robot);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
