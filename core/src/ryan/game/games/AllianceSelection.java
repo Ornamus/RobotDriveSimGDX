@@ -144,6 +144,8 @@ public class AllianceSelection extends ImageDrawer {
 
                 setSelecting(selectingForAlliance);
                 showingAlliances = true;
+            } else if (g.getButton(1).get()) {
+                showingAlliances = true;
             }
             float dPad = g.getDPad();
             if (dPad != prevDPadValue) {

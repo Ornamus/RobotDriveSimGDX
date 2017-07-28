@@ -15,7 +15,7 @@ public class SteamDozer extends SteamRobotStats {
         shootHeight = 1.1f;
         shootPower = 24.4f;
         timePerShoot = 200;
-        shooterTurretPivot = new Vector2(0, -.5f);
+        shooterPosition = new Vector2(0, -.5f);
         texture = "core/assets/dozer_recolor.png";
     }
 

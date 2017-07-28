@@ -1,5 +1,7 @@
 package ryan.game.competition;
 
+import ryan.game.games.steamworks.SteamTeamData;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,12 +23,15 @@ public abstract class Rankings<T extends RankData> {
     public void addFakeRankings() {
         for (int i : fakeranks) {
             final int num = i;
+            //TODO: revert
+            currentRanks.add((T)new SteamTeamData(num));
+            /*
             currentRanks.add((T) new RankData() {
                 @Override
                 public int getTeam() {
                     return num;
                 }
-            });
+            });*/
         }
     }
 

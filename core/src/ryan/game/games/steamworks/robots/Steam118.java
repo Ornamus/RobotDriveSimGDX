@@ -10,7 +10,7 @@ public class Steam118 extends SteamRobotStats {
     public Steam118() {
         shooter = true;
         shooterIsTurret = true;
-        shooterTurretPivot = new Vector2(-.5f, -.5f);
+        shooterPosition = new Vector2(-.5f, -.5f);
         timePerShoot = 163f;
 
         shootHeight = 1.15f;

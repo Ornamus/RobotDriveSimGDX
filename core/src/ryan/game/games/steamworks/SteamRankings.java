@@ -5,15 +5,15 @@ import ryan.game.competition.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SteamRankings extends Rankings<TeamData> {
+public class SteamRankings extends Rankings<SteamTeamData> {
 
     @Override
-    public TeamData generate(Team team) {
-        return new TeamData(team.number);
+    public SteamTeamData generate(Team team) {
+        return new SteamTeamData(team.number);
     }
 
     @Override
-    public void update(TeamData data, Match.MatchAlliance alliance, Match.MatchAlliance other) {;
+    public void update(SteamTeamData data, Match.MatchAlliance alliance, Match.MatchAlliance other) {;
         AllianceScoreData scoreInfo = (AllianceScoreData) alliance.breakdown;
         if (scoreInfo == null) Utils.log("Score info is null");
         if (data == null) Utils.log("Data is null");
@@ -28,9 +28,9 @@ public class SteamRankings extends Rankings<TeamData> {
     }
 
     @Override
-    public List<TeamData> rank(List<TeamData> original) {
-        List<TeamData> d = new ArrayList<>(original);
-        for (TeamData t : original) {
+    public List<SteamTeamData> rank(List<SteamTeamData> original) {
+        List<SteamTeamData> d = new ArrayList<>(original);
+        for (SteamTeamData t : original) {
             if (t.matchesPlayed == 0) d.remove(t);
         }
         d.sort((o1, o2) -> {
@@ -46,30 +46,5 @@ public class SteamRankings extends Rankings<TeamData> {
             return result;
         });
         return d;
-    }
-}
-
-class TeamData extends RankData {
-    int team;
-    float rankingPoints = 0;
-    int scores = 0;
-    int rotorPoints = 0;
-    int climbPoints = 0;
-    int kPa = 0;
-    float matchesPlayed = 0;
-
-
-    TeamData(int t) {
-        team = t;
-    }
-
-    @Override
-    public int getTeam() {
-        return team;
-    }
-
-    @Override
-    public String toString() {
-        return team + " - " + (rankingPoints/matchesPlayed) + " RP";
     }
 }

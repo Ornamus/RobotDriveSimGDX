@@ -309,7 +309,7 @@ public class Robot extends Entity {
             turretAngle = Utils.fixAngle(turretAngle);
             while (turretAngle > 360) turretAngle -= 360;
             while (turretAngle < 0) turretAngle = 360 + turretAngle;
-            Vector2 pos = getTurretPosition();
+            Vector2 pos = getShooterPosition();
             turretSprite.setBounds(pos.x - turretSprite.getWidth()/2, pos.y - turretSprite.getHeight()/2, steam.turretWidth * 2, steam.turretHeight * 2);
             turretSprite.setOriginCenter();
             turretSprite.setRotation(getAngle() + turretAngle);
@@ -420,13 +420,13 @@ public class Robot extends Entity {
         if (metadata != null) metadata.tick(this);
     }
 
-    public Vector2 getTurretPosition() {
+    public Vector2 getShooterPosition() {
         Vector2 pos = new Vector2(getX(), getY());
-        if (hasTurret) {
+        //if (hasTurret) {
             SteamRobotStats steam = (SteamRobotStats) stats;
-            Vector2 copy = new Vector2(steam.shooterTurretPivot.x, steam.shooterTurretPivot.y);
+            Vector2 copy = new Vector2(steam.shooterPosition.x, steam.shooterPosition.y);
             pos.add(copy.rotate(getAngle()));
-        }
+        //}
         return pos;
     }
 
@@ -498,17 +498,12 @@ public class Robot extends Entity {
     }
 
     public void updateMiddleMotor(float m) {
-        //Vector2 vel = getLateralVelocity(left).add(getLateralVelocity(right));
-        //vel.scl(0.5f);
-
         float angle = (float) gyro.getForPID() + 90f;
-        //Utils.log("Pow: " + m + ", Angle of movement: " + angle);
 
-        //Utils.log("Bot angle: " + Utils.roundToPlace(((float)gyro.getForPID() + 90), 2));
         m = Utils.deadzone(m, 0.1f);
         float pow = m * 1;
 
-        float strafeSpeed = stats.maxMPS * 6;
+        float strafeSpeed = stats.maxMPS * 5.2f;
 
         float forceX = (strafeSpeed * pow) * (float) Math.sin(Math.toRadians(angle));
         float forceY = (strafeSpeed  * pow) * (float) Math.cos(Math.toRadians(angle));
@@ -516,7 +511,7 @@ public class Robot extends Entity {
         forceX = Math.abs(speed.x) > stats.maxMPS * stats.fieldCentricStrafeMult ? 0 : forceX;
         forceY = Math.abs(speed.y) > stats.maxMPS * stats.fieldCentricStrafeMult ? 0 : forceY;
 
-        float accel = stats.maxAccel * 2f;
+        float accel = stats.maxAccel * 1.7f;
 
         left.applyForceToCenter(Utils.cap(forceX, accel), Utils.cap(forceY, accel), true);
         right.applyForceToCenter(Utils.cap(forceX, accel), Utils.cap(forceY, accel), true);

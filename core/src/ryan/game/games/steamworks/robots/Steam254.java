@@ -9,13 +9,18 @@ public class Steam254 extends SteamRobotStats {
     public Steam254() {
         super();
         intakeWidth = robotWidth;
+
         gearIntake = true;
+
         fuelIntake = true;
+        fuelIntakeRate = 220;
+
         timePerShoot = 143f;
         shootHeight = 1.15f;
         shootPower = 24;
         shootPowerVariance = 2.5f;
         shootAngleVariance = 1;
+
         needsStateGenerator = true;
 
         texture = "core/assets/254.png";

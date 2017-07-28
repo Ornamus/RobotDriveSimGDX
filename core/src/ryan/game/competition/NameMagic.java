@@ -80,7 +80,7 @@ public class NameMagic {
            "Streakers","Strikers","Stripes","Strokers","Stumblers","Summit","Supernovas","Surgeons","Swells","Syndrome","Talcum","Tamales","Tarts","Termites",
            "Terror","Threat","Thrillers","Thunderballs","Tigresses","Tigrettes","Titans","Toads","Toddlers","Tornadoes","Tossers","Tractors","Traders","Trample",
            "Tramps","Triangles","Trippers","Troopers","Turmoil","Turtles","Twins","Twisters","Universe","Urge","Vampires","Vanguard","Vegetables","Venison",
-           "Vigilantes","Vikings","Wallabies","Wankers","Wannabees","Warthogs","Wasps","Wedge","Werewolves","Westerners","Whackers","Wheelers","Wigglers",
+           "Vigilantes","Vikings","Wallabies","Wannabees","Warthogs","Wasps","Wedge","Werewolves","Westerners","Whackers","Wheelers","Wigglers",
            "Wipeout","Wolfpack","Woodies","Worms","Wranglers","Zealots","Zombies","Zone","Zonkers"};
 
 }

@@ -26,6 +26,7 @@ import ryan.game.entity.*;
 import ryan.game.games.AllianceSelection;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
+import ryan.game.games.RankingDisplay;
 import ryan.game.games.steamworks.AllianceScoreData;
 import ryan.game.games.steamworks.SteamRankings;
 import ryan.game.games.steamworks.SteamResultDisplay;
@@ -48,6 +49,7 @@ public class Main extends ApplicationAdapter {
     public static final Color RED = Utils.toColor(237, 28, 36);
 
     public Drawable results = null;
+    public Drawable rankings = null;
 	SpriteBatch batch;
     SpriteBatch nonScaled;
     ShapeRenderer shape;
@@ -68,6 +70,7 @@ public class Main extends ApplicationAdapter {
     public static int randomTeams = 24;
     public static String eventName = "FIRST Championship";
     public static String eventKey = "debug";
+    public static int extraRobots = 0;
 
     public static boolean isShowingResults = false;
     public static Drawable allianceSelection = null;
@@ -116,7 +119,6 @@ public class Main extends ApplicationAdapter {
         nonScaledCamera.update();
         int index = 0;
 
-        int extraRobots = 0;
         if (extraRobots > 0) currentRobot = 0;
 
         for (int i=0; i<ControllerManager.getGamepads().size() + extraRobots; i++) {
@@ -128,9 +130,6 @@ public class Main extends ApplicationAdapter {
         gameField = new Steamworks();
         gameField.affectRobots();
         drawables.addAll(gameField.generateField());
-
-        //schedule.getRankings().addFakeRankings();
-        //drawables.add(new AllianceSelection());
 
         /*
         Match fake = new Match(5, new int[]{1114,2056,1902}, new int[]{987,1557,180});
@@ -164,6 +163,9 @@ public class Main extends ApplicationAdapter {
 
         schedule = new Schedule(new SteamRankings());
         schedule.generate(scheduleRounds);
+
+        //schedule.getRankings().addFakeRankings();
+        //drawables.add(new AllianceSelection());
     }
 
     @Override
@@ -402,7 +404,7 @@ public class Main extends ApplicationAdapter {
             }
         }
         if (!anyHeld) upHeld = null;
-        if ((controllerStartMatch || Gdx.input.isKeyPressed(Input.Keys.P)) && !matchPlay && !isShowingResults && allianceSelection == null) {
+        if ((controllerStartMatch || Gdx.input.isKeyPressed(Input.Keys.P)) && !matchPlay && !isShowingResults && allianceSelection == null && rankings == null) {
             matchEnd = 0;
             gameField.onMatchStart();
             resetField = true;
@@ -452,6 +454,17 @@ public class Main extends ApplicationAdapter {
         }
         if (Gdx.input.isKeyPressed(Input.Keys.C)) {
             ControllerManager.init();
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
+            if (rankings == null) {
+                if (makeSchedule) {
+                    rankings = new RankingDisplay();
+                    drawables.add(rankings);
+                }
+            } else {
+                drawables.remove(rankings);
+                rankings = null;
+            }
         }
         if (ControllerManager.getGamepads().size() != robots.size() && ControllerManager.getGamepads().size() == 1) {
             Gamepad one = ControllerManager.getGamepad(0);

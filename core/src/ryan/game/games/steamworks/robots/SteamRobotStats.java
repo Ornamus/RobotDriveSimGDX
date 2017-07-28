@@ -20,7 +20,8 @@ public abstract class SteamRobotStats extends RobotStats {
     public boolean shooterIsTurret = false;
     public float turretWidth = .275f;
     public float turretHeight = .275f;
-    public Vector2 shooterTurretPivot = new Vector2(0, 0);
+    public boolean shooterVisible = false;
+    public Vector2 shooterPosition = new Vector2(0, 0);
     public String turretTexture = "core/assets/118_turret.png";
 
     public float shootHeight = 1f;

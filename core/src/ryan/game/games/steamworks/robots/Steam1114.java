@@ -2,6 +2,7 @@ package ryan.game.games.steamworks.robots;
 
 import com.badlogic.gdx.math.Vector2;
 import ryan.game.autonomous.steamworks.AutoBaseline;
+import ryan.game.autonomous.steamworks.AutoCenterGear;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.entity.Robot;
 
@@ -14,7 +15,7 @@ public class Steam1114 extends SteamRobotStats {
 
         fuelIntake = false;
         shooterIsTurret = true;
-        shooterTurretPivot = new Vector2(.6f, 0);
+        shooterPosition = new Vector2(.6f, 0);
         timePerShoot = 170;
         shootHeight = 1.2f;
         shootPower = 20;
@@ -28,6 +29,6 @@ public class Steam1114 extends SteamRobotStats {
 
     @Override
     public Command getAutonomous(Robot r) {
-        return new AutoBaseline(r);
+        return new AutoCenterGear(r);
     }
 }

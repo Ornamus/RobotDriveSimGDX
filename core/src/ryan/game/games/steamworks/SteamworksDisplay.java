@@ -193,9 +193,8 @@ public class SteamworksDisplay extends ScoreDisplay {
             }
             a.score += (a.crosses * 5);
 
-            //TODO: reenable fouls
-            //blueScore += Steamworks.redFouls;
-            //redScore += Steamworks.blueFouls;
+            a.score += a.blue ? Steamworks.red.fouls : Steamworks.blue.fouls;
+
             if (seconds <= 30) {
                 a.climbs += a.bonusClimbs;
                 if (a.climbs > 3) a.climbs = 3;

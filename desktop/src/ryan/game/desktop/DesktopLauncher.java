@@ -38,6 +38,9 @@ public class DesktopLauncher {
 			if (s.startsWith("event_name=")) {
                 Main.eventName = s.replace("event_name=", "");
 			}
+			if (s.startsWith("extra_robots=")) {
+				Main.extraRobots = Integer.parseInt(s.replace("extra_robots=", ""));
+			}
 			if (s.startsWith("event_key=")) {
 				Main.eventKey = s.replace("event_key=", "");
 			}

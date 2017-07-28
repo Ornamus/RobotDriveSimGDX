@@ -240,10 +240,7 @@ public class SteamworksMetadata extends RobotMetadata {
         if (fuel > 0 && Main.getTime() - timeOfLastFire >= stats.timePerShoot && stats.shooter) {
 
 
-            Vector2 shootPos = new Vector2(r.getX(), r.getY());
-            if (r.hasTurret) {
-                shootPos = r.getTurretPosition();
-            }
+            Vector2 shootPos = r.getShooterPosition();
             Fuel f = new Fuel(shootPos.x, shootPos.y, false);//shootFuel(getX() + xChange, getY() + yChange, 1);
             f.setAirMomentum(stats.shootHeight + (Utils.randomFloat(-stats.shootHeightVariance, stats.shootHeightVariance)));
             f.setShot();
