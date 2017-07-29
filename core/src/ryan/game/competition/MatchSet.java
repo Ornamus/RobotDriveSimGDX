@@ -4,6 +4,7 @@ import ryan.game.Main;
 import ryan.game.Utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,6 +14,13 @@ public class MatchSet {
 
     public MatchSet(Match... m) {
         addMatches(m);
+    }
+
+    public boolean belongsInSet(Match m) {
+        if (matches.size() > 0) {
+            return Arrays.equals(matches.get(0).blue.teams, m.blue.teams);
+        }
+        return true;
     }
 
     public void addMatches(Match...m) {
@@ -39,11 +47,26 @@ public class MatchSet {
     }
 
     public static List<MatchSet> getSets(List<Match> matches) {
+        List<MatchSet> sets = new ArrayList<>();
+        for (int i=0; i<Main.schedule.remainingAlliances.length/2; i++) {
+            sets.add(new MatchSet());
+        }
+        List<Match> taken = new ArrayList<>();
+        for (MatchSet set : sets) {
+            for (Match m : matches) {
+                if (set.belongsInSet(m) && !taken.contains(m)) {
+                    set.addMatches(m);
+                    taken.add(m);
+                }
+            }
+        }
+        return sets;
+        /*
         HashMap<String, MatchSet> sets = new HashMap<>();
         for (Match m : matches) {
             for (Match m2 : matches) {
                 if (!m.equals(m2)) {
-                    if (m.getLevel().equalsIgnoreCase(m2.getLevel()) && Main.schedule.arraysEqual(m.blue.teams, m2.blue.teams) && Main.schedule.arraysEqual(m.red.teams, m2.red.teams)) {
+                    if (m.getLevel().equalsIgnoreCase(m2.getLevel()) && Arrays.equals(m.blue.teams, m2.blue.teams) && Arrays.equals(m.red.teams, m2.red.teams)) {
                         MatchSet set = sets.get(m.blue.teams[0] + "" + m.blue.teams[1] + "" + m.blue.teams[2]);
                         if (set == null) {
                             set = new MatchSet();
@@ -54,6 +77,6 @@ public class MatchSet {
                 }
             }
         }
-        return new ArrayList<>(sets.values());
+        return new ArrayList<>(sets.values());*/
     }
 }

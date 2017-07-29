@@ -233,13 +233,14 @@ public class Schedule {
                 if (m.isInMatch(a[0])) {
                     if (arraysEqual(a, m.blue.teams) && m.blue.winner) {
                         wins++;
+                    } else if (arraysEqual(a, m.red.teams) && m.red.winner) {
+                        wins++;
                     }
                 }
             }
             if (wins == 2) wonSet.put(a, true);
         }
 
-        List<MatchSet> wonSets = new ArrayList<>();
         List<MatchSet> sets = MatchSet.getSets(matches);
         for (MatchSet s : new ArrayList<>(sets)) {
             if (s.getWinner() != null) {
@@ -258,17 +259,14 @@ public class Schedule {
                     newAll[3] = wonSet.get(seeds.get(4)) ? getAlliance(4) : getAlliance(5);
                 } else if (newAll.length == 2) { //ending semifinals
                     Utils.log("Ending semis");
-                    if (remainingAlliances == null) Utils.log("remaining is null");
-                    if (newAll == null) Utils.log("newALl is null");
-                    if (wonSet == null) Utils.log("wonset is null");
-                    Utils.log(remainingAlliances[0] + "");
-                    Utils.log(remainingAlliances[1] + "");
-                    Utils.log(remainingAlliances[2] + "");
-                    Utils.log(remainingAlliances[3] + "");
-                    //Utils.log(remainingAlliances[0][0] + " is captain of 1");
-                    //Utils.log(remainingAlliances[1][0] + " is captain of 2");
+                    Utils.log("Remaining 0 is seed " + getSeed(remainingAlliances[0]));
+                    Utils.log("Remaining 1 is seed " + getSeed(remainingAlliances[1]));
+                    Utils.log("Remaining 2 is seed " + getSeed(remainingAlliances[2]));
+                    Utils.log("Remaining 3 is seed " + getSeed(remainingAlliances[3]));
                     newAll[0] = wonSet.get(remainingAlliances[0]) ? remainingAlliances[0] : remainingAlliances[3];
                     newAll[1] = wonSet.get(remainingAlliances[1]) ? remainingAlliances[1] : remainingAlliances[2];
+                    Utils.log("Winner #1 is " + getSeed(newAll[0]));
+                    Utils.log("Winner #2 is " + getSeed(newAll[1]));
                 }
                 remainingAlliances = newAll;
 
