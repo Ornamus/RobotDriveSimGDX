@@ -11,8 +11,6 @@ import ryan.game.competition.RankData;
 import ryan.game.games.steamworks.SteamTeamData;
 import ryan.game.render.Fonts;
 import ryan.game.render.ImageDrawer;
-
-import java.security.Key;
 import java.util.List;
 
 public class RankingDisplay extends ImageDrawer {

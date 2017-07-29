@@ -406,6 +406,7 @@ public class Robot extends Entity {
             val = changeAlliance.get();
             if (val && !changeAllianceWasTrue && !Game.isPlaying()) {
                 blue = !blue;
+                metadata = metadata.getNewInstance();
                 updateSprite();
             }
             changeAllianceWasTrue = val;

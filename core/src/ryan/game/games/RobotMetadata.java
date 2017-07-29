@@ -17,4 +17,13 @@ public abstract class RobotMetadata {
     public abstract void collideEnd(Robot r, Entity e, Body self, Body other, Contact contact);
 
     public abstract void draw(SpriteBatch batch, Robot r);
+
+    public RobotMetadata getNewInstance() {
+        try {
+            return this.getClass().getConstructor().newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

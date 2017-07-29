@@ -8,7 +8,7 @@ public class StrykeForce extends SteamRobotStats {
 
     public StrykeForce() {
         super();
-        maxMPS = 15.7f / 3.28084f;
+        //maxMPS = 15.7f / 3.28084f;
 
         gearIntake = true;
         gearIntakeRate = 800f;

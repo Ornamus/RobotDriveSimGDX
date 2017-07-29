@@ -39,7 +39,7 @@ public class SteamworksMetadata extends RobotMetadata {
     boolean startedIntakingWithGear = false;
     boolean gearToggleWasTrue = false;
 
-    boolean inLoadingZone = false;
+    boolean inWrongLoadingZone = false;
 
     long timeOfLastFire = 0;
 
@@ -134,8 +134,8 @@ public class SteamworksMetadata extends RobotMetadata {
             }
         }
         if (e instanceof LoadingZone && self != r.intake) {
-            if (((LoadingZone)e).blue == r.blue) {
-                inLoadingZone = true;
+            if (((LoadingZone)e).blue != r.blue) {
+                inWrongLoadingZone = true;
             }
         }
         if (e instanceof Rope) {
@@ -155,9 +155,9 @@ public class SteamworksMetadata extends RobotMetadata {
                     else Steamworks.red.bonusClimbs++;
                     ropeTouch = Main.getTime();
                     //TODO: some sort of foul visual
-                } else if (inLoadingZone && Main.getTime() - zoneHit >= 2000) {
-                    if (r.blue) Steamworks.red.fouls += 25;
-                    else Steamworks.blue.fouls += 25;
+                } else if (inWrongLoadingZone && Main.getTime() - zoneHit >= 2000) {
+                    if (r.blue) Steamworks.blue.fouls += 25;
+                    else Steamworks.red.fouls += 25;
                     zoneHit = Main.getTime();
                     //TODO: some sort of foul visual
                 }
@@ -179,8 +179,8 @@ public class SteamworksMetadata extends RobotMetadata {
             }
         }
         if (e instanceof LoadingZone && self != r.intake) {
-            if (((LoadingZone)e).blue == r.blue) {
-                inLoadingZone = false;
+            if (((LoadingZone)e).blue != r.blue) {
+                inWrongLoadingZone = false;
             }
         }
         if (e instanceof Rope) {
