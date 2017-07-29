@@ -113,13 +113,13 @@ public class Steamworks extends Field {
         drawables.add(Entity.peg(16.25f - xFix, -4.25f, 360-60));
 
         float ropeFix = 1.25f;
-        drawables.add(new Rope(11.6f - ropeFix, 3.25f, 300, true)); //blue top
-        drawables.add(new Rope(18.35f - ropeFix, -.5f, 0, true)); //blue middle
-        drawables.add(new Rope(11.6f - ropeFix, -4.45f, 60, true)); //blue bottom
+        drawables.add(new Rope(11.6f - ropeFix, 3.25f, 300, true).setId(0)); //blue top
+        drawables.add(new Rope(18.35f - ropeFix, -.5f, 0, true).setId(1)); //blue middle
+        drawables.add(new Rope(11.6f - ropeFix, -4.45f, 60, true).setId(2)); //blue bottom
 
-        drawables.add(new Rope(-11.6f, 3.25f, 60, false)); //red top
-        drawables.add(new Rope(-18.35f, -.5f, 0, false)); //red middle
-        drawables.add(new Rope(-11.6f, -4.45f, 300, false)); //red bottom
+        drawables.add(new Rope(-11.6f, 3.25f, 60, false).setId(0)); //red top
+        drawables.add(new Rope(-18.35f, -.5f, 0, false).setId(1)); //red middle
+        drawables.add(new Rope(-11.6f, -4.45f, 300, false).setId(2)); //red bottom
 
         drawables.add(new Boiler(-24.6f, -12.25f, false)); //red boiler
         drawables.add(new Boiler(23.4f, -12.25f, true));

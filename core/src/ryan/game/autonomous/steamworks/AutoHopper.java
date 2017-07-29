@@ -10,6 +10,7 @@ import ryan.game.games.steamworks.SteamworksMetadata;
 
 public class AutoHopper extends Command {
 
+    public int driveDistance = 6500;
     Motor pidOutput;
     PIDController rotatePID;
 
@@ -26,7 +27,7 @@ public class AutoHopper extends Command {
         try {
             robot.getGyro().reset();
             robot.getLeftEncoder().reset();
-            while (robot.getLeftEncoder().getForPID() < 6500 && Game.isAutonomous()) {
+            while (robot.getLeftEncoder().getForPID() < driveDistance && Game.isAutonomous()) {
                 robot.setMotors(1f, 1f);
                 Thread.sleep(5);
             }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.competition.Match;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
 import ryan.game.entity.steamworks.Fuel;
@@ -139,8 +140,18 @@ public class SteamworksMetadata extends RobotMetadata {
             }
         }
         if (e instanceof Rope) {
-            if (((Rope)e).blue == r.blue && stats.climber && (Game.getMatchTime() <= 30 || !Game.isPlaying())) {
-                if (onRope == null) onRope = Main.getTime();
+            Rope rope = (Rope) e;
+            rope.robotTouching = true;
+            if (rope.blue == r.blue && stats.climber && (Game.getMatchTime() <= 30 || !Game.isPlaying())) {
+                Match m = Main.schedule.getCurrentMatch();
+                boolean numMatch = false;
+                if (m != null) {
+                    if (rope.blue) numMatch = r.getNumber() == m.blue.teams[rope.id];
+                    else numMatch = r.getNumber() == m.red.teams[rope.id];
+                }
+                if (m == null || (m != null && numMatch)) {
+                    if (onRope == null) onRope = Main.getTime();
+                }
             }
         }
     }
@@ -185,6 +196,7 @@ public class SteamworksMetadata extends RobotMetadata {
         }
         if (e instanceof Rope) {
             onRope = null;
+            ((Rope)e).robotTouching = false;
         }
     }
 

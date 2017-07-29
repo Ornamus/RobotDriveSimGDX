@@ -50,7 +50,8 @@ public class Robot extends Entity {
     private float middleMotor = 0;
 
     private int statsIndex = 0;
-    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(), new SteamRookie(), new Steam1114(), new StrykeForce()};
+    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
+            new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething()};
     //private RobotStats[] statsOptions = {new OverRobotStats()};
     public RobotStats stats = statsOptions[statsIndex];
 
@@ -443,15 +444,21 @@ public class Robot extends Entity {
     }
 
     public void drawUnscaled(SpriteBatch b) {
-        int t;
         Match m = Main.schedule.getCurrentMatch();
         if (m != null) {
-            if (blue) t = Main.schedule.getCurrentMatch().blue.teams[numberIndex];
-            else t = Main.schedule.getCurrentMatch().red.teams[numberIndex];
             Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, getAngle() > 110 && getAngle() < 250 ? .3f : 1);
-            Fonts.drawCentered(t + "", getX() * Main.meterToPixelWidth, (getY() * Main.meterToPixelHeight) + (Main.meterToPixelHeight * 2.7f), Fonts.fmsWhiteVerySmall, b);
+            Fonts.drawCentered(getNumber() + "", getX() * Main.meterToPixelWidth, (getY() * Main.meterToPixelHeight) + (Main.meterToPixelHeight * 2.7f), Fonts.fmsWhiteVerySmall, b);
             Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, 1);
         }
+    }
+
+    public int getNumber() {
+        Match m = Main.schedule.getCurrentMatch();
+        if (m != null) {
+            if (blue) return Main.schedule.getCurrentMatch().blue.teams[numberIndex];
+            else return Main.schedule.getCurrentMatch().red.teams[numberIndex];
+        }
+        return 0;
     }
 
     final float k = 10.0f; //2.25
