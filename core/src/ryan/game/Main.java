@@ -93,11 +93,12 @@ public class Main extends ApplicationAdapter {
 
     private static Main self = null;
 
+    public static float screenWidth = 1100f, screenHeight = 630f, screenAR = screenWidth/screenHeight;
     public static final int world_width = 56, world_height = 30; //56, 29
     private static final int camera_y = -4;
 
-    public static float meterToPixelWidth = 1100f/world_width;
-    public static float meterToPixelHeight = 630f/world_height;
+    public static float meterToPixelWidth = screenWidth/world_width;
+    public static float meterToPixelHeight = screenHeight/world_height;
 
     public Field gameField;
 
@@ -170,7 +171,10 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void resize(int width, int height) {
-        float screenAR = width / (float) height;
+        screenWidth = width;
+        screenHeight = height;
+
+        screenAR = screenWidth/screenHeight;
 
         meterToPixelHeight = 630f/((world_height * 2) /screenAR);
         camera = new OrthographicCamera(world_width, (world_height * 2) /screenAR);
@@ -181,11 +185,14 @@ public class Main extends ApplicationAdapter {
         batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
 
-        /*
         nonScaledCamera = new OrthographicCamera(width, height);
         nonScaledCamera.update();
         nonScaled = new SpriteBatch();
-        nonScaled.setProjectionMatrix(nonScaledCamera.combined);*/
+        nonScaled.setProjectionMatrix(nonScaledCamera.combined);
+
+        //TODO: probably calculate this better
+        float fontScale = (screenWidth/1100f);
+        Fonts.init(fontScale);
     }
 
     public void addFriction(Body b) {

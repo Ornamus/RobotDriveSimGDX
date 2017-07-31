@@ -47,9 +47,11 @@ public abstract class ScoreDisplay extends Drawable {
     boolean wasMatch = false;
     boolean startedTeleop = false;
 
-    //TODO: move this to main or somewhere more suitable
     @Override
     public void tick() {
+        //TODO: limit height at points to prevent overflowing onto the field
+        display.setBounds(0, 0, Main.screenWidth, Main.screenHeight*0.23015873f);
+        display.setPosition(0 - (display.getWidth() / 2), -Main.screenHeight/2);
         if (Main.matchPlay) {
             if (seconds > 135) {
                 if (!wasMatch) {
