@@ -169,15 +169,14 @@ public class Main extends ApplicationAdapter {
         //drawables.add(new AllianceSelection());
     }
 
+    public static float widthScale = 1, heightScale = 1;
+
     @Override
     public void resize(int width, int height) {
-        screenWidth = width;
-        screenHeight = height;
+        float trueAR = width*1f/height*1f;
 
-        screenAR = screenWidth/screenHeight;
-
-        meterToPixelHeight = 630f/((world_height * 2) /screenAR);
-        camera = new OrthographicCamera(world_width, (world_height * 2) /screenAR);
+        meterToPixelHeight = 630f/((world_height * 2) /trueAR);
+        camera = new OrthographicCamera(world_width, (world_height * 2) /trueAR);
 
         camera.position.set(0, camera_y, 0);
         camera.update();
@@ -185,13 +184,20 @@ public class Main extends ApplicationAdapter {
         batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
 
-        nonScaledCamera = new OrthographicCamera(width, height);
+        //nonScaledCamera = new OrthographicCamera(width, height);
+        screenWidth = width;
+        screenHeight = (height*2)/trueAR;
+        screenAR = screenWidth/screenHeight;
+        nonScaledCamera = new OrthographicCamera(screenWidth, screenHeight);
         nonScaledCamera.update();
         nonScaled = new SpriteBatch();
         nonScaled.setProjectionMatrix(nonScaledCamera.combined);
 
+        widthScale = screenWidth/1100f;
+        heightScale = screenHeight/630f;
+
         //TODO: probably calculate this better
-        float fontScale = (screenWidth/1100f);
+        float fontScale = (widthScale);
         Fonts.init(fontScale);
     }
 

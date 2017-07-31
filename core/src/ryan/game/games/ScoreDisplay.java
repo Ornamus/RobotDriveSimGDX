@@ -52,6 +52,10 @@ public abstract class ScoreDisplay extends Drawable {
         //TODO: limit height at points to prevent overflowing onto the field
         display.setBounds(0, 0, Main.screenWidth, Main.screenHeight*0.23015873f);
         display.setPosition(0 - (display.getWidth() / 2), -Main.screenHeight/2);
+
+        setX(display.getX());
+        setY(display.getY());
+
         if (Main.matchPlay) {
             if (seconds > 135) {
                 if (!wasMatch) {
@@ -97,8 +101,8 @@ public abstract class ScoreDisplay extends Drawable {
         Fonts.drawCentered(blueScore + "", 65, getY()+61.5f, Fonts.fmsScore, batch);
         Fonts.drawCentered(redScore + "", -65, getY()+61.5f, Fonts.fmsScore, batch);
 
-        Fonts.drawCentered(matchName, -205, getY() + 130f, Fonts.fmsBlack, batch);
-        Fonts.drawCentered(eventName, 205, getY() + 130f, Fonts.fmsBlack, batch);
+        Fonts.drawCentered(matchName, -205 * Main.widthScale, getY() + (130f*Main.heightScale), Fonts.fmsBlack, batch);
+        Fonts.drawCentered(eventName, 205 * Main.widthScale, getY() + (130f*Main.heightScale), Fonts.fmsBlack, batch);
         //Fonts.drawCentered(Main.matchPlay ? matchName : "Practice Match 1", -205, getY() + 130f, Fonts.fmsBlack, batch);
         //Fonts.drawCentered(Main.matchPlay ? eventName : "Breakfast of Champions", 205, getY() + 130f, Fonts.fmsBlack, batch);
 
