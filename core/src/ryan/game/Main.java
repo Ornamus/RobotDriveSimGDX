@@ -175,7 +175,6 @@ public class Main extends ApplicationAdapter {
     public void resize(int width, int height) {
         float trueAR = width*1f/height*1f;
 
-        meterToPixelHeight = 630f/((world_height * 2) /trueAR);
         camera = new OrthographicCamera(world_width, (world_height * 2) /trueAR);
 
         camera.position.set(0, camera_y, 0);
@@ -188,6 +187,10 @@ public class Main extends ApplicationAdapter {
         screenWidth = width;
         screenHeight = (height*2)/trueAR;
         screenAR = screenWidth/screenHeight;
+
+        meterToPixelWidth = screenWidth/world_width;
+        meterToPixelHeight = screenHeight/((world_height * 2) /trueAR);
+
         nonScaledCamera = new OrthographicCamera(screenWidth, screenHeight);
         nonScaledCamera.update();
         nonScaled = new SpriteBatch();
@@ -197,7 +200,7 @@ public class Main extends ApplicationAdapter {
         heightScale = screenHeight/630f;
 
         //TODO: probably calculate this better
-        float fontScale = (widthScale);
+        float fontScale = (Math.max(widthScale, heightScale));
         Fonts.init(fontScale);
     }
 

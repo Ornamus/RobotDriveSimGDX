@@ -171,6 +171,7 @@ public class Utils {
         front.draw(b);
     }
 
+    //TODO: fix this for the new upscaling and make this also not a bad copy of the above function
     public static void drawUnscaledProgressBar(float x, float y, float width, float height, float progress, SpriteBatch b) {
         x = x - (width/2);
         progress = Utils.cap(progress, 1);

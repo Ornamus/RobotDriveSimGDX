@@ -46,14 +46,17 @@ public class SteamworksDisplay extends ScoreDisplay {
 
         super.draw(batch);
 
-        Fonts.drawCentered(Steamworks.blue.kPA + "", 257.5f, getY() + 35f, Fonts.fmsBlack, batch); //blue kpa
-        Fonts.drawCentered(Steamworks.red.kPA + "", -257.5f, getY() + 35f, Fonts.fmsBlack, batch); //red kpa
+        Fonts.drawCentered(Fonts.fmsBlack, Steamworks.blue.kPA + "", 0, getY(), 257.5f, 35f, batch); //blue kpa
+        Fonts.drawCentered(Fonts.fmsBlack, Steamworks.red.kPA + "", 0, getY(), -257.5f, 35f, batch); //red kpa
 
-        Fonts.drawCentered(Steamworks.blue.rotors + "", 360.5f, getY() + 36f, Fonts.fmsBlack, batch); //blue rotors
-        Fonts.drawCentered(Steamworks.red.rotors + "", -360.5f, getY() + 36f, Fonts.fmsBlack, batch); //red rotors
+        Fonts.drawCentered(Fonts.fmsBlack, Steamworks.blue.rotors + "", 0, getY(), 360.5f, 36, batch); //blue rotors
+        Fonts.drawCentered(Fonts.fmsBlack, Steamworks.red.rotors + "", 0, getY(), -360.5f, 36, batch); //red rotors
 
-        Fonts.drawCentered(Steamworks.blue.climbs + "", 455, getY() + 36f, Fonts.fmsBlack, batch); //blue climbs
-        Fonts.drawCentered(Steamworks.red.climbs + "", -455, getY() + 36f, Fonts.fmsBlack, batch); //red climbs
+        Fonts.drawCentered(Fonts.fmsBlack, Steamworks.blue.climbs + "", 0, getY(), 455, 36, batch); //blue climbs
+        Fonts.drawCentered(Fonts.fmsBlack, Steamworks.red.climbs + "", 0, getY(), -455, 36, batch); //red climbs
+
+        //Fonts.drawCentered(Steamworks.blue.climbs + "", 455, getY() + 36f, Fonts.fmsBlack, batch); //blue climbs
+        //Fonts.drawCentered(Steamworks.red.climbs + "", -455, getY() + 36f, Fonts.fmsBlack, batch); //red climbs
 
         if (Main.matchPlay) {
             drawGearDisplay(232.5f, 45, Steamworks.blue.gears, Steamworks.blue.gears > 12 ? Color.YELLOW : Color.WHITE, batch);
@@ -210,8 +213,9 @@ public class SteamworksDisplay extends ScoreDisplay {
     }
 
     public void drawGearDisplay(float x, float y, int gears, Color c, SpriteBatch b) {
-        b.draw(Gear.TEXTURE, x, y, 30f, 30f);
+        b.draw(Gear.TEXTURE, x*Main.widthScale, y*Main.heightScale, 30f*Main.widthScale, 30f*Main.heightScale);
         Fonts.monoWhiteLarge.setColor(c);
-        Fonts.monoWhiteLarge.draw(b, gears + "", x + 15 - (Fonts.getWidth(gears + "", Fonts.monoWhiteLarge) / 2), y + 55);
+
+        Fonts.drawCentered(Fonts.monoWhiteLarge, gears + "", 0, 0, x+15, y+55, b);
     }
 }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import ryan.game.Main;
 
 public class Fonts {
 
@@ -100,8 +101,22 @@ public class Fonts {
         layout = new GlyphLayout(monoWhiteLarge, "");
     }
 
+    public static void draw(BitmapFont f, String s, float x, float y, float offsetX, float offsetY, SpriteBatch b) {
+        f.draw(b, s, x + (offsetX*Main.widthScale), y + (offsetY * Main.heightScale));
+    }
+
+    public static void drawCentered(BitmapFont f, String s, float oX, float oY, SpriteBatch b) {
+        draw(f, s, 0-(getWidth(s,f)/2), 0, oX, oY, b);
+    }
+
+    public static void drawCentered(BitmapFont f, String s, float x, float y, float oX, float oY, SpriteBatch b) {
+        draw(f, s, x-(getWidth(s,f)/2), y, oX, oY, b);
+    }
+
+    @Deprecated
     public static void drawCentered(String s, float x, float y, BitmapFont f, SpriteBatch b) {
-        f.draw(b, s, x - (getWidth(s, f) / 2), y);
+        draw(f, s, x-(getWidth(s,f)/2), y, 0, 0, b);
+        //f.draw(b, s, x - (getWidth(s, f) / 2), y);
     }
 
     public static float getWidth(String s, BitmapFont f) {
