@@ -22,6 +22,9 @@ public abstract class ScoreDisplay extends Drawable {
     String matchName = "Semifinal 2 of 4";
     String eventName = Main.eventName;
 
+    float timerBackingWidth = 0;
+    float timerBackingHeight = 0;
+
     public ScoreDisplay() {
         this("score_display_gamedefault.png");
     }
@@ -41,6 +44,9 @@ public abstract class ScoreDisplay extends Drawable {
         timerBacking.setAlpha(.75f);
         timerBacking.setPosition(0 - (timerBacking.getWidth() / 2), getY() + 72);
 
+        timerBackingWidth = timerBacking.getWidth();
+        timerBackingHeight = timerBacking.getHeight();
+
         timerBar = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Utils.toColor(39, 124, 28)));
         timerBar.setAlpha(1f);
     }
@@ -55,6 +61,12 @@ public abstract class ScoreDisplay extends Drawable {
 
         setX(display.getX());
         setY(display.getY());
+
+        timerBacking.setSize(timerBackingWidth * Main.fontScale, timerBackingHeight * Main.fontScale);
+        timerBacking.setAlpha(.75f);
+        timerBacking.setPosition(0 - (timerBacking.getWidth() / 2), getY() + (72*Main.heightScale));
+
+        timerBar.setBounds(-127 * Main.widthScale, getY() + (72*Main.heightScale), ((150f-seconds)/150f) * (254*Main.widthScale), 29*Main.heightScale);
 
         if (Main.matchPlay) {
             if (seconds > 135) {
@@ -87,7 +99,7 @@ public abstract class ScoreDisplay extends Drawable {
         display.draw(batch);
 
         seconds = Game.getMatchTime();
-        timerBar.setBounds(-127, getY() + 72, ((150f-seconds)/150f) * 254, 29);
+
         timerBar.draw(batch);
         timerBar.setTexture(Utils.colorImage("core/assets/whitepixel.png", (seconds <= 30 ? Color.YELLOW : Utils.toColor(39, 124, 28))));
 

@@ -165,11 +165,19 @@ public class Main extends ApplicationAdapter {
         schedule = new Schedule(new SteamRankings());
         schedule.generate(scheduleRounds);
 
+        /*
+        Match fake = new Match(4, new int[]{1,2,3}, new int[]{4,5,6});
+        fake.qualifier = false;
+        fake.blue.breakdown = new AllianceScoreData(true);
+        fake.red.breakdown = new AllianceScoreData(false);
+        drawables.add(new SteamResultDisplay(fake));
+        */
+
         //schedule.getRankings().addFakeRankings();
         //drawables.add(new AllianceSelection());
     }
 
-    public static float widthScale = 1, heightScale = 1;
+    public static float widthScale = 1, heightScale = 1, fontScale = 1;
 
     @Override
     public void resize(int width, int height) {
@@ -183,7 +191,6 @@ public class Main extends ApplicationAdapter {
         batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
 
-        //nonScaledCamera = new OrthographicCamera(width, height);
         screenWidth = width;
         screenHeight = (height*2)/trueAR;
         screenAR = screenWidth/screenHeight;
@@ -200,7 +207,7 @@ public class Main extends ApplicationAdapter {
         heightScale = screenHeight/630f;
 
         //TODO: probably calculate this better
-        float fontScale = (Math.max(widthScale, heightScale));
+        fontScale = (Math.max(widthScale, heightScale));
         Fonts.init(fontScale);
     }
 

@@ -447,7 +447,10 @@ public class Robot extends Entity {
         Match m = Main.schedule.getCurrentMatch();
         if (m != null) {
             Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, getAngle() > 110 && getAngle() < 250 ? .3f : 1);
-            Fonts.drawCentered(getNumber() + "", getX() * Main.meterToPixelWidth, (getY() * Main.meterToPixelHeight) + (Main.meterToPixelHeight * 2.7f), Fonts.fmsWhiteVerySmall, b);
+
+            //TODO: fix bug where this ONE piece of text doesn't scale 100% perfectly on the y axis
+            Fonts.drawCentered(Fonts.fmsWhiteVerySmall, getNumber() + "", getX()*Main.meterToPixelWidth, getY()*Main.meterToPixelHeight, 0, 53, b);
+
             Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, 1);
         }
     }

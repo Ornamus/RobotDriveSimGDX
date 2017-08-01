@@ -177,10 +177,15 @@ public class AllianceSelection extends ImageDrawer {
 
     @Override
     public void draw(SpriteBatch batch) {
+        sprite.setSize(Main.screenWidth, Main.screenHeight);
+        sprite.setPosition(0-sprite.getWidth() /2, 0-sprite.getHeight()/2);
         super.draw(batch);
-        Fonts.drawCentered(Main.eventName + " Alliance" + (done ? "s" : " Selection"), getCenterX(), getCenterY() + 305-15, Fonts.fmsBlack, batch);
+
+        Fonts.drawCentered(Fonts.fmsBlack, Main.eventName + " Alliance" + (done ? "s" : " Selection"), getCenterX(), getCenterY(), 0, 305-15, batch);
+        //Fonts.drawCentered(Main.eventName + " Alliance" + (done ? "s" : " Selection"), getCenterX(), getCenterY() + 305-15, Fonts.fmsBlack, batch);
         if (showingAlliances) {
-            if (!done) Fonts.drawCentered("Alliance " + (selectingForAlliance+1) + " Is Picking", getCenterX(), getCenterY() + 280-15, Fonts.fmsBlackSmall, batch);
+            if (!done) Fonts.drawCentered(Fonts.fmsBlackSmall, "Alliance " + (selectingForAlliance+1) + " Is Picking", getCenterX(), getCenterY(), 0, 280-15, batch);
+            //if (!done) Fonts.drawCentered("Alliance " + (selectingForAlliance+1) + " Is Picking", getCenterX(), getCenterY() + 280-15, Fonts.fmsBlackSmall, batch);
             for (int i=0; i<allianceAmount; i++) {
                 float x = -270;
                 float y = 135;
@@ -201,8 +206,8 @@ public class AllianceSelection extends ImageDrawer {
                 Fonts.fmsBlack.draw(batch, teamString, x+90f, y+33.5f);
             }
         } else {
-            Fonts.drawCentered("Available Teams", getCenterX(), getCenterY() + 280-15, Fonts.fmsBlackSmall, batch);
-            //TODO: probably need to calculate available teams once per screen appearance instead of EVERY RENDER FRAME
+            Fonts.drawCentered(Fonts.fmsBlackSmall, "Available Teams", getCenterX(), getCenterY(), 0, 280-15, batch);
+            //TODO: probably want to calculate available teams once per screen appearance instead of EVERY RENDER FRAME
             List<RankData> available = new ArrayList<>(rankings);
             if (selectionRound == 1) { //Remove all teams on an alliance equal to or higher seeded than this one (i.e. 6 can only pick from 7 or 8)
                 int currAlliance = selectingForAlliance;
@@ -232,6 +237,8 @@ public class AllianceSelection extends ImageDrawer {
             int index = 0;
             for (int gridX=0; gridX<8; gridX++) {
                 for (int gridY=0; gridY<8; gridY++) {
+
+                    //TODO: calculate this differently to separate x and y from offsets
                     float x = -500 + (gridX * 120);
                     float y = 135 - (gridY * 56);
 
@@ -246,10 +253,14 @@ public class AllianceSelection extends ImageDrawer {
                         s.draw(batch);
 
                         Fonts.fmsWhiteSmall.setColor(Color.RED);
-                        Fonts.drawCentered((d.rank) + "", x + 19f, y + 33.5f, Fonts.fmsWhiteSmall, batch);
-                        //Fonts.fmsWhiteSmall.draw(batch, (index+1) + "", x + 15f, y + 33.5f);
+
+                        Fonts.drawCentered(Fonts.fmsWhiteSmall, d.rank + "", x, y, 19, 33.5f, batch);
+                        //Fonts.drawCentered((d.rank) + "", x + 19f, y + 33.5f, Fonts.fmsWhiteSmall, batch);
+
                         Fonts.fmsWhiteSmall.setColor(Color.WHITE);
-                        Fonts.fmsBlack.draw(batch, d.getTeam() + "", x + 50f, y + 33.5f);
+
+                        Fonts.draw(Fonts.fmsBlack, d.getTeam() + "", x, y, 50, 33.5f, batch);
+                        //Fonts.fmsBlack.draw(batch, d.getTeam() + "", x + 50f, y + 33.5f);
                     }
                     index++;
                 }
