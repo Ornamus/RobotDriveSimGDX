@@ -27,6 +27,8 @@ import ryan.game.games.AllianceSelection;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
 import ryan.game.games.RankingDisplay;
+import ryan.game.games.overboard.PirateField;
+import ryan.game.games.overboard.robots.OverRobotStats;
 import ryan.game.games.steamworks.AllianceScoreData;
 import ryan.game.games.steamworks.SteamRankings;
 import ryan.game.games.steamworks.SteamResultDisplay;
@@ -122,12 +124,12 @@ public class Main extends ApplicationAdapter {
         if (extraRobots > 0) currentRobot = 0;
 
         for (int i=0; i<ControllerManager.getGamepads().size() + extraRobots; i++) {
-            robots.add(Robot.create(new SteamDefault(), 2 + (index * 3), -11));
+            robots.add(Robot.create(new OverRobotStats(), 2 + (index * 3), -11)); //TODO: remove the need to provide hardcoded stats here
             index++;
         }
 
-        //gameField = new PirateField();
-        gameField = new Steamworks();
+        gameField = new PirateField();
+        //gameField = new Steamworks();
         gameField.affectRobots();
         drawables.addAll(gameField.generateField());
 

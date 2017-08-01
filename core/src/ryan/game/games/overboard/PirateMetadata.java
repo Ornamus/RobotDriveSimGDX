@@ -79,7 +79,7 @@ public class PirateMetadata extends RobotMetadata {
     @Override
     public void collideStart(Robot r, Entity e, Body self, Body other, Contact contact) {
         OverRobotStats stats = (OverRobotStats) r.stats;
-        if (self == r.intake) {
+        if (r.isPart("intake", self)) {
             if (e instanceof Chest) {
                 contact.setEnabled(false);
                 if (intakeableChests.size() < stats.maxChestIntakeAtOnce && !intakeableChests.contains(e)) {
@@ -96,7 +96,7 @@ public class PirateMetadata extends RobotMetadata {
 
     @Override
     public void collideEnd(Robot r, Entity e, Body self, Body other, Contact contact) {
-        if (self == r.intake) {
+        if (r.isPart("intake", self)) {
             if (intakeableChests.contains(e)) {
                 intakeableChests.remove(e);
                 chestIntakeTimes.remove(e);

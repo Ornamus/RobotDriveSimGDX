@@ -8,7 +8,6 @@ import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.games.Game;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,7 +81,7 @@ public class Ship extends Entity {
             }
             Robot r = null;
             if (e instanceof Robot) r = (Robot) e;
-            if (r != null && r.blue == blue && other != r.intake) {
+            if (r != null && r.blue == blue && !r.isPart("intake", other)) {
                 if (self == bottomRamp) {
                     if (!bottomRampRobots.contains(r)) bottomRampRobots.add(r);
                 } else if (self == topRamp) {
@@ -99,7 +98,7 @@ public class Ship extends Entity {
         }
         Robot r = null;
         if (e instanceof Robot) r = (Robot) e;
-        if (r != null && r.blue == blue && other != r.intake) {
+        if (r != null && r.blue == blue && !r.isPart("intake", other)) {
             if (self == bottomRamp) {
                 bottomRampRobots.remove(r);
             } else if (self == topRamp) {

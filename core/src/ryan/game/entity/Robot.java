@@ -21,9 +21,11 @@ import ryan.game.controls.FakeButton;
 import ryan.game.controls.Gamepad;
 import ryan.game.drive.*;
 import ryan.game.autonomous.pathmagic.RobotStateGenerator;
+import ryan.game.entity.parts.Part;
 import ryan.game.entity.steamworks.Boiler;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
+import ryan.game.games.overboard.robots.OverRobotStats;
 import ryan.game.games.steamworks.robots.*;
 import ryan.game.render.Fonts;
 import ryan.game.sensors.Gyro;
@@ -34,7 +36,7 @@ import java.util.List;
 public class Robot extends Entity {
 
     public final int id;
-    public Body left, right, intake = null;
+    public Body left, right;
     public boolean hasTurret = false;
     private int controllerIndex;
     private DriveController[] scrollOptions = {new Arcade(false), new Arcade(true), new Tank(), new CheesyDrive()};
@@ -50,9 +52,9 @@ public class Robot extends Entity {
     private float middleMotor = 0;
 
     private int statsIndex = 0;
-    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
-            new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething()};
-    //private RobotStats[] statsOptions = {new OverRobotStats()};
+    //private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
+      //      new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething()};
+    private RobotStats[] statsOptions = {new OverRobotStats()};
     public RobotStats stats = statsOptions[statsIndex];
 
     private int numberIndex = 0;
@@ -144,11 +146,6 @@ public class Robot extends Entity {
         }
     }
 
-    public void setIntake(Body b) {
-        intake = b;
-        addBody(b);
-    }
-
     public void setTurret(boolean b) {
         hasTurret = b;
         if (b) {
@@ -167,10 +164,11 @@ public class Robot extends Entity {
         else if (stats.recolorIndex == 1) setSprite(Utils.colorImage(tex, null, c));
         else if (stats.recolorIndex == 2) setSprite(Utils.colorImage(tex, null, null, c));
 
+        /*
         if (intake != null) {
             intakeSprite = new Sprite(Utils.colorImage("core/assets/robot_intake.png", c));
             intakeSprite.setPosition(-999, -999);
-        }
+        }*/
 
         outline = new Sprite(Utils.colorImage("core/assets/whitepixel.png", blue ? Main.BLUE : Main.RED));
     }
@@ -278,12 +276,12 @@ public class Robot extends Entity {
             iconAlpha -= 0.01;
             if (iconAlpha <= 0) icon = null;
         }
-        if (intakeSprite != null && intake != null) {
+        /*if (intakeSprite != null && intake != null) {
             Vector2 pos = intake.getPosition();
             intakeSprite.setBounds(pos.x - intakeSprite.getWidth()/2, pos.y - intakeSprite.getHeight()/2, stats.intakeWidth * 2, stats.robotHeight / 2);
             intakeSprite.setOriginCenter();
             intakeSprite.setRotation((float)Math.toDegrees(intake.getAngle()));
-        }
+        }*/
         outline.setBounds(getX() - 1, getY() - 1.95f, 2f, .7f);
         outline.setAlpha(getAngle() > 110 && getAngle() < 250 ? .3f : .6f);
         if (hasTurret) {
@@ -437,7 +435,7 @@ public class Robot extends Entity {
         super.draw(b);
 
         if (icon != null) icon.draw(b);
-        if (intake != null && intakeSprite != null) intakeSprite.draw(b);
+        //if (intake != null && intakeSprite != null) intakeSprite.draw(b);
         if (metadata != null) metadata.draw(b, this);
         if (hasTurret) turretSprite.draw(b);
         outline.draw(b);
@@ -528,14 +526,26 @@ public class Robot extends Entity {
     @Override
     public List<Body> getFrictionlessBodies() {
         List<Body> no = new ArrayList<>();
-        if (intake != null) no.add(intake);
+        for (Part p : parts) {
+            no.addAll(p.bodies);
+        }
+        //if (intake != null) no.add(intake);
         return no;
+    }
+
+    @Override
+    public void addPart(Part p) {
+        super.addPart(p);
+        for (Body b : p.bodies) {
+            weldJoint(left, b);
+            weldJoint(right, b);
+        }
     }
 
     private static void weldJoint(Body a, Body b) {
         synchronized (Main.WORLD_USE) {
             WeldJointDef jointDef = new WeldJointDef();
-            jointDef.collideConnected = false;
+            jointDef.collideConnected = true;
             jointDef.initialize(a, b, new Vector2(0, 0));
             Main.getInstance().world.createJoint(jointDef);
         }
@@ -557,26 +567,17 @@ public class Robot extends Entity {
         return create(stats, x, y, robots++);
     }
 
+    //TODO: diagnose why the intake part "phases" away from the robot while moving, despite being init the same as the original intake
     public static Robot create(RobotStats stats, float x, float y, int id) {
         Body left = createRobotPart(stats, x - stats.robotWidth, y);
         Body right = createRobotPart(stats, x, y);
 
         weldJoint(left, right);
 
-        Body intake = null;
-        if (stats.hasIntake) {
-            float width = stats.intakeWidth, height = stats.robotHeight / 4;
-            intake = BodyFactory.getRectangleDynamic(x - (stats.robotWidth/2), y + stats.robotHeight * 1.25f, width, height, width*height);
-            weldJoint(left, intake);
-            weldJoint(right, intake);
-        }
-
         Robot r = new Robot(stats, left, right, id);
-        if (stats.hasIntake) {
-            r.setIntake(intake);
-            r.updateSprite();
-        }
+        stats.addParts(x, y, r);
 
+        //TODO: get out of here
         if (stats instanceof SteamRobotStats) {
             SteamRobotStats steam = (SteamRobotStats) stats;
             if (steam.shooterIsTurret) {

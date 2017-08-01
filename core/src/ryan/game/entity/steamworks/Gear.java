@@ -41,7 +41,7 @@ public class Gear extends Entity {
                 Robot r = (Robot) e;
                 SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
                 SteamRobotStats stats = (SteamRobotStats) r.stats;
-                if (r.intake == other && !meta.hasGear && stats.gearHPStation) {
+                if (r.isPart("intake", other) && !meta.hasGear && stats.gearHPStation) {
                     meta.hasGear = true;
                     Main.getInstance().removeEntity(this);
                 }

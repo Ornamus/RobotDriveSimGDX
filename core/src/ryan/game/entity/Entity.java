@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import ryan.game.Constants;
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.entity.parts.Part;
 import ryan.game.render.Drawable;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class Entity extends Drawable {
     public float friction = 8f;
     private List<Body> bodies = new ArrayList<>();
     private Body primary = null;
+    protected List<Part> parts = new ArrayList<>();
     private Sprite s = null;
 
     private static final Texture defaultTexture = new Texture("core/assets/default_block.png");
@@ -57,6 +59,39 @@ public class Entity extends Drawable {
     public void addBody(Body b) {
         bodies.add(b);
         b.setUserData(this);
+    }
+
+    public void addPart(Part p) {
+        for (Body b : p.bodies) {
+            addBody(b);
+        }
+        parts.add(p);
+    }
+
+    public void removePart(Part p) {
+        for (Body b : p.bodies) {
+            bodies.remove(b);
+        }
+        parts.remove(p);
+    }
+
+    public List<Part> getPart(String partName) {
+        List<Part> matches = new ArrayList<>();
+        for (Part p : parts) {
+            if (p.name.equalsIgnoreCase(partName)) {
+                matches.add(p);
+            }
+        }
+        return matches;
+    }
+
+    public boolean isPart(String partName, Body b) {
+        for (Part p : parts) {
+            if (p.belongsTo(b)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setSprite(Texture t) {
@@ -143,6 +178,9 @@ public class Entity extends Drawable {
     public void draw(SpriteBatch b) {
         if (s != null) {
             s.draw(b);
+        }
+        for (Part p : parts) {
+            p.draw(b);
         }
     }
 

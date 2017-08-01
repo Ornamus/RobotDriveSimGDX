@@ -122,7 +122,7 @@ public class SteamworksMetadata extends RobotMetadata {
     @Override
     public void collideStart(Robot r, Entity e, Body self, Body other, Contact contact) {
         SteamRobotStats stats = (SteamRobotStats) r.stats;
-        if (self == r.intake) {
+        if (r.isPart("intake", self)) {
             if (e.getName().equalsIgnoreCase("peg")) {
                 peg = e;
                 contact.setEnabled(false);
@@ -134,7 +134,7 @@ public class SteamworksMetadata extends RobotMetadata {
                 contact.setEnabled(false);
             }
         }
-        if (e instanceof LoadingZone && self != r.intake) {
+        if (e instanceof LoadingZone && !r.isPart("intake", self)) {
             if (((LoadingZone)e).blue != r.blue) {
                 inWrongLoadingZone = true;
             }
@@ -178,7 +178,7 @@ public class SteamworksMetadata extends RobotMetadata {
 
     @Override
     public void collideEnd(Robot r, Entity e, Body self, Body other, Contact contact) {
-        if (self == r.intake) {
+        if (r.isPart("intake", self)) {
             if (e == peg) {
                 peg = null;
             } else if (e == intakeableGear) {
@@ -189,7 +189,7 @@ public class SteamworksMetadata extends RobotMetadata {
                 fuelIntakeTimes.remove(e);
             }
         }
-        if (e instanceof LoadingZone && self != r.intake) {
+        if (e instanceof LoadingZone && !r.isPart("intake", self)) {
             if (((LoadingZone)e).blue != r.blue) {
                 inWrongLoadingZone = false;
             }
