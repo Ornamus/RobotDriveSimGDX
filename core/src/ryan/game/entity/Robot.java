@@ -567,7 +567,6 @@ public class Robot extends Entity {
         return create(stats, x, y, robots++);
     }
 
-    //TODO: diagnose why the intake part "phases" away from the robot while moving, despite being init the same as the original intake
     public static Robot create(RobotStats stats, float x, float y, int id) {
         Body left = createRobotPart(stats, x - stats.robotWidth, y);
         Body right = createRobotPart(stats, x, y);
@@ -577,7 +576,7 @@ public class Robot extends Entity {
         Robot r = new Robot(stats, left, right, id);
         stats.addParts(x, y, r);
 
-        //TODO: get out of here
+        //TODO: get this out of here
         if (stats instanceof SteamRobotStats) {
             SteamRobotStats steam = (SteamRobotStats) stats;
             if (steam.shooterIsTurret) {

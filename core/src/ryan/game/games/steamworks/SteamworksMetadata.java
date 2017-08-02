@@ -59,10 +59,6 @@ public class SteamworksMetadata extends RobotMetadata {
         boolean gearIntake = stats.gearIntake;
         boolean fuelIntake = stats.fuelIntake;
 
-        gear.setPosition(r.getX() - gear.getWidth() / 2, r.getY() - gear.getHeight() / 2);
-        gear.setOriginCenter();
-        gear.setRotation(r.getAngle());
-
         if (gamepad != null) {
             boolean val = gamepad.getButton(gearToggle).get();
 
@@ -202,10 +198,15 @@ public class SteamworksMetadata extends RobotMetadata {
 
     @Override
     public void draw(SpriteBatch batch, Robot r) {
+        Vector2 pos = r.getPhysicsPosition();
+        gear.setPosition(pos.x - gear.getWidth() / 2, pos.y - gear.getHeight() / 2);
+        gear.setOriginCenter();
+        gear.setRotation(r.getAngle());
+
         SteamRobotStats stats = (SteamRobotStats) r.stats;
         if (fuel > 0) {
             float size = 1 * (fuel / stats.maxFuel);
-            batch.draw(fuel == stats.maxFuel ? Fuel.TEXTURE_MAX : Fuel.TEXTURE, r.getX() - (size / 2), r.getY() - (size / 2), size, size);
+            batch.draw(fuel == stats.maxFuel ? Fuel.TEXTURE_MAX : Fuel.TEXTURE, pos.x - (size / 2), pos.y - (size / 2), size, size);
         }
         if (hasGear) gear.draw(batch);
         if (onRope != null && (Game.getMatchTime() <= 30 || !Game.isPlaying())) {

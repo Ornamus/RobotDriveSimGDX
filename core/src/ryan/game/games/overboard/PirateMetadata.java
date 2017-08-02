@@ -2,6 +2,7 @@ package ryan.game.games.overboard;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import ryan.game.Main;
@@ -44,12 +45,6 @@ public class PirateMetadata extends RobotMetadata {
         OverRobotStats stats = (OverRobotStats) r.stats;
 
         boolean hasChests = chests.size() > 0;
-
-        if (chests.size() > 1) chest.setSize(.5f, 1f);
-        else chest.setSize(.3f, .6f);
-        chest.setPosition(r.getX() - chest.getWidth() / 2, r.getY() - chest.getHeight() / 2);
-        chest.setOriginCenter();
-        chest.setRotation(r.getAngle());
 
         if (stats.chestIntake && (gamepad.isRightTriggerPressed() || intaking)) {
             for (Entity e : new ArrayList<>(intakeableChests)) {
@@ -106,6 +101,14 @@ public class PirateMetadata extends RobotMetadata {
 
     @Override
     public void draw(SpriteBatch batch, Robot r) {
+        if (chests.size() > 1) chest.setSize(.5f, 1f);
+        else chest.setSize(.3f, .6f);
+
+        Vector2 pos = r.getPhysicsPosition();
+        chest.setPosition(pos.x - chest.getWidth() / 2, pos.y - chest.getHeight() / 2);
+        chest.setOriginCenter();
+        chest.setRotation(r.getAngle());
+
         if (chests.size() > 0) chest.draw(batch);
     }
 

@@ -128,14 +128,6 @@ public class Entity extends Drawable {
             if (airMomentum > -1f) airMomentum -= .1f;
         }
         if (airDistance < 1) airDistance = 1;
-        float sizeChanger = airDistance / 3.2f; //2,5
-        if (sizeChanger < 1) sizeChanger = 1;
-        if (s != null) {
-            s.setBounds(pos.x - s.getWidth()/2, pos.y - s.getHeight()/2, width * 2 * sizeChanger, height * 2 * sizeChanger);
-            // Set origin center for the sprite to guarantee proper rotation with physicsBody.
-            s.setOriginCenter();
-            s.setRotation(angle);
-        }
         previousPos = new Vector2(pos.x, pos.y);
     }
 
@@ -177,6 +169,15 @@ public class Entity extends Drawable {
     @Override
     public void draw(SpriteBatch b) {
         if (s != null) {
+            Vector2 pos = getPhysicsPosition();
+
+            float sizeChanger = airDistance / 3.2f;
+            if (sizeChanger < 1) sizeChanger = 1;
+
+            s.setBounds(pos.x - s.getWidth()/2, pos.y - s.getHeight()/2, width * 2 * sizeChanger, height * 2 * sizeChanger);
+                // Set origin center for the sprite to guarantee proper rotation with physicsBody.
+            s.setOriginCenter();
+            s.setRotation(angle);
             s.draw(b);
         }
         for (Part p : parts) {
