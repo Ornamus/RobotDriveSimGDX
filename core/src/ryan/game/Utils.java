@@ -197,7 +197,8 @@ public class Utils {
         try {
             return g.fromJson(new FileReader(fileName), clazz);
         } catch (Exception e) {
-            e.printStackTrace();
+            Utils.log("File not found: " + fileName);
+            //e.printStackTrace();
             return null;
         }
     }
