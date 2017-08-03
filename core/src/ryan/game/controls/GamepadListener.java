@@ -35,11 +35,10 @@ public class GamepadListener implements ControllerListener {
     }
 
     HashMap<Controller, Integer> movingAxises = new HashMap<>();
-
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
         Gamepad g = Gamepads.getGamepad(controller);
-        if (Math.abs(value) <= 0.01) {
+        if (Math.abs(value) == 1) {
             if (movingAxises.get(controller) != null) {
                 if (g.mapping) g.updateMap(axisCode);
                 movingAxises.remove(controller);

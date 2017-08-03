@@ -5,29 +5,20 @@ import ryan.game.Utils;
 
 public class Gamepad {
 
-    public static final int ONE = 0;
-    public static final int TWO = 1;
-    public static final int THREE = 2;
-    public static final int FOUR = 3;
-
+    public static final int ONE = 0, TWO = 1, THREE = 2, FOUR = 3;
     public static final int BUMPER_LEFT = 4, BUMPER_RIGHT = 5;
-
     public static final int START = 6, SELECT = 7;
-
     public static final int JOY_LEFT = 8, JOY_RIGHT = 9;
-
     public static final int TRIGGER_LEFT = 10, TRIGGER_RIGHT = 11;
 
-
-
-    private static final int[] mapOrder = {ONE, TWO, THREE, FOUR, BUMPER_LEFT, BUMPER_RIGHT, START, SELECT, JOY_LEFT, JOY_RIGHT,
+    protected static final int[] mapOrder = {ONE, TWO, THREE, FOUR, BUMPER_LEFT, BUMPER_RIGHT, START, SELECT, JOY_LEFT, JOY_RIGHT,
     TRIGGER_LEFT, TRIGGER_RIGHT, 94, 95, 96, 97, 98, 99};
 
 
     public final int id;
     protected Controller c;
 
-    private GamepadConfig config = null;
+    protected GamepadConfig config = null;
 
     private boolean reverseSticks = false;
 
@@ -41,11 +32,9 @@ public class Gamepad {
         this.c = c;
 
         config = Utils.fromJSON("core/assets/controller_configs/" + getSimpleName() + ".json", GamepadConfig.class);
-        if (config == null) {
-            mapping = true;
-            config = new GamepadConfig();
-            currentKey = mapOrder[0];
-            Utils.log("Starting controller mapping");
+        config = null;
+        if (config == null) { //TODO: check if in mapping mode or not
+            Utils.log("NULL GAMEPAD AAAAAAH");
         }
 
         id = gamepads++;

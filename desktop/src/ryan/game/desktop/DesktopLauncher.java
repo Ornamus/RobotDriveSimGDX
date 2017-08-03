@@ -4,6 +4,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.controls.ControllerMapper;
 
 public class DesktopLauncher {
 
@@ -17,6 +18,7 @@ public class DesktopLauncher {
 		//config.width = 1100;
 		//config.height = 630;
 		//config.title = "RobotDriveSimGDX - " + random[Utils.randomInt(0, random.length-1)];
+		boolean mapping = false;
 		for (String s : arg) {
 			System.out.println("Arg: " + s);
 			if (s.equalsIgnoreCase("no_music")) {
@@ -49,7 +51,11 @@ public class DesktopLauncher {
 			if (s.equalsIgnoreCase("debug_view")) {
 				Main.DEBUG_RENDER = true;
 			}
+			if (s.equalsIgnoreCase("controller-mapping")) {
+				mapping = true;
+				//TODO: put application into mapping mode instead of simulator play more
+			}
 		}
-		new Lwjgl3Application(new Main(), config);
+		new Lwjgl3Application(mapping ? new ControllerMapper() : new Main(), config);
 	}
 }
