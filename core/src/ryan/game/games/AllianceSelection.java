@@ -86,12 +86,12 @@ public class AllianceSelection extends ImageDrawer {
     }
 
     boolean threeWasPressed = false;
-    float prevDPadValue = 0;
+    PovDirection prevDPadValue = 0;
 
     @Override
     public void tick() {
         super.tick();
-        Gamepad g = ControllerManager.getGamepad(0);
+        Gamepad g = Gamepads.getGamepad(0);
         boolean threeVal = g.getButton(3).get();
         boolean pressed = threeVal && !threeWasPressed;
         if (!showingAlliances) {
@@ -148,15 +148,15 @@ public class AllianceSelection extends ImageDrawer {
             } else if (g.getButton(1).get()) {
                 showingAlliances = true;
             }
-            float dPad = g.getDPad();
+            PovDirection dPad = g.getDPad();
             if (dPad != prevDPadValue) {
-                if (dPad == .25f) {
+                if (dPad == PovDirection.south) {
                     selectedGridY--;
-                } else if (dPad == .5f) {
+                } else if (dPad == PovDirection.east) {
                     selectedGridX++;
-                } else if (dPad == .75f) {
+                } else if (dPad == PovDirection.north) {
                     selectedGridY++;
-                } else if (dPad == 1) {
+                } else if (dPad == PovDirection.west) {
                     selectedGridX--;
                 }
                 //TODO: limit to buttons that are visible

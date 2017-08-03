@@ -205,7 +205,8 @@ public class Utils {
         try {
             return g.fromJson(new FileReader(fileName), clazz);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+          Utils.log("Can't find file :" + fileName);
             return null;
         }
     }
@@ -215,7 +216,7 @@ public class Utils {
         try {
             return g.fromJson(new FileReader(f), clazz);
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace();         
             return null;
         }
     }
