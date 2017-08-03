@@ -22,6 +22,9 @@ public abstract class ScoreDisplay extends Drawable {
     String matchName = "Semifinal 2 of 4";
     String eventName = Main.eventName;
 
+    float timerBackingWidth = 0;
+    float timerBackingHeight = 0;
+
     public ScoreDisplay() {
         this("score_display_gamedefault.png");
     }
@@ -35,10 +38,14 @@ public abstract class ScoreDisplay extends Drawable {
         setX(display.getX());
         setY(display.getY());
 
+        //TODO: constantly recalculate these positions and sizes like for display
         timerBacking = new Sprite(new Texture("core/assets/timer_backing.png"));
         timerBacking.setSize(timerBacking.getWidth() * .75f, timerBacking.getHeight() * .75f);
         timerBacking.setAlpha(.75f);
         timerBacking.setPosition(0 - (timerBacking.getWidth() / 2), getY() + 72);
+
+        timerBackingWidth = timerBacking.getWidth();
+        timerBackingHeight = timerBacking.getHeight();
 
         timerBar = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Utils.toColor(39, 124, 28)));
         timerBar.setAlpha(1f);
@@ -47,9 +54,20 @@ public abstract class ScoreDisplay extends Drawable {
     boolean wasMatch = false;
     boolean startedTeleop = false;
 
-    //TODO: move this to main or somewhere more suitable
     @Override
     public void tick() {
+        display.setBounds(0, 0, Main.screenWidth, Main.screenHeight*0.23015873f);
+        display.setPosition(0 - (display.getWidth() / 2), -Main.screenHeight/2);
+
+        setX(display.getX());
+        setY(display.getY());
+
+        timerBacking.setSize(timerBackingWidth * Main.fontScale, timerBackingHeight * Main.fontScale);
+        timerBacking.setAlpha(.75f);
+        timerBacking.setPosition(0 - (timerBacking.getWidth() / 2), getY() + (72*Main.heightScale));
+
+        timerBar.setBounds(-127 * Main.widthScale, getY() + (72*Main.heightScale), ((150f-seconds)/150f) * (254*Main.widthScale), 29*Main.heightScale);
+
         if (Main.matchPlay) {
             if (seconds > 135) {
                 if (!wasMatch) {
@@ -81,7 +99,7 @@ public abstract class ScoreDisplay extends Drawable {
         display.draw(batch);
 
         seconds = Game.getMatchTime();
-        timerBar.setBounds(-127, getY() + 72, ((150f-seconds)/150f) * 254, 29);
+
         timerBar.draw(batch);
         timerBar.setTexture(Utils.colorImage("core/assets/whitepixel.png", (seconds <= 30 ? Color.YELLOW : Utils.toColor(39, 124, 28))));
 
@@ -92,25 +110,26 @@ public abstract class ScoreDisplay extends Drawable {
         int blueScore = scores[0];
         int redScore = scores[1];
 
-        Fonts.drawCentered(blueScore + "", 65, getY()+61.5f, Fonts.fmsScore, batch);
-        Fonts.drawCentered(redScore + "", -65, getY()+61.5f, Fonts.fmsScore, batch);
+        Fonts.drawCentered(Fonts.fmsScore, blueScore + "", 0, getY(), 65, 61.5f, batch);
+        Fonts.drawCentered(Fonts.fmsScore, redScore + "", 0, getY(), -65, 61.5f, batch);
 
-        Fonts.drawCentered(matchName, -205, getY() + 130f, Fonts.fmsBlack, batch);
-        Fonts.drawCentered(eventName, 205, getY() + 130f, Fonts.fmsBlack, batch);
-        //Fonts.drawCentered(Main.matchPlay ? matchName : "Practice Match 1", -205, getY() + 130f, Fonts.fmsBlack, batch);
-        //Fonts.drawCentered(Main.matchPlay ? eventName : "Breakfast of Champions", 205, getY() + 130f, Fonts.fmsBlack, batch);
+        Fonts.drawCentered(Fonts.fmsBlack, matchName, 0, getY(), -205 , 130, batch);
+        Fonts.drawCentered(Fonts.fmsBlack, eventName, 0, getY(), 205, 130, batch);
 
-        Fonts.drawCentered(Main.matchPlay ? (seconds > 135 ? seconds - 135 : seconds) + "" : "Infinite", 0, getY() + 93f, Fonts.fmsBlack, batch);
+        Fonts.drawCentered(Fonts.fmsBlack, Main.matchPlay ? (seconds > 135 ? seconds - 135 : seconds) + "" : "Infinite", 0, getY(), 0, 93, batch);
+        //Fonts.drawCentered(Main.matchPlay ? (seconds > 135 ? seconds - 135 : seconds) + "" : "Infinite", 0, getY() + 93f, Fonts.fmsBlack, batch);
 
-        Fonts.drawCentered(redTeams[0] + "", -166, getY() + 92f, Fonts.fmsBlack, batch);
-        Fonts.drawCentered(redTeams[1] + "", -166, getY() + 71f, Fonts.fmsBlack, batch);
-        Fonts.drawCentered(redTeams[2] + "", -166, getY() + 71f - 21f, Fonts.fmsBlack, batch);
-        if (Main.schedule.elims) Fonts.drawCentered(Main.schedule.getSeed(redTeams) + "", -166, getY() + 71f - 21f - 25f, Fonts.fmsBlackSmall, batch);
+        for (int i=0; i<redTeams.length; i++) {
+            int team = redTeams[i];
+            Fonts.drawCentered(Fonts.fmsBlack, team + "", 0, getY(), -166, 92 - (i*21), batch);
+        }
+        if (Main.schedule.elims) Fonts.drawCentered(Fonts.fmsBlackSmall, Main.schedule.getSeed(redTeams) + "", 0, getY(), -166, 71-21-25, batch);
 
-        Fonts.drawCentered(blueTeams[0] + "", 166, getY() + 92f, Fonts.fmsBlack, batch);
-        Fonts.drawCentered(blueTeams[1] + "", 166, getY() + 71f, Fonts.fmsBlack, batch);
-        Fonts.drawCentered(blueTeams[2] + "", 166, getY() + 71f - 21f, Fonts.fmsBlack, batch);
-        if (Main.schedule.elims) Fonts.drawCentered(Main.schedule.getSeed(blueTeams) + "", 166, getY() + 71f - 21f - 25f, Fonts.fmsBlackSmall, batch);
+        for (int i=0; i<blueTeams.length; i++) {
+            int team = blueTeams[i];
+            Fonts.drawCentered(Fonts.fmsBlack, team + "", 0, getY(), 166, 92 - (i*21), batch);
+        }
+        if (Main.schedule.elims) Fonts.drawCentered(Fonts.fmsBlackSmall, Main.schedule.getSeed(blueTeams) + "", 0, getY(), 166, 71-21-25, batch);
     }
 
     /**

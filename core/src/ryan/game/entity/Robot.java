@@ -135,15 +135,9 @@ public class Robot extends Entity {
     }
 
     public void setupButtons(Gamepad g) {
-        if (g != null) {
-            changeAlliance = g.getButton(7);
-            changeControls = g.getButton(6);
-            reverseToggle = g.getButton(9);
-        } else {
-            changeAlliance = new FakeButton();
-            changeControls = new FakeButton();
-            reverseToggle = new FakeButton();
-        }
+        changeAlliance = Gamepad.SELECT;
+        changeControls = Gamepad.START;
+        reverseToggle = Gamepad.JOY_LEFT;
     }
 
     public void setTurret(boolean b) {
@@ -329,7 +323,7 @@ public class Robot extends Entity {
                 }
             }*/
 
-            boolean val = changeControls.get();
+            boolean val = g.getButton(changeControls);
             if (val && !changeControlsWasTrue) {
                 controllerIndex++;
                 //Utils.log("Robot " + id + " changing controls (" + g.hasSecondJoystick() + ")");
@@ -370,7 +364,7 @@ public class Robot extends Entity {
                 doFriction(right);
             }
 
-            val = g != null && g.getDPad() == .75;
+            val = g != null && g.getDPad() == PovDirection.south;
             if (val && !statsToggleWasTrue && !Game.isPlaying()) {
                 statsIndex++;
                 if (statsIndex >= statsOptions.length) {
@@ -396,7 +390,7 @@ public class Robot extends Entity {
             }
             statsToggleWasTrue = val;
 
-            val = g != null && g.getDPad() == .5;
+            val = g != null && g.getDPad() == PovDirection.east;
             if (val && !numberChangeWasTrue && !Game.isPlaying()) {
                 numberIndex++;
                 if (numberIndex > 2) {
@@ -405,7 +399,7 @@ public class Robot extends Entity {
             }
             numberChangeWasTrue = val;
 
-            val = changeAlliance.get();
+            val = g.getButton(changeAlliance);
             if (val && !changeAllianceWasTrue && !Game.isPlaying()) {
                 blue = !blue;
                 metadata = metadata.getNewInstance();
@@ -413,7 +407,7 @@ public class Robot extends Entity {
             }
             changeAllianceWasTrue = val;
 
-            val = reverseToggle.get();
+            val = g.getButton(reverseToggle);
             if (val && !reverseToggleWasTrue && !Game.isPlaying()) {
                 g.setReverseSticks(!g.isSticksReversed());
             }
@@ -445,13 +439,16 @@ public class Robot extends Entity {
     }
 
     public void drawUnscaled(SpriteBatch b) {
-        Match m = Main.schedule.getCurrentMatch();
-        if (m != null) {
-            Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, getAngle() > 110 && getAngle() < 250 ? .3f : 1);
-            Fonts.drawCentered(getNumber() + "", getX() * Main.meterToPixelWidth, (getY() * Main.meterToPixelHeight) + (Main.meterToPixelHeight * 2.7f), Fonts.fmsWhiteVerySmall, b);
+         Match m = Main.schedule.getCurrentMatch();
+         if (m != null) {
+             Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, getAngle() > 110 && getAngle() < 250 ? .3f : 1);
+ 
+             //TODO: fix bug where this ONE piece of text doesn't scale 100% perfectly on the y axis
+             Fonts.drawCentered(Fonts.fmsWhiteVerySmall, getNumber() + "", getX()*Main.meterToPixelWidth, getY()*Main.meterToPixelHeight, 0, 53, b);
+ 
             Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, 1);
         }
-    }
+     }
 
     public int getNumber() {
         Match m = Main.schedule.getCurrentMatch();

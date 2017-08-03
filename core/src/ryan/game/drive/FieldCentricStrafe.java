@@ -38,12 +38,12 @@ public class FieldCentricStrafe implements DriveController {
         //double x, y, target
         float adjust = robot.blue ? 270 : 90;
 
-        if (g.getButton(robot.blue? 0 : 3).get()) targetAngle = adjust - feedAngle;
-        if (g.getButton(robot.blue ? 2 : 1).get()) targetAngle = adjust;
-        if (g.getButton(robot.blue ? 1 : 2).get()) targetAngle = adjust + 180;
-        if (g.getButton(robot.blue ? 3 : 0).get()) targetAngle = feedAngle + adjust;
+        if (g.getButton(robot.blue? 0 : 3)) targetAngle = adjust - feedAngle;
+        if (g.getButton(robot.blue ? 2 : 1)) targetAngle = adjust;
+        if (g.getButton(robot.blue ? 1 : 2)) targetAngle = adjust + 180;
+        if (g.getButton(robot.blue ? 3 : 0)) targetAngle = feedAngle + adjust;
 
-        if (g.getButton(2).get() && g.getButton(1).get()) targetAngle = adjust + (robot.blue ? -90 : 90);
+        if (g.getButton(2) && g.getButton(1)) targetAngle = adjust + (robot.blue ? -90 : 90);
 
         if (Game.isAutonomous()) targetAngle = adjust;
 

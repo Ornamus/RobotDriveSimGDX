@@ -4,14 +4,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import ryan.game.Main;
-import ryan.game.Utils;
 import ryan.game.competition.Match;
 import ryan.game.competition.Rankings;
-import ryan.game.competition.Schedule;
 import ryan.game.render.Fonts;
 import ryan.game.render.ImageDrawer;
-
-import java.util.Arrays;
 
 public class SteamResultDisplay extends ImageDrawer {
 
@@ -39,40 +35,44 @@ public class SteamResultDisplay extends ImageDrawer {
 
     @Override
     public void draw(SpriteBatch b) {
+        sprite.setSize(Main.screenWidth, Main.screenHeight);
+        sprite.setPosition(0-sprite.getWidth() /2, 0-sprite.getHeight()/2);
         super.draw(b);
 
         float adjust = 15;
-        Fonts.drawCentered(match.getName(), getCenterX(), getCenterY() + 305-adjust, Fonts.fmsBlack, b);
-        Fonts.drawCentered(Steamworks.display.getEventName(), getCenterX(), getCenterY() + 280-adjust, Fonts.fmsBlackSmall, b);
-        Fonts.drawCentered("Scoring System powered by Bacon", getCenterX(), getCenterY() + 252-adjust, Fonts.fmsBlackSmall, b);
 
-        drawAlliance(getCenterX() - 430, getCenterY(), match.red, b);
-        drawAlliance(getCenterX() + 85, getCenterY(), match.blue, b);
+        Fonts.drawCentered(Fonts.fmsBlack, match.getName(), getCenterX(), getCenterY(), 0, 305-adjust, b);
+        Fonts.drawCentered(Fonts.fmsBlackSmall, Steamworks.display.getEventName(), getCenterX(), getCenterY(), 0, 280-adjust, b);
+        Fonts.drawCentered(Fonts.fmsBlackSmall, "Scoring System powered by Bacon", getCenterX(), getCenterY(), 0, 252-adjust, b);
 
-        blueWin.setBounds(getCenterX() + 206, getCenterY() - 295, 294, 77);
+        drawAlliance(getCenterX() - (Main.widthScale*405), getCenterY(), match.red, b);
+        drawAlliance(getCenterX() + (Main.widthScale*70), getCenterY(), match.blue, b);
+
+        blueWin.setBounds(getCenterX() + (206*Main.widthScale), getCenterY() - (295*Main.heightScale), 294*Main.widthScale, 77*Main.heightScale);
         if (match.blue.score > match.red.score) blueWin.draw(b);
 
-        redWin.setBounds(getCenterX() - 206 - 294, getCenterY() - 295, 294, 77);
-        if (match.red.score > match.blue.score)redWin.draw(b);
+        redWin.setBounds(getCenterX() + ((-206 - 294)*Main.widthScale), getCenterY() - (295*Main.heightScale), 294*Main.widthScale, 77*Main.heightScale);
+        if (match.red.score > match.blue.score) redWin.draw(b);
     }
 
     public void drawAlliance(float x, float y, Match.MatchAlliance a, SpriteBatch b) {
         boolean blue = x > getCenterX();
-        float teamY = y + 167.5f;
+        float teamYAdjust = 167.5f;
         if (match.qualifier) {
             Rankings r = Main.getInstance().schedule.getRankings();
             for (int i = 0; i < a.teams.length; i++) {
                 int team = a.teams[i];
                 float increment = (i * 40);
-                Fonts.fmsWhiteNormal.draw(b, team + "", x + 53, teamY - increment);
-                Fonts.drawCentered(r.getRank(team) + "", x + 243, teamY - increment, Fonts.fmsWhiteNormal, b);
+
+                Fonts.draw(Fonts.fmsWhiteNormal, team + "", x, y, 53, teamYAdjust-increment, b);
+                Fonts.drawCentered(Fonts.fmsWhiteNormal, r.getRank(team) + "", x, y, 243, teamYAdjust-increment, b);
 
                 boolean first = r.getPreviousRank(team) == -1;
                 if (!first) {
                     int rankDiff = r.getRank(team) - r.getPreviousRank(team);
                     if (rankDiff != 0) {
                         Sprite s = rankDiff < 0 ? arrowUp : arrowDown;
-                        s.setPosition(x + 263 + 5, teamY - increment - 24);
+                        s.setPosition(x + 263 + 5, y+teamYAdjust - increment - 24);
                         s.draw(b);
                     }
                 }
@@ -83,21 +83,28 @@ public class SteamResultDisplay extends ImageDrawer {
                 teams += "-" + t;
             }
             teams = teams.substring(1, teams.length());
-            Fonts.fmsWhiteSmall.draw(b, teams, x+70, y + 156);
 
-            Fonts.fmsBlackSmall.draw(b, "" + (match.blue == a ? Main.schedule.getSeed(match.blue.teams) : Main.schedule.getSeed(match.red.teams)), x+22.5f, y + 156); //TODO: handle seeds
+            Fonts.draw(Fonts.fmsWhiteSmall, teams, x, y, 70, 156, b);
+            //Fonts.fmsWhiteSmall.draw(b, teams, x+70, y + 156);
+
+            Fonts.draw(Fonts.fmsBlackSmall, "" + (match.blue == a ? Main.schedule.getSeed(match.blue.teams) : Main.schedule.getSeed(match.red.teams)), x, y, 22.5f, 156, b);
+            //Fonts.fmsBlackSmall.draw(b, "" + (match.blue == a ? Main.schedule.getSeed(match.blue.teams) : Main.schedule.getSeed(match.red.teams)), x+22.5f, y + 156);
         }
 
         AllianceScoreData d = (AllianceScoreData) a.breakdown;
+        AllianceScoreData oppD = (AllianceScoreData) (match.blue == a ? match.red.breakdown : match.blue.breakdown);
 
-        Fonts.fmsBlack.draw(b, "Auto Mobility\nPressure\nRotor\nReady for Takeoff\n" + (blue ? "Red" : "Blue") + " Penalty", x, y);
-        Fonts.fmsBlack.draw(b,
+        Fonts.draw(Fonts.fmsBlack, "Auto Mobility\nPressure\nRotor\nReady for Takeoff\n" + (blue ? "Red" : "Blue") + " Penalty", x, y, 0, 0, b);
+        //Fonts.fmsBlack.draw(b, "Auto Mobility\nPressure\nRotor\nReady for Takeoff\n" + (blue ? "Red" : "Blue") + " Penalty", x, y);
+
+
+        Fonts.draw(Fonts.fmsBlack,
                 (d.crosses*5) + "\n" +
                         d.kPA + "\n" +
                         d.rotorPoints + "\n" +
                         (d.climbs*50) + "\n" +
-                        d.fouls,
-                x + 310,  y);
+                        oppD.fouls,
+                x,  y, 310, 0, b);
 
         String bonusText;
         if (match.qualifier) {
@@ -111,8 +118,9 @@ public class SteamResultDisplay extends ImageDrawer {
             if (d.rotors == 4) points += 100;
             bonusText = points + "";
         }
-        Fonts.fmsBlack.draw(b, bonusText, x + 310,  y + 40);
 
-        Fonts.drawCentered(a.score + "", getCenterX() + (blue? 106 : -106), getCenterY() - 225, Fonts.fmsScore, b);
+        Fonts.draw(Fonts.fmsBlack, bonusText, x, y, 310, 40, b);
+
+        Fonts.drawCentered(Fonts.fmsScore, a.score + "", getCenterX(), getCenterY(), 100 * (blue ? 1 : -1), -225, b);
     }
 }

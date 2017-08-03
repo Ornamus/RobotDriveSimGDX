@@ -14,7 +14,6 @@ import ryan.game.entity.overboard.Chest;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
 import ryan.game.games.overboard.robots.OverRobotStats;
-
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
