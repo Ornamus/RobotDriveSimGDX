@@ -2,6 +2,7 @@ package ryan.game.games.overboard;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import ryan.game.Main;
@@ -13,7 +14,6 @@ import ryan.game.entity.overboard.Chest;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
 import ryan.game.games.overboard.robots.OverRobotStats;
-
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,12 +45,6 @@ public class PirateMetadata extends RobotMetadata {
 
         boolean hasChests = chests.size() > 0;
 
-        if (chests.size() > 1) chest.setSize(.5f, 1f);
-        else chest.setSize(.3f, .6f);
-        chest.setPosition(r.getX() - chest.getWidth() / 2, r.getY() - chest.getHeight() / 2);
-        chest.setOriginCenter();
-        chest.setRotation(r.getAngle());
-
         if (stats.chestIntake && (gamepad.isRightTriggerPressed() || intaking)) {
             for (Entity e : new ArrayList<>(intakeableChests)) {
                 if (!intakeableChests.isEmpty() && chests.size() < stats.maxChests) {
@@ -69,7 +63,7 @@ public class PirateMetadata extends RobotMetadata {
                 }
             }
         }
-        boolean val = gamepad.getButton(ejectGearButton);
+        boolean val = gamepad.getButton(ejectGearButton).get();
         if (val && !ejectChestWasHeld) {
             ejectChest(r);
         }
@@ -79,7 +73,7 @@ public class PirateMetadata extends RobotMetadata {
     @Override
     public void collideStart(Robot r, Entity e, Body self, Body other, Contact contact) {
         OverRobotStats stats = (OverRobotStats) r.stats;
-        if (self == r.intake) {
+        if (r.isPart("intake", self)) {
             if (e instanceof Chest) {
                 contact.setEnabled(false);
                 if (intakeableChests.size() < stats.maxChestIntakeAtOnce && !intakeableChests.contains(e)) {
@@ -96,7 +90,7 @@ public class PirateMetadata extends RobotMetadata {
 
     @Override
     public void collideEnd(Robot r, Entity e, Body self, Body other, Contact contact) {
-        if (self == r.intake) {
+        if (r.isPart("intake", self)) {
             if (intakeableChests.contains(e)) {
                 intakeableChests.remove(e);
                 chestIntakeTimes.remove(e);
@@ -106,6 +100,14 @@ public class PirateMetadata extends RobotMetadata {
 
     @Override
     public void draw(SpriteBatch batch, Robot r) {
+        if (chests.size() > 1) chest.setSize(.5f, 1f);
+        else chest.setSize(.3f, .6f);
+
+        Vector2 pos = r.getPhysicsPosition();
+        chest.setPosition(pos.x - chest.getWidth() / 2, pos.y - chest.getHeight() / 2);
+        chest.setOriginCenter();
+        chest.setRotation(r.getAngle());
+
         if (chests.size() > 0) chest.draw(batch);
     }
 

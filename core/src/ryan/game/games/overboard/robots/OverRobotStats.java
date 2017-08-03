@@ -1,9 +1,12 @@
 package ryan.game.games.overboard.robots;
 
+import com.badlogic.gdx.physics.box2d.Body;
 import ryan.game.autonomous.overboard.Auto254Over;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.competition.RobotStats;
+import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Robot;
+import ryan.game.entity.parts.Intake;
 import ryan.game.games.Game;
 
 public class OverRobotStats extends RobotStats {
@@ -25,11 +28,19 @@ public class OverRobotStats extends RobotStats {
     public OverRobotStats() {
         super(Game.OVERBOARD);
         robotWidth = 0.8128f;
+        intakeWidth = robotWidth*.75f;
         needsStateGenerator = true; //TODO: remove this once this class is properly treated as a stats default
     }
 
     @Override
     public Command getAutonomous(Robot r) {
         return new Auto254Over(r);
+    }
+
+    @Override
+    public void addParts(float x, float y, Robot r) {
+        float width = intakeWidth, height = robotHeight / 4;
+        Body in = BodyFactory.getRectangleDynamic(x - (robotWidth/2), y + robotHeight * 1.25f, width, height, width*height);
+        r.addPart(new Intake(width*2, height*2, in));
     }
 }
