@@ -163,6 +163,9 @@ public class Robot extends Entity {
         if (stats.recolorIndex == 0) setSprite(Utils.colorImage(tex, c));
         else if (stats.recolorIndex == 1) setSprite(Utils.colorImage(tex, null, c));
         else if (stats.recolorIndex == 2) setSprite(Utils.colorImage(tex, null, null, c));
+        for (Part p : parts) {
+            p.onRobotColorChange(c);
+        }
 
         /*
         if (intake != null) {

@@ -16,7 +16,7 @@ public class Intake extends Part {
 
     public Intake(float width, float height, Body b) {
         this("Intake", width, height, b);
-        s = new Sprite(Utils.colorImage("core/assets/robot_intake.png", Main.RED)); //TODO: pull from robot color
+        onRobotColorChange(Main.BLUE);
     }
 
     public Intake(String name, float width, float height, Body b) {
@@ -27,8 +27,14 @@ public class Intake extends Part {
     }
 
     @Override
+    public void onRobotColorChange(Color c) {
+        s = new Sprite(Utils.colorImage("core/assets/robot_intake.png", c));
+    }
+
+    @Override
     public void draw(SpriteBatch batch) {
         Vector2 pos = body.getPosition();
+
         s.setBounds(pos.x - s.getWidth()/2, pos.y - s.getHeight()/2, width, height);
         s.setOriginCenter();
         s.setRotation((float)Math.toDegrees(body.getAngle()));

@@ -1,8 +1,6 @@
 package ryan.game.autonomous.overboard;
 
-
 import ryan.game.Main;
-import ryan.game.Utils;
 import ryan.game.autonomous.pathmagic.PursuitControl;
 import ryan.game.autonomous.pathmagic.RobotStateGenerator;
 import ryan.game.bcnlib_pieces.Command;
@@ -10,11 +8,9 @@ import ryan.game.drive.DriveOrder;
 import ryan.game.entity.Robot;
 import ryan.game.games.Game;
 import ryan.game.games.overboard.PirateMetadata;
-import ryan.game.games.steamworks.SteamworksMetadata;
 import ryan.game.team254.utils.Path;
 import ryan.game.team254.utils.RigidTransform2d;
 import ryan.game.team254.utils.Translation2d;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +22,6 @@ public class Auto254Over extends Command {
 
     @Override
     public void onInit() {
-        Utils.log("254over init");
         try {
             PirateMetadata meta = (PirateMetadata) robot.metadata;
             robot.getGyro().reset();
