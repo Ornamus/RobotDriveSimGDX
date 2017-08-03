@@ -1,5 +1,6 @@
 package ryan.game.games;
 
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -10,8 +11,8 @@ import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.competition.RankData;
 import ryan.game.competition.Rankings;
-import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
+import ryan.game.controls.Gamepads;
 import ryan.game.render.Fonts;
 import ryan.game.render.ImageDrawer;
 import java.util.ArrayList;
@@ -86,13 +87,13 @@ public class AllianceSelection extends ImageDrawer {
     }
 
     boolean threeWasPressed = false;
-    PovDirection prevDPadValue = 0;
+    PovDirection prevDPadValue = PovDirection.center;
 
     @Override
     public void tick() {
         super.tick();
         Gamepad g = Gamepads.getGamepad(0);
-        boolean threeVal = g.getButton(3).get();
+        boolean threeVal = g.getButton(3);
         boolean pressed = threeVal && !threeWasPressed;
         if (!showingAlliances) {
             if (pressed) {
@@ -145,7 +146,7 @@ public class AllianceSelection extends ImageDrawer {
 
                 setSelecting(selectingForAlliance);
                 showingAlliances = true;
-            } else if (g.getButton(1).get()) {
+            } else if (g.getButton(1)) {
                 showingAlliances = true;
             }
             PovDirection dPad = g.getDPad();
