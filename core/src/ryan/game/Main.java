@@ -14,22 +14,17 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.FrictionJointDef;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import ryan.game.ai.Pathfinding;
-import ryan.game.competition.Match;
 import ryan.game.competition.Schedule;
 import ryan.game.competition.Team;
-import ryan.game.controls.ControllerManager;
+import ryan.game.controls.Gamepads;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
 import ryan.game.games.AllianceSelection;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
 import ryan.game.games.RankingDisplay;
-import ryan.game.games.steamworks.AllianceScoreData;
 import ryan.game.games.steamworks.SteamRankings;
-import ryan.game.games.steamworks.SteamResultDisplay;
 import ryan.game.games.steamworks.Steamworks;
 import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.render.Drawable;
@@ -107,7 +102,7 @@ public class Main extends ApplicationAdapter {
 	public void create () {
         self = this;
         Fonts.init();
-        ControllerManager.init();
+        Gamepads.init();
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
         world.setContactListener(new CollisionListener());
@@ -121,7 +116,7 @@ public class Main extends ApplicationAdapter {
 
         if (extraRobots > 0) currentRobot = 0;
 
-        for (int i=0; i<ControllerManager.getGamepads().size() + extraRobots; i++) {
+        for (int i = 0; i< Gamepads.getGamepads().size() + extraRobots; i++) {
             robots.add(Robot.create(new SteamDefault(), 2 + (index * 3), -11));
             index++;
         }
@@ -393,7 +388,7 @@ public class Main extends ApplicationAdapter {
 
         boolean controllerStartMatch = false;
         boolean anyHeld = false;
-        for (Gamepad g : ControllerManager.getGamepads()) {
+        for (Gamepad g : Gamepads.getGamepads()) {
             if (g.getDPad() == .25) {
                 anyHeld = true;
                 if (upHeld == null) upHeld = getTime();
@@ -453,7 +448,7 @@ public class Main extends ApplicationAdapter {
             resetField = false;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.C)) {
-            ControllerManager.init();
+            Gamepads.init();
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
             if (rankings == null) {
@@ -466,9 +461,9 @@ public class Main extends ApplicationAdapter {
                 rankings = null;
             }
         }
-        if (ControllerManager.getGamepads().size() != robots.size() && ControllerManager.getGamepads().size() == 1) {
-            Gamepad one = ControllerManager.getGamepad(0);
-            if (one.getButton(10).get()) {
+        if (Gamepads.getGamepads().size() != robots.size() && Gamepads.getGamepads().size() == 1) {
+            Gamepad one = Gamepads.getGamepad(0);
+            if (one.getButton(10)) {
                 if (!wasHeld) {
                     currentRobot++;
                     if (currentRobot == robots.size()) {

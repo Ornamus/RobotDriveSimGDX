@@ -1,156 +1,152 @@
 package ryan.game.controls;
 
-import net.java.games.input.Component;
-import net.java.games.input.Controller;
-import java.util.ArrayList;
-import java.util.List;
+import com.badlogic.gdx.controllers.Controller;
+import ryan.game.Utils;
 
 public class Gamepad {
 
+    public static final int ONE = 0;
+    public static final int TWO = 1;
+    public static final int THREE = 2;
+    public static final int FOUR = 3;
+
+    public static final int BUMPER_LEFT = 4, BUMPER_RIGHT = 5;
+
+    public static final int START = 6, SELECT = 7;
+
+    public static final int JOY_LEFT = 8, JOY_RIGHT = 9;
+
+    public static final int TRIGGER_LEFT = 10, TRIGGER_RIGHT = 11;
+
+
+
+    private static final int[] mapOrder = {ONE, TWO, THREE, FOUR, BUMPER_LEFT, BUMPER_RIGHT, START, SELECT, JOY_LEFT, JOY_RIGHT,
+    TRIGGER_LEFT, TRIGGER_RIGHT, 94, 95, 96, 97, 98, 99};
+
+
     public final int id;
-    private Controller c;
-    private Component xAxis = null, yAxis = null, xAxis2 = null, yAxis2 = null;
-    private Component zAxis = null;
-    private Component dPad = null;
-    private List<Button> buttons = new ArrayList<>();
+    protected Controller c;
+
+    private GamepadConfig config = null;
+
     private boolean reverseSticks = false;
+
+    protected boolean mapping = false;
+    protected int mapIndex = 0;
+    protected int currentKey = -1;
 
     private static int gamepads = 0;
 
     protected Gamepad(Controller c) {
         this.c = c;
-        //List<Component> buts = new ArrayList<Component>();
-        if (c.getType() == Controller.Type.KEYBOARD) {
-            for (Component comp : c.getComponents()) {
-                //TODO
-            }
-        } else {
-            boolean zRot = false;
-            for (Component comp : c.getComponents()) {
-                if (comp.getName().equalsIgnoreCase("X Axis")) xAxis = comp;
-                if (comp.getName().equalsIgnoreCase("Y Axis")) yAxis = comp;
-                if (comp.getName().equalsIgnoreCase("X Rotation")) xAxis2 = comp;
-                if (comp.getName().equalsIgnoreCase("Y Rotation")) yAxis2 = comp;
-                if (comp.getName().equalsIgnoreCase("Z Axis")) zAxis = comp;
-                if (comp.getName().equalsIgnoreCase("Z Rotation")) zRot = true;
-                if (comp.getName().equalsIgnoreCase("hat switch")) dPad = comp;
-                if (comp.getName().toLowerCase().contains("button")) buttons.add(new Button(comp));
-                //if (comp.getIdentifier() instanceof Component.Identifier.Button) buts.add(comp);
 
-            }
-            if (!hasSecondJoystick() && zRot) {
-                zAxis = null;
-                for (Component comp : c.getComponents()) {
-                    //Utils.log(comp.getName());
-                    if (comp.getName().equalsIgnoreCase("Z Axis")) xAxis2 = comp;
-                    if (comp.getName().equalsIgnoreCase("Z Rotation")) yAxis2 = comp;
-                }
-            }
+        config = Utils.fromJSON("core/assets/controller_configs/" + getSimpleName() + ".json", GamepadConfig.class);
+        if (config == null) {
+            mapping = true;
+            config = new GamepadConfig();
+            currentKey = mapOrder[0];
+            Utils.log("Starting controller mapping");
         }
-        /*
-        int highestExisting = 0;
-        for (Component comp : buts) {
-            Utils.log(comp.getIdentifier().getName());
-            int num = Integer.parseInt(comp.getIdentifier().getName());
-            buttons.add(new Button(comp, num));
-            if (num > highestExisting) {
-                highestExisting = num;
-            }
-            //if (comp.getIdentifier().getName())
-        }*/
+
         id = gamepads++;
     }
 
-    public boolean poll() {
-        return c.poll();
+    public void updateMap(int index) {
+        Utils.log("Mapping " + currentKey + " to " + index);
+        config.setMapping(currentKey, index);
+        mapIndex++;
+        if (mapIndex < mapOrder.length) {
+            currentKey = mapOrder[mapIndex];
+        } else {
+            mapping = false;
+            config.save(getSimpleName());
+            Utils.log("Mapping complete!");
+        }
     }
 
+    /*
+    public boolean poll() {
+        return c.poll();
+    }*/
+
     public float getX() {
-        if (hasSecondJoystick() && reverseSticks) return xAxis2.getPollData();
-        return xAxis.getPollData();
+        if (hasSecondJoystick() && reverseSticks) return c.getAxis(config.xAxis2);
+        return c.getAxis(config.xAxis);
     }
 
     public float getY() {
-        if (hasSecondJoystick() && reverseSticks) return -yAxis2.getPollData();
-        return -yAxis.getPollData();
+        if (hasSecondJoystick() && reverseSticks) return -c.getAxis(config.yAxis2);
+        return -c.getAxis(config.yAxis);
     }
 
     public float getX2() {
-        if (xAxis2 != null) {
-            if (reverseSticks) return xAxis.getPollData();
-            return xAxis2.getPollData();
+        if (config.xAxis2 != -1) {
+            if (reverseSticks) return c.getAxis(config.xAxis);
+            return c.getAxis(config.xAxis2);
         }
         return 0;
     }
 
     public float getY2() {
-        if (yAxis2 != null) {
-            if (reverseSticks) return -yAxis.getPollData();
-            return -yAxis2.getPollData();
+        if (config.yAxis2 != -1) {
+            if (reverseSticks) return -c.getAxis(config.yAxis);
+            return -c.getAxis(config.yAxis2);
         }
         return 0;
     }
 
     public float getZ() {
-        if (zAxis != null) return zAxis.getPollData();
+        if (config.zAxis != -1) c.getAxis(config.zAxis);
         return 0;
     }
 
     public float getDPad() {
-        return dPad.getPollData();
+        //Utils.log("Gamepad.getDPad() not implemented yet");
+        return 0;
     }
 
     public boolean isLeftTriggerPressed() {
         if (hasZAxis()) return getZ() > 0.1;
-        else return getButton(98).get();
+        else return getButton(TRIGGER_LEFT);
     }
 
     public boolean isRightTriggerPressed() {
         if (hasZAxis()) return getZ() < -0.1;
-        else return getButton(99).get();
+        else return getButton(TRIGGER_RIGHT);
     }
 
     public boolean hasZAxis() {
-        return zAxis != null;
+        return config.zAxis != -1;
     }
 
     public boolean hasSecondJoystick() {
-        return xAxis2 != null && yAxis2 != null;
+        return config.xAxis2 != -1 && config.yAxis2 != -1;
     }
 
     public boolean isSticksReversed() {
         return reverseSticks;
     }
 
+    public GamepadConfig getConfig() {
+        return config;
+    }
+
     public void setReverseSticks(boolean rev) {
         if (hasSecondJoystick()) reverseSticks = rev;
     }
 
-    public List<Button> getButtons() {
-        return new ArrayList<>(buttons);
-    }
-
-    public Button getButton(int id) {
-        if (c.getName().equalsIgnoreCase("Rock Candy Wireless Gamepad for PS3") || c.getName().equalsIgnoreCase("Logitech Dual Action")) {
-            if (id == 1) return buttons.get(2);
-            if (id == 2) return buttons.get(0);
-            if (id == 0) return buttons.get(1);
-            if (id == 6) return buttons.get(8);
-            if (id == 7) return buttons.get(9);
-            if (id == 9) return buttons.get(11);
-            if (id == 98) return buttons.get(6);
-            if (id == 99) return buttons.get(7);
-        } else if (c.getName().equalsIgnoreCase("Logitech Attack 3")) {
-            if (id == 0) return buttons.get(1);
-            if (id == 2) return buttons.get(3);
-            if (id == 3) return buttons.get(4);
-            if (id == 5) return buttons.get(0);
-            //TODO
-        }
-        return buttons.get(id);
+    public boolean getButton(int id) {
+        if (id > -1) return c.getButton(config.getMapping(id));
+        return false;
     }
 
     public String getName() {
         return c.getName();
+    }
+
+    public String getSimpleName() {
+        String s = getName();
+        s = s.replaceAll("[^A-Za-z0-9]", "");
+        return s;
     }
 }

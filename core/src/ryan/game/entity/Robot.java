@@ -16,7 +16,7 @@ import ryan.game.bcnlib_pieces.PIDSource;
 import ryan.game.competition.Match;
 import ryan.game.competition.RobotStats;
 import ryan.game.controls.Button;
-import ryan.game.controls.ControllerManager;
+import ryan.game.controls.Gamepads;
 import ryan.game.controls.FakeButton;
 import ryan.game.controls.Gamepad;
 import ryan.game.drive.*;
@@ -61,9 +61,9 @@ public class Robot extends Entity {
 
     public RobotMetadata metadata = null;
 
-    private Button changeAlliance;
-    private Button changeControls;
-    private Button reverseToggle;
+    private int changeAlliance;
+    private int changeControls;
+    private int reverseToggle;
 
     private float maxTurn = 1.5f;
     public boolean blue;
@@ -133,15 +133,9 @@ public class Robot extends Entity {
     }
 
     public void setupButtons(Gamepad g) {
-        if (g != null) {
-            changeAlliance = g.getButton(7);
-            changeControls = g.getButton(6);
-            reverseToggle = g.getButton(9);
-        } else {
-            changeAlliance = new FakeButton();
-            changeControls = new FakeButton();
-            reverseToggle = new FakeButton();
-        }
+        changeAlliance = Gamepad.SELECT;
+        changeControls = Gamepad.START;
+        reverseToggle = Gamepad.JOY_LEFT;
     }
 
     public void setIntake(Body b) {
@@ -315,7 +309,7 @@ public class Robot extends Entity {
             turretSprite.setOriginCenter();
             turretSprite.setRotation(getAngle() + turretAngle);
         }
-        if (ControllerManager.getGamepads().isEmpty()) {
+        if (Gamepads.getGamepads().isEmpty()) {
             //TODO: ?????
         } else {
             Gamepad g = getController();
@@ -328,7 +322,7 @@ public class Robot extends Entity {
                 }
             }*/
 
-            boolean val = changeControls.get();
+            boolean val = g.getButton(changeControls);
             if (val && !changeControlsWasTrue) {
                 controllerIndex++;
                 //Utils.log("Robot " + id + " changing controls (" + g.hasSecondJoystick() + ")");
@@ -404,7 +398,7 @@ public class Robot extends Entity {
             }
             numberChangeWasTrue = val;
 
-            val = changeAlliance.get();
+            val = g.getButton(changeAlliance);
             if (val && !changeAllianceWasTrue && !Game.isPlaying()) {
                 blue = !blue;
                 metadata = metadata.getNewInstance();
@@ -412,7 +406,7 @@ public class Robot extends Entity {
             }
             changeAllianceWasTrue = val;
 
-            val = reverseToggle.get();
+            val = g.getButton(reverseToggle);
             if (val && !reverseToggleWasTrue && !Game.isPlaying()) {
                 g.setReverseSticks(!g.isSticksReversed());
             }
@@ -606,9 +600,9 @@ public class Robot extends Entity {
 
     public Gamepad getController() {
         if (Main.currentRobot == -1) {
-            return ControllerManager.getGamepad(id);
+            return Gamepads.getGamepad(id);
         } else if (Main.currentRobot == id) {
-            return ControllerManager.getGamepad(0);
+            return Gamepads.getGamepad(0);
         } else {
             return null;
         }

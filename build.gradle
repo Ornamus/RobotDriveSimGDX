@@ -37,7 +37,14 @@ project(":desktop") {
 
     dependencies {
         compile project(":core")
-        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+
+        compile "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers-lwjgl3:$gdxVersion"
+
+        //compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        //compile "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
+        //compile "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
+
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
@@ -52,6 +59,7 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile "net.java.jinput:jinput:2.0.5"
         compile "com.github.xaguzman:pathfinding:0.2.6"
         compile group: 'com.google.code.gson', name: 'gson', version: '2.7'

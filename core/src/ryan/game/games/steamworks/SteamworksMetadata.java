@@ -64,7 +64,7 @@ public class SteamworksMetadata extends RobotMetadata {
         gear.setRotation(r.getAngle());
 
         if (gamepad != null) {
-            boolean val = gamepad.getButton(gearToggle).get();
+            boolean val = gamepad.getButton(gearToggle);
 
             if (val && !gearToggleWasTrue) {
                 startedIntakingWithGear = hasGear;
@@ -110,7 +110,7 @@ public class SteamworksMetadata extends RobotMetadata {
             }
             gearToggleWasTrue = val;
 
-            if (gamepad.getButton(shoot).get()) {
+            if (gamepad.getButton(shoot)) {
                 shootFuel(r);
             }
         }

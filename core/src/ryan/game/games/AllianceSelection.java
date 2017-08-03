@@ -10,7 +10,7 @@ import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.competition.RankData;
 import ryan.game.competition.Rankings;
-import ryan.game.controls.ControllerManager;
+import ryan.game.controls.Gamepads;
 import ryan.game.controls.Gamepad;
 import ryan.game.render.Fonts;
 import ryan.game.render.ImageDrawer;
@@ -90,8 +90,8 @@ public class AllianceSelection extends ImageDrawer {
     @Override
     public void tick() {
         super.tick();
-        Gamepad g = ControllerManager.getGamepad(0);
-        boolean threeVal = g.getButton(3).get();
+        Gamepad g = Gamepads.getGamepad(0);
+        boolean threeVal = g.getButton(3);
         boolean pressed = threeVal && !threeWasPressed;
         if (!showingAlliances) {
             if (pressed) {
@@ -144,7 +144,7 @@ public class AllianceSelection extends ImageDrawer {
 
                 setSelecting(selectingForAlliance);
                 showingAlliances = true;
-            } else if (g.getButton(1).get()) {
+            } else if (g.getButton(1)) {
                 showingAlliances = true;
             }
             float dPad = g.getDPad();
