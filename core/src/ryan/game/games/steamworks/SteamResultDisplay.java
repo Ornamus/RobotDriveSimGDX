@@ -48,11 +48,11 @@ public class SteamResultDisplay extends ImageDrawer {
         drawAlliance(getCenterX() - (Main.widthScale*405), getCenterY(), match.red, b);
         drawAlliance(getCenterX() + (Main.widthScale*70), getCenterY(), match.blue, b);
 
-        blueWin.setBounds(getCenterX() + 206, getCenterY() - 295, 294, 77);
+        blueWin.setBounds(getCenterX() + (206*Main.widthScale), getCenterY() - (295*Main.heightScale), 294*Main.widthScale, 77*Main.heightScale);
         if (match.blue.score > match.red.score) blueWin.draw(b);
 
-        redWin.setBounds(getCenterX() - 206 - 294, getCenterY() - 295, 294, 77);
-        if (match.red.score > match.blue.score)redWin.draw(b);
+        redWin.setBounds(getCenterX() + ((-206 - 294)*Main.widthScale), getCenterY() - (295*Main.heightScale), 294*Main.widthScale, 77*Main.heightScale);
+        if (match.red.score > match.blue.score) redWin.draw(b);
     }
 
     public void drawAlliance(float x, float y, Match.MatchAlliance a, SpriteBatch b) {
