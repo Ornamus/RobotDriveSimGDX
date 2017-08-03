@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -15,17 +14,22 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.FrictionJointDef;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import ryan.game.ai.Pathfinding;
+import ryan.game.competition.Match;
 import ryan.game.competition.Schedule;
 import ryan.game.competition.Team;
-import ryan.game.controls.Gamepads;
+import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.*;
 import ryan.game.games.AllianceSelection;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
 import ryan.game.games.RankingDisplay;
+import ryan.game.games.steamworks.AllianceScoreData;
 import ryan.game.games.steamworks.SteamRankings;
+import ryan.game.games.steamworks.SteamResultDisplay;
 import ryan.game.games.steamworks.Steamworks;
 import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.render.Drawable;
@@ -89,11 +93,12 @@ public class Main extends ApplicationAdapter {
 
     private static Main self = null;
 
+    public static float screenWidth = 1100f, screenHeight = 630f, screenAR = screenWidth/screenHeight;
     public static final int world_width = 56, world_height = 30; //56, 29
     private static final int camera_y = -4;
 
-    public static float meterToPixelWidth = 1100f/world_width;
-    public static float meterToPixelHeight = 630f/world_height;
+    public static float meterToPixelWidth = screenWidth/world_width;
+    public static float meterToPixelHeight = screenHeight/world_height;
 
     public Field gameField;
 
@@ -103,7 +108,7 @@ public class Main extends ApplicationAdapter {
 	public void create () {
         self = this;
         Fonts.init();
-        Gamepads.init();
+        ControllerManager.init();
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
         world.setContactListener(new CollisionListener());
@@ -117,7 +122,7 @@ public class Main extends ApplicationAdapter {
 
         if (extraRobots > 0) currentRobot = 0;
 
-        for (int i = 0; i< Gamepads.getGamepads().size() + extraRobots; i++) {
+        for (int i=0; i<ControllerManager.getGamepads().size() + extraRobots; i++) {
             robots.add(Robot.create(new SteamDefault(), 2 + (index * 3), -11));
             index++;
         }
@@ -160,16 +165,25 @@ public class Main extends ApplicationAdapter {
         schedule = new Schedule(new SteamRankings());
         schedule.generate(scheduleRounds);
 
+        /*
+        Match fake = new Match(4, new int[]{1,2,3}, new int[]{4,5,6});
+        fake.qualifier = false;
+        fake.blue.breakdown = new AllianceScoreData(true);
+        fake.red.breakdown = new AllianceScoreData(false);
+        drawables.add(new SteamResultDisplay(fake));
+        */
+
         //schedule.getRankings().addFakeRankings();
         //drawables.add(new AllianceSelection());
     }
 
+    public static float widthScale = 1, heightScale = 1, fontScale = 1;
+
     @Override
     public void resize(int width, int height) {
-        float screenAR = width / (float) height;
+        float trueAR = width*1f/height*1f;
 
-        meterToPixelHeight = 630f/((world_height * 2) /screenAR);
-        camera = new OrthographicCamera(world_width, (world_height * 2) /screenAR);
+        camera = new OrthographicCamera(world_width, (world_height * 2) /trueAR);
 
         camera.position.set(0, camera_y, 0);
         camera.update();
@@ -177,11 +191,24 @@ public class Main extends ApplicationAdapter {
         batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
 
-        /*
-        nonScaledCamera = new OrthographicCamera(width, height);
+        screenWidth = width;
+        screenHeight = (height*2)/trueAR;
+        screenAR = screenWidth/screenHeight;
+
+        meterToPixelWidth = screenWidth/world_width;
+        meterToPixelHeight = screenHeight/((world_height * 2) /trueAR);
+
+        nonScaledCamera = new OrthographicCamera(screenWidth, screenHeight);
         nonScaledCamera.update();
         nonScaled = new SpriteBatch();
-        nonScaled.setProjectionMatrix(nonScaledCamera.combined);*/
+        nonScaled.setProjectionMatrix(nonScaledCamera.combined);
+
+        widthScale = screenWidth/1100f;
+        heightScale = screenHeight/630f;
+
+        //TODO: probably calculate this better
+        fontScale = (Math.max(widthScale, heightScale));
+        Fonts.init(fontScale);
     }
 
     public void addFriction(Body b) {
@@ -389,8 +416,8 @@ public class Main extends ApplicationAdapter {
 
         boolean controllerStartMatch = false;
         boolean anyHeld = false;
-        for (Gamepad g : Gamepads.getGamepads()) {
-            if (g.getDPad() == PovDirection.north) {
+        for (Gamepad g : ControllerManager.getGamepads()) {
+            if (g.getDPad() == .25) {
                 anyHeld = true;
                 if (upHeld == null) upHeld = getTime();
                 else if (getTime() - upHeld >= 2000) {
@@ -449,7 +476,7 @@ public class Main extends ApplicationAdapter {
             resetField = false;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.C)) {
-            Gamepads.init();
+            ControllerManager.init();
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
             if (rankings == null) {
@@ -462,9 +489,9 @@ public class Main extends ApplicationAdapter {
                 rankings = null;
             }
         }
-        if (Gamepads.getGamepads().size() != robots.size() && Gamepads.getGamepads().size() == 1) {
-            Gamepad one = Gamepads.getGamepad(0);
-            if (one.getButton(10)) {
+        if (ControllerManager.getGamepads().size() != robots.size() && ControllerManager.getGamepads().size() == 1) {
+            Gamepad one = ControllerManager.getGamepad(0);
+            if (one.getButton(10).get()) {
                 if (!wasHeld) {
                     currentRobot++;
                     if (currentRobot == robots.size()) {

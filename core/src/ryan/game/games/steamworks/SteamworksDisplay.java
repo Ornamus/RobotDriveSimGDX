@@ -27,14 +27,14 @@ public class SteamworksDisplay extends ScoreDisplay {
     public SteamworksDisplay() {
         super("core/assets/score_display.png");
         blueBlob = new Sprite(new Texture("core/assets/blob_blue.png"));
-        blueBlob.setSize(17.5f, 17.5f);
         redBlob = new Sprite(new Texture("core/assets/blob_red.png"));
-        redBlob.setSize(17.5f, 17.5f);
     }
 
     @Override
     public void tick() {
         super.tick();
+        blueBlob.setSize(17.5f*Main.widthScale, 17.5f*Main.heightScale);
+        redBlob.setSize(17.5f*Main.widthScale, 17.5f*Main.heightScale);
     }
 
     @Override
@@ -46,14 +46,17 @@ public class SteamworksDisplay extends ScoreDisplay {
 
         super.draw(batch);
 
-        Fonts.drawCentered(Steamworks.blue.kPA + "", 257.5f, getY() + 35f, Fonts.fmsBlack, batch); //blue kpa
-        Fonts.drawCentered(Steamworks.red.kPA + "", -257.5f, getY() + 35f, Fonts.fmsBlack, batch); //red kpa
+        Fonts.drawCentered(Fonts.fmsBlack, Steamworks.blue.kPA + "", 0, getY(), 257.5f, 35f, batch); //blue kpa
+        Fonts.drawCentered(Fonts.fmsBlack, Steamworks.red.kPA + "", 0, getY(), -257.5f, 35f, batch); //red kpa
 
-        Fonts.drawCentered(Steamworks.blue.rotors + "", 360.5f, getY() + 36f, Fonts.fmsBlack, batch); //blue rotors
-        Fonts.drawCentered(Steamworks.red.rotors + "", -360.5f, getY() + 36f, Fonts.fmsBlack, batch); //red rotors
+        Fonts.drawCentered(Fonts.fmsBlack, Steamworks.blue.rotors + "", 0, getY(), 360.5f, 36, batch); //blue rotors
+        Fonts.drawCentered(Fonts.fmsBlack, Steamworks.red.rotors + "", 0, getY(), -360.5f, 36, batch); //red rotors
 
-        Fonts.drawCentered(Steamworks.blue.climbs + "", 455, getY() + 36f, Fonts.fmsBlack, batch); //blue climbs
-        Fonts.drawCentered(Steamworks.red.climbs + "", -455, getY() + 36f, Fonts.fmsBlack, batch); //red climbs
+        Fonts.drawCentered(Fonts.fmsBlack, Steamworks.blue.climbs + "", 0, getY(), 455, 36, batch); //blue climbs
+        Fonts.drawCentered(Fonts.fmsBlack, Steamworks.red.climbs + "", 0, getY(), -455, 36, batch); //red climbs
+
+        //Fonts.drawCentered(Steamworks.blue.climbs + "", 455, getY() + 36f, Fonts.fmsBlack, batch); //blue climbs
+        //Fonts.drawCentered(Steamworks.red.climbs + "", -455, getY() + 36f, Fonts.fmsBlack, batch); //red climbs
 
         if (Main.matchPlay) {
             drawGearDisplay(232.5f, 45, Steamworks.blue.gears, Steamworks.blue.gears > 12 ? Color.YELLOW : Color.WHITE, batch);
@@ -66,33 +69,34 @@ public class SteamworksDisplay extends ScoreDisplay {
                 else redProgresses.add(h.scoreProgress);
             });
             int loops = blueProgresses.size()+ Steamworks.blue.gearQueue;
-            final float spacing = 22f;
-            float hpX = 215.5f;
-            float hpY = 45 + (spacing * (loops/2f));
+            final float spacing = 22f * Main.heightScale;
+            float hpX = 215.5f * Main.widthScale;
+            float hpY = (45*Main.heightScale) + (spacing * (loops/2f));
             for (int i=0; i<loops; i++) {
                 long progress = Main.getTime();
                 if (i <= blueProgresses.size()-1) progress = blueProgresses.get(i);
-                Utils.drawUnscaledProgressBar(hpX + 40, hpY - (spacing * i), 60, 15, (Main.getTime()-progress)/ Steamworks.hpGearScoreSpeed, batch);
-                batch.draw(Gear.TEXTURE, hpX-12, hpY-4 - (spacing * i), 20f, 20f);
+                Utils.drawUnscaledProgressBar(hpX + (40*Main.widthScale), hpY - (spacing * i), 60, 15, (Main.getTime()-progress)/ Steamworks.hpGearScoreSpeed, batch);
+                batch.draw(Gear.TEXTURE, hpX - (12*Main.widthScale), hpY - (4*Main.heightScale) - (spacing * i), 20f*Main.widthScale, 20f*Main.heightScale);
             }
 
             loops = redProgresses.size()+ Steamworks.red.gearQueue;
-            hpX = -287.5f-(232.5f-215.5f);
-            hpY = 45 + (spacing * (loops/2f));
+            hpX = (-287.5f-(232.5f-215.5f)) * Main.widthScale;
+            hpY = (45*Main.heightScale) + (spacing * (loops/2f));
             for (int i=0; i<loops; i++) {
                 long progress = Main.getTime();
                 if (i <= redProgresses.size()-1) progress = redProgresses.get(i);
-                Utils.drawUnscaledProgressBar(hpX + 40, hpY - (spacing * i), 60, 15, (Main.getTime()-progress)/ Steamworks.hpGearScoreSpeed, batch);
-                batch.draw(Gear.TEXTURE, hpX-12, hpY-4 - (spacing * i), 20f, 20f);
+                Utils.drawUnscaledProgressBar(hpX + (40*Main.widthScale), hpY - (spacing * i), 60, 15, (Main.getTime()-progress)/ Steamworks.hpGearScoreSpeed, batch);
+                batch.draw(Gear.TEXTURE, hpX - (12*Main.widthScale), hpY - (4*Main.heightScale) - (spacing * i), 20f*Main.widthScale, 20f*Main.heightScale);
             }
-            drawFuelProgress(274, -273, true, batch);
-            drawFuelProgress(-291, -275, false, batch);
+            drawFuelProgress(274*Main.widthScale, -270*Main.heightScale, true, batch);
+            drawFuelProgress(-291*Main.widthScale, -272*Main.heightScale, false, batch);
         }
     }
 
+    //TODO: does not scale perfectly due to being affected by the ratio of width to height
     public void drawFuelProgress(float startX, float startY, boolean blue, SpriteBatch b) {
         Sprite s = blue ? blueBlob : redBlob;
-        float radius = 38.25f;//38.5f;
+        float radius = 38.25f*Main.widthScale;//38.5f;
         int totalBalls = 12;
         double angle = 0;
         int ballsMade = 0;
@@ -210,8 +214,9 @@ public class SteamworksDisplay extends ScoreDisplay {
     }
 
     public void drawGearDisplay(float x, float y, int gears, Color c, SpriteBatch b) {
-        b.draw(Gear.TEXTURE, x, y, 30f, 30f);
+        b.draw(Gear.TEXTURE, x*Main.widthScale, y*Main.heightScale, 30f*Main.widthScale, 30f*Main.heightScale);
         Fonts.monoWhiteLarge.setColor(c);
-        Fonts.monoWhiteLarge.draw(b, gears + "", x + 15 - (Fonts.getWidth(gears + "", Fonts.monoWhiteLarge) / 2), y + 55);
+
+        Fonts.drawCentered(Fonts.monoWhiteLarge, gears + "", 0, 0, x+15, y+55, b);
     }
 }

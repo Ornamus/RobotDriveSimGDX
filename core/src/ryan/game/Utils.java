@@ -171,18 +171,26 @@ public class Utils {
         front.draw(b);
     }
 
+    //TODO: fix this for the new upscaling and make this also not a bad copy of the above function
     public static void drawUnscaledProgressBar(float x, float y, float width, float height, float progress, SpriteBatch b) {
+        width *= Main.widthScale;
+        height *= Main.heightScale;
         x = x - (width/2);
         progress = Utils.cap(progress, 1);
         Sprite outline = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Color.BLACK));
         Sprite background = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Color.RED));
         Sprite front = new Sprite(Utils.colorImage("core/assets/whitepixel.png", Color.GREEN));
+
         outline.setBounds(x, y, width, height);
+
         background.setBounds(x + (Main.meterToPixelWidth*.1f), y + (Main.meterToPixelHeight*.1f),
                 width-(Main.meterToPixelWidth*.2f), height-(Main.meterToPixelHeight*.2f));
+
         float frontLength = progress * (width-(Main.meterToPixelWidth*.2f));
+
         front.setBounds(x + (Main.meterToPixelWidth*.1f), y + (Main.meterToPixelHeight*.1f),
                 frontLength, height-(Main.meterToPixelHeight*.2f));
+
         outline.draw(b);
         background.draw(b);
         front.draw(b);
@@ -197,8 +205,8 @@ public class Utils {
         try {
             return g.fromJson(new FileReader(fileName), clazz);
         } catch (Exception e) {
-            Utils.log("File not found: " + fileName);
             //e.printStackTrace();
+          Utils.log("Can't find file :" + fileName);
             return null;
         }
     }
@@ -208,7 +216,7 @@ public class Utils {
         try {
             return g.fromJson(new FileReader(f), clazz);
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace();         
             return null;
         }
     }

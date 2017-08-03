@@ -1,6 +1,5 @@
 package ryan.game.games;
 
-import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -11,7 +10,7 @@ import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.competition.RankData;
 import ryan.game.competition.Rankings;
-import ryan.game.controls.Gamepads;
+import ryan.game.controls.ControllerManager;
 import ryan.game.controls.Gamepad;
 import ryan.game.render.Fonts;
 import ryan.game.render.ImageDrawer;
@@ -49,6 +48,7 @@ public class AllianceSelection extends ImageDrawer {
 
         rankings = Main.schedule.getRankings().getRankings();
 
+        /*
         allianceBar = new Sprite(new Texture("core/assets/alliance_selection_bar.png"));
         resize(allianceBar, .25f);
 
@@ -56,7 +56,7 @@ public class AllianceSelection extends ImageDrawer {
         resize(teamButton, .25f);
 
         teamButtonSelected = new Sprite(new Texture("core/assets/alliance_selection_teambutton_selected.png"));
-        resize(teamButtonSelected, .25f);
+        resize(teamButtonSelected, .25f);*/
 
         if (Main.schedule.getTeams().size() >= 24) allianceAmount = 8;
         else if (Main.schedule.getTeams().size() >= 12) allianceAmount = 4;
@@ -86,13 +86,13 @@ public class AllianceSelection extends ImageDrawer {
     }
 
     boolean threeWasPressed = false;
-    PovDirection prevDPadValue = PovDirection.center;
+    PovDirection prevDPadValue = 0;
 
     @Override
     public void tick() {
         super.tick();
         Gamepad g = Gamepads.getGamepad(0);
-        boolean threeVal = g.getButton(3);
+        boolean threeVal = g.getButton(3).get();
         boolean pressed = threeVal && !threeWasPressed;
         if (!showingAlliances) {
             if (pressed) {
@@ -145,7 +145,7 @@ public class AllianceSelection extends ImageDrawer {
 
                 setSelecting(selectingForAlliance);
                 showingAlliances = true;
-            } else if (g.getButton(1)) {
+            } else if (g.getButton(1).get()) {
                 showingAlliances = true;
             }
             PovDirection dPad = g.getDPad();
@@ -178,19 +178,36 @@ public class AllianceSelection extends ImageDrawer {
 
     @Override
     public void draw(SpriteBatch batch) {
+        sprite.setSize(Main.screenWidth, Main.screenHeight);
+        sprite.setPosition(0-sprite.getWidth() /2, 0-sprite.getHeight()/2);
         super.draw(batch);
-        Fonts.drawCentered(Main.eventName + " Alliance" + (done ? "s" : " Selection"), getCenterX(), getCenterY() + 305-15, Fonts.fmsBlack, batch);
+
+
+        allianceBar = new Sprite(new Texture("core/assets/alliance_selection_bar.png"));
+        resize(allianceBar, .25f*Main.fontScale);
+
+        teamButton = new Sprite(new Texture("core/assets/alliance_selection_teambutton.png"));
+        resize(teamButton, .25f*Main.fontScale);
+
+        teamButtonSelected = new Sprite(new Texture("core/assets/alliance_selection_teambutton_selected.png"));
+        resize(teamButtonSelected, .25f*Main.fontScale);
+
+
+        Fonts.drawCentered(Fonts.fmsBlack, Main.eventName + " Alliance" + (done ? "s" : " Selection"), getCenterX(), getCenterY(), 0, 305-15, batch);
+        //Fonts.drawCentered(Main.eventName + " Alliance" + (done ? "s" : " Selection"), getCenterX(), getCenterY() + 305-15, Fonts.fmsBlack, batch);
         if (showingAlliances) {
-            if (!done) Fonts.drawCentered("Alliance " + (selectingForAlliance+1) + " Is Picking", getCenterX(), getCenterY() + 280-15, Fonts.fmsBlackSmall, batch);
+            if (!done) Fonts.drawCentered(Fonts.fmsBlackSmall, "Alliance " + (selectingForAlliance+1) + " Is Picking", getCenterX(), getCenterY(), 0, 280-15, batch);
+            //TODO: fix minor text alignment bug that happens when resized at certain sizes
             for (int i=0; i<allianceAmount; i++) {
-                float x = -270;
-                float y = 135;
-                y -= (i*56);
+                float x = -270*Main.widthScale;
+                float y = 135*Main.heightScale;
+                y -= ((i*56)*Main.heightScale);
 
                 allianceBar.setPosition(x,y);
                 allianceBar.draw(batch);
 
-                Fonts.drawCentered((i+1)+"", x+48.5f, y+33.5f, Fonts.fmsBlack, batch);
+                Fonts.draw(Fonts.fmsBlack, (i+1)+"", x, y, 48.5f, 33.5f, batch);
+                //Fonts.drawCentered((i+1)+"", x+48.5f, y+33.5f, Fonts.fmsBlack, batch);
 
                 int[] teams = alliances[i];
                 String teamString = "";
@@ -199,11 +216,12 @@ public class AllianceSelection extends ImageDrawer {
                 }
                 teamString = teamString.substring(0, teamString.length()-3);
 
-                Fonts.fmsBlack.draw(batch, teamString, x+90f, y+33.5f);
+                Fonts.draw(Fonts.fmsBlack, teamString, x, y, 90, 33.5f, batch);
+                //Fonts.fmsBlack.draw(batch, teamString, x+90f, y+33.5f);
             }
         } else {
-            Fonts.drawCentered("Available Teams", getCenterX(), getCenterY() + 280-15, Fonts.fmsBlackSmall, batch);
-            //TODO: probably need to calculate available teams once per screen appearance instead of EVERY RENDER FRAME
+            Fonts.drawCentered(Fonts.fmsBlackSmall, "Available Teams", getCenterX(), getCenterY(), 0, 280-15, batch);
+            //TODO: probably want to calculate available teams once per screen appearance instead of EVERY RENDER FRAME
             List<RankData> available = new ArrayList<>(rankings);
             if (selectionRound == 1) { //Remove all teams on an alliance equal to or higher seeded than this one (i.e. 6 can only pick from 7 or 8)
                 int currAlliance = selectingForAlliance;
@@ -233,8 +251,12 @@ public class AllianceSelection extends ImageDrawer {
             int index = 0;
             for (int gridX=0; gridX<8; gridX++) {
                 for (int gridY=0; gridY<8; gridY++) {
-                    float x = -500 + (gridX * 120);
-                    float y = 135 - (gridY * 56);
+
+                    float x = -500*Main.widthScale;
+                    float y = -250*Main.heightScale;
+
+                    float xOffset = (gridX*120);
+                    float yOffset = (gridY*56);
 
                     if (available.size() > index) {
                         RankData d = available.get(index);
@@ -243,14 +265,14 @@ public class AllianceSelection extends ImageDrawer {
                             s = teamButtonSelected;
                             selected = d;
                         }
-                        s.setPosition(x, y);
+                        s.setPosition(x + (xOffset*Main.widthScale), y + (yOffset*Main.heightScale));
                         s.draw(batch);
 
                         Fonts.fmsWhiteSmall.setColor(Color.RED);
-                        Fonts.drawCentered((d.rank) + "", x + 19f, y + 33.5f, Fonts.fmsWhiteSmall, batch);
-                        //Fonts.fmsWhiteSmall.draw(batch, (index+1) + "", x + 15f, y + 33.5f);
+                        Fonts.drawCentered(Fonts.fmsWhiteSmall, d.rank + "", x, y, 19+xOffset, 33.5f+yOffset, batch);
                         Fonts.fmsWhiteSmall.setColor(Color.WHITE);
-                        Fonts.fmsBlack.draw(batch, d.getTeam() + "", x + 50f, y + 33.5f);
+
+                        Fonts.draw(Fonts.fmsBlack, d.getTeam() + "", x, y, 50+xOffset, 33.5f+yOffset, batch);
                     }
                     index++;
                 }

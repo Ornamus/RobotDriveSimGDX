@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import ryan.game.Main;
 
 public class Fonts {
 
@@ -23,36 +24,40 @@ public class Fonts {
     private Fonts() {}
 
     public static void init() {
+        init(1);
+    }
+
+    public static void init(float scale) {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/DTM-Mono.otf"));
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 26;
-        param.borderWidth = 2f;
+        param.size = Math.round(26f*scale);
+        param.borderWidth = 2f*scale;
         param.borderColor = Color.BLACK;
         monoWhiteLarge = generator.generateFont(param);
 
         param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 15;
+        param.size = Math.round(15f*scale);
         param.color = Color.WHITE;
-        param.borderWidth = .75f;
+        param.borderWidth = .75f*scale;
         param.borderColor = Color.BLACK;
         monoWhiteSmall = generator.generateFont(param);
         generator.dispose();
 
         generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/Kozuka.otf"));
         param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 20;
+        param.size = Math.round(20f*scale);
         param.color = Color.BLACK;
         param.shadowColor = Color.BLACK;
-        param.borderWidth = .5f;
+        param.borderWidth = .5f*scale;
         param.borderColor = Color.BLACK;
 
         fmsBlack = generator.generateFont(param);
 
         param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 15;
+        param.size = Math.round(15f*scale);
         param.color = Color.BLACK;
         param.shadowColor = Color.BLACK;
-        param.borderWidth = .5f;
+        param.borderWidth = .5f*scale;
         param.borderColor = Color.BLACK;
 
         fmsBlackSmall = generator.generateFont(param);
@@ -61,32 +66,32 @@ public class Fonts {
 
         generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/segoe-ui.ttf")); //generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/Kozuka.otf"));
         param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 52;
+        param.size = Math.round(52f*scale);
         param.borderColor = Color.BLACK;
         param.color = Color.WHITE;
-        param.borderWidth = 2f;
+        param.borderWidth = 2f*scale;
 
         fmsScore = generator.generateFont(param);
 
-        param.size = 15;
+        param.size = Math.round(15f*scale);
         param.color = Color.WHITE;
-        param.borderWidth = 1.5f;
+        param.borderWidth = 1.5f*scale;
         param.borderColor = Color.BLACK;
 
         fmsWhiteVerySmall = generator.generateFont(param);
 
         param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 30;
+        param.size = Math.round(30f*scale);
         param.color = Color.WHITE;
-        param.borderWidth = 1f;
+        param.borderWidth = 1f*scale;
         param.borderColor = Color.BLACK;
 
         fmsWhiteNormal = generator.generateFont(param);
 
         param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 20;
+        param.size = Math.round(20f*scale);
         param.color = Color.WHITE;
-        param.borderWidth = 1f;
+        param.borderWidth = 1f*scale;
         param.borderColor = Color.BLACK;
 
         fmsWhiteSmall = generator.generateFont(param);
@@ -96,8 +101,22 @@ public class Fonts {
         layout = new GlyphLayout(monoWhiteLarge, "");
     }
 
+    public static void draw(BitmapFont f, String s, float x, float y, float offsetX, float offsetY, SpriteBatch b) {
+        f.draw(b, s, x + (offsetX*Main.widthScale), y + (offsetY * Main.heightScale));
+    }
+
+    public static void drawCentered(BitmapFont f, String s, float oX, float oY, SpriteBatch b) {
+        draw(f, s, 0-(getWidth(s,f)/2), 0, oX, oY, b);
+    }
+
+    public static void drawCentered(BitmapFont f, String s, float x, float y, float oX, float oY, SpriteBatch b) {
+        draw(f, s, x-(getWidth(s,f)/2), y, oX, oY, b);
+    }
+
+    @Deprecated
     public static void drawCentered(String s, float x, float y, BitmapFont f, SpriteBatch b) {
-        f.draw(b, s, x - (getWidth(s, f) / 2), y);
+        draw(f, s, x-(getWidth(s,f)/2), y, 0, 0, b);
+        //f.draw(b, s, x - (getWidth(s, f) / 2), y);
     }
 
     public static float getWidth(String s, BitmapFont f) {
