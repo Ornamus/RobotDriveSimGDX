@@ -63,7 +63,7 @@ public class PirateMetadata extends RobotMetadata {
                 }
             }
         }
-        boolean val = gamepad.getButton(ejectGearButton).get();
+        boolean val = gamepad.getButton(ejectGearButton);
         if (val && !ejectChestWasHeld) {
             ejectChest(r);
         }

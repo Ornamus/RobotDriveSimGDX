@@ -87,7 +87,7 @@ public class Entity extends Drawable {
 
     public boolean isPart(String partName, Body b) {
         for (Part p : parts) {
-            if (p.belongsTo(b)) {
+            if (p.belongsTo(b) && p.name.equalsIgnoreCase(partName)) {
                 return true;
             }
         }

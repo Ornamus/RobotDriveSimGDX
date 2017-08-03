@@ -31,6 +31,7 @@ public class Intake extends Part {
         s = new Sprite(Utils.colorImage("core/assets/robot_intake.png", c));
     }
 
+    //TODO: get these to always render over game elements
     @Override
     public void draw(SpriteBatch batch) {
         Vector2 pos = body.getPosition();

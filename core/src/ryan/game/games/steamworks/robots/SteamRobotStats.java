@@ -1,7 +1,11 @@
 package ryan.game.games.steamworks.robots;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import ryan.game.competition.RobotStats;
+import ryan.game.entity.BodyFactory;
+import ryan.game.entity.Robot;
+import ryan.game.entity.parts.Intake;
 import ryan.game.games.Game;
 
 public abstract class SteamRobotStats extends RobotStats {
@@ -43,6 +47,13 @@ public abstract class SteamRobotStats extends RobotStats {
         intakeWidth = robotWidth * .9f;
     }
 
-    //TODO: more ai info
+    @Override
+    public void addParts(float x, float y, Robot r) {
+        if (hasIntake) {
+            float width = intakeWidth, height = robotHeight / 4;
+            Body in = BodyFactory.getRectangleDynamic(x - (robotWidth / 2), y + robotHeight + height, width, height, width * height);
+            r.addPart(new Intake(width * 2, height * 2, in));
+        }
+    }
 
 }

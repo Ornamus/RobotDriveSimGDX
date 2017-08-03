@@ -25,6 +25,8 @@ import java.util.List;
 
 public class SteamworksMetadata extends RobotMetadata {
 
+    //TODO: support for the specific gear and fuel intakes
+
     Sprite gear;
 
     public boolean crossedBaseline = false;
@@ -60,7 +62,7 @@ public class SteamworksMetadata extends RobotMetadata {
         boolean fuelIntake = stats.fuelIntake;
 
         if (gamepad != null) {
-            boolean val = gamepad.getButton(gearToggle).get();
+            boolean val = gamepad.getButton(gearToggle);
 
             if (val && !gearToggleWasTrue) {
                 startedIntakingWithGear = hasGear;
@@ -106,7 +108,7 @@ public class SteamworksMetadata extends RobotMetadata {
             }
             gearToggleWasTrue = val;
 
-            if (gamepad.getButton(shoot).get()) {
+            if (gamepad.getButton(shoot)) {
                 shootFuel(r);
             }
         }

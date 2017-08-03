@@ -1,6 +1,7 @@
 package ryan.game.entity;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -15,10 +16,8 @@ import ryan.game.bcnlib_pieces.Command;
 import ryan.game.bcnlib_pieces.PIDSource;
 import ryan.game.competition.Match;
 import ryan.game.competition.RobotStats;
-import ryan.game.controls.Button;
-import ryan.game.controls.ControllerManager;
-import ryan.game.controls.FakeButton;
 import ryan.game.controls.Gamepad;
+import ryan.game.controls.Gamepads;
 import ryan.game.drive.*;
 import ryan.game.autonomous.pathmagic.RobotStateGenerator;
 import ryan.game.entity.parts.Part;
@@ -52,9 +51,10 @@ public class Robot extends Entity {
     private float middleMotor = 0;
 
     private int statsIndex = 0;
-    //private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
-      //      new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething()};
-    private RobotStats[] statsOptions = {new OverRobotStats()};
+    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
+            new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething()};
+    //private RobotStats[] statsOptions = {new OverRobotStats()};
+
     public RobotStats stats = statsOptions[statsIndex];
 
     private int numberIndex = 0;
@@ -63,9 +63,9 @@ public class Robot extends Entity {
 
     public RobotMetadata metadata = null;
 
-    private Button changeAlliance;
-    private Button changeControls;
-    private Button reverseToggle;
+    private int changeAlliance;
+    private int changeControls;
+    private int reverseToggle;
 
     private float maxTurn = 1.5f;
     public boolean blue;
@@ -310,7 +310,7 @@ public class Robot extends Entity {
             turretSprite.setOriginCenter();
             turretSprite.setRotation(getAngle() + turretAngle);
         }
-        if (ControllerManager.getGamepads().isEmpty()) {
+        if (Gamepads.getGamepads().isEmpty()) {
             //TODO: ?????
         } else {
             Gamepad g = getController();
@@ -606,9 +606,9 @@ public class Robot extends Entity {
 
     public Gamepad getController() {
         if (Main.currentRobot == -1) {
-            return ControllerManager.getGamepad(id);
+            return Gamepads.getGamepad(id);
         } else if (Main.currentRobot == id) {
-            return ControllerManager.getGamepad(0);
+            return Gamepads.getGamepad(0);
         } else {
             return null;
         }
