@@ -10,8 +10,6 @@ public class GamepadConfig {
             xAxis2 = 96, yAxis2 = 97,
             zAxis = 98;
 
-    protected int dPad = 99;
-
     private int[] mappings;
 
     public GamepadConfig() {
@@ -24,7 +22,6 @@ public class GamepadConfig {
         else if (buttonID == 96) xAxis2 = controllerButton;
         else if (buttonID == 97) yAxis2 = controllerButton;
         else if (buttonID == 98) zAxis = controllerButton;
-        else if (buttonID == 99) dPad = controllerButton;
         else mappings[buttonID] = controllerButton;
     }
 

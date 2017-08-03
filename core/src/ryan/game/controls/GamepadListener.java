@@ -51,8 +51,8 @@ public class GamepadListener implements ControllerListener {
 
     @Override
     public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-        Gamepad g = Gamepads.getGamepad(controller);
-        if (g.mapping) g.updateMap(povCode);
+        //Gamepad g = Gamepads.getGamepad(controller);
+        //if (g.mapping) g.updateMap(povCode);
         return false;
     }
 

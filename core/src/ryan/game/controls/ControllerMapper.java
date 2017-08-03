@@ -2,6 +2,7 @@ package ryan.game.controls;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import ryan.game.Utils;
 
@@ -16,18 +17,37 @@ public class ControllerMapper extends ApplicationAdapter {
         Utils.log("Welcome to the Gamepad Mapper!\n[INFO] Follow the instructions to map your gamepad(s).");
     }
 
+    boolean loggedDone = false;
+
     public void tick() {
         if (currentMap == null) {
             for (Gamepad g : Gamepads.getGamepads()) {
-                if (g.getConfig() == null) {
+                if (g.noConfig) {
                     currentMap = g;
                     break;
                 }
             }
-            currentMap.mapping = true;
-            currentMap.config = new GamepadConfig();
-            currentMap.currentKey = currentMap.mapOrder[0];
-            Utils.log("Starting to create mapping for: " + currentMap.getName());
+            if (currentMap == null) {
+                if (!loggedDone) {
+                    Utils.log("All controllers mapped! You can close this now.");
+                    loggedDone = true;
+                }
+            } else {
+                Utils.log("Now Mapping: " + currentMap.getName());
+                currentMap.mapping = true;
+                currentMap.config = new GamepadConfig();
+                currentMap.doMapInit();
+            }
+        } else {
+            if (currentMap.mapping) {
+                if (Gdx.input.isKeyJustPressed(Input.Keys.X) && Gamepad.mapOrder[currentMap.mapIndex].optional) {
+                    Utils.log("Skipping...");
+                    currentMap.updateMap(-1);
+                }
+            } else {
+                currentMap.noConfig = false;
+                currentMap = null;
+            }
         }
     }
 

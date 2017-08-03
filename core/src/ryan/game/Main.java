@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -389,7 +390,7 @@ public class Main extends ApplicationAdapter {
         boolean controllerStartMatch = false;
         boolean anyHeld = false;
         for (Gamepad g : Gamepads.getGamepads()) {
-            if (g.getDPad() == .25) {
+            if (g.getDPad() == PovDirection.north) {
                 anyHeld = true;
                 if (upHeld == null) upHeld = getTime();
                 else if (getTime() - upHeld >= 2000) {

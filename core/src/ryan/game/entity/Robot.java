@@ -1,6 +1,7 @@
 package ryan.game.entity;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -363,7 +364,7 @@ public class Robot extends Entity {
                 doFriction(right);
             }
 
-            val = g != null && g.getDPad() == .75;
+            val = g != null && g.getDPad() == PovDirection.south;
             if (val && !statsToggleWasTrue && !Game.isPlaying()) {
                 statsIndex++;
                 if (statsIndex >= statsOptions.length) {
@@ -389,7 +390,7 @@ public class Robot extends Entity {
             }
             statsToggleWasTrue = val;
 
-            val = g != null && g.getDPad() == .5;
+            val = g != null && g.getDPad() == PovDirection.east;
             if (val && !numberChangeWasTrue && !Game.isPlaying()) {
                 numberIndex++;
                 if (numberIndex > 2) {

@@ -1,6 +1,7 @@
 package ryan.game.controls;
 
 import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.PovDirection;
 import ryan.game.Utils;
 
 public class Gamepad {
@@ -10,9 +11,17 @@ public class Gamepad {
     public static final int START = 6, SELECT = 7;
     public static final int JOY_LEFT = 8, JOY_RIGHT = 9;
     public static final int TRIGGER_LEFT = 10, TRIGGER_RIGHT = 11;
+    public static final int DPAD_UP = 12, DPAD_LEFT = 13, DPAD_DOWN = 14, DPAD_RIGHT = 15;
 
-    protected static final int[] mapOrder = {ONE, TWO, THREE, FOUR, BUMPER_LEFT, BUMPER_RIGHT, START, SELECT, JOY_LEFT, JOY_RIGHT,
-    TRIGGER_LEFT, TRIGGER_RIGHT, 94, 95, 96, 97, 98, 99};
+    protected static final GamepadConfigPart[] mapOrder = {
+            new GamepadConfigPart(ONE, "QuadButton Top"), new GamepadConfigPart(TWO, "QuadButton Left"), new GamepadConfigPart(THREE, "QuadButton Bottom"),
+            new GamepadConfigPart(FOUR, "QuadButton Right"), new GamepadConfigPart(BUMPER_LEFT, "Left Bumper"), new GamepadConfigPart(BUMPER_RIGHT, "Right Bumper"), new GamepadConfigPart(START, "Start (left)"),
+            new GamepadConfigPart(SELECT, "Select (right)"), new GamepadConfigPart(JOY_LEFT, "Left Joystick Button"), new GamepadConfigPart(JOY_RIGHT, "Right Joystick Button"),
+            new GamepadConfigPart(TRIGGER_LEFT, "Left Trigger Button", true), new GamepadConfigPart(TRIGGER_RIGHT, "Right Trigger Button", true),
+            new GamepadConfigPart(DPAD_UP, "DPad Up"), new GamepadConfigPart(DPAD_LEFT, "DPad Left"), new GamepadConfigPart(DPAD_DOWN, "DPad Down"), new GamepadConfigPart(DPAD_RIGHT, "DPad Right"),
+            new GamepadConfigPart(94, "Joystick X Axis"), new GamepadConfigPart(95, "Joystick Y Axis"), new GamepadConfigPart(96, "Joystick X Axis 2", true),
+            new GamepadConfigPart(97, "Joystick Y Axis 2", true), new GamepadConfigPart(98, "Joystick Z Axis (Triggers)", true)
+    };
 
 
     public final int id;
@@ -22,9 +31,9 @@ public class Gamepad {
 
     private boolean reverseSticks = false;
 
+    protected boolean noConfig = false;
     protected boolean mapping = false;
     protected int mapIndex = 0;
-    protected int currentKey = -1;
 
     private static int gamepads = 0;
 
@@ -32,31 +41,37 @@ public class Gamepad {
         this.c = c;
 
         config = Utils.fromJSON("core/assets/controller_configs/" + getSimpleName() + ".json", GamepadConfig.class);
-        config = null;
+        //config = null; //TODO: remove
         if (config == null) { //TODO: check if in mapping mode or not
-            Utils.log("NULL GAMEPAD AAAAAAH");
+            Utils.log("NULL GAMEPAD");
+            noConfig = true;
+            config = new GamepadConfig();
         }
 
         id = gamepads++;
     }
 
+    public void doMapInit() {
+        Utils.log("Please Press: " + mapOrder[mapIndex].display);
+        if (mapOrder[mapIndex].optional) {
+            Utils.log("(This field is optional. If your controller does not have it, press 'X' on the keyboard.)");
+            //TODO: implement this
+        }
+    }
+
     public void updateMap(int index) {
-        Utils.log("Mapping " + currentKey + " to " + index);
-        config.setMapping(currentKey, index);
+        int key = mapOrder[mapIndex].key;
+        Utils.log("[DEBUG] Mapping " + key + " to " + index);
+        config.setMapping(key, index);
         mapIndex++;
         if (mapIndex < mapOrder.length) {
-            currentKey = mapOrder[mapIndex];
+            doMapInit();
         } else {
             mapping = false;
             config.save(getSimpleName());
             Utils.log("Mapping complete!");
         }
     }
-
-    /*
-    public boolean poll() {
-        return c.poll();
-    }*/
 
     public float getX() {
         if (hasSecondJoystick() && reverseSticks) return c.getAxis(config.xAxis2);
@@ -89,12 +104,22 @@ public class Gamepad {
         return 0;
     }
 
-    public float getDPad() {
-        //Utils.log("Gamepad.getDPad() not implemented yet");
-        return 0;
+    public PovDirection getDPad() {
+        if (getButton(DPAD_UP)) {
+            if (getButton(DPAD_LEFT)) return PovDirection.northWest;
+            else if (getButton(DPAD_RIGHT)) return PovDirection.northEast;
+            else return PovDirection.north;
+        } else if (getButton(DPAD_DOWN)) {
+            if (getButton(DPAD_LEFT)) return PovDirection.southWest;
+            else if (getButton(DPAD_RIGHT)) return PovDirection.southEast;
+            else return PovDirection.south;
+        } else if (getButton(DPAD_LEFT)) return PovDirection.west;
+        else if (getButton(DPAD_RIGHT)) return PovDirection.east;
+        else return PovDirection.center;
     }
 
     public boolean isLeftTriggerPressed() {
+        //Utils.log(hasZAxis() + " for axis, " + getZ() + " axis val, " + getButton(TRIGGER_LEFT) + " trig");
         if (hasZAxis()) return getZ() > 0.1;
         else return getButton(TRIGGER_LEFT);
     }
