@@ -121,14 +121,16 @@ public class SteamworksMetadata extends RobotMetadata {
     public void collideStart(Robot r, Entity e, Body self, Body other, Contact contact) {
         SteamRobotStats stats = (SteamRobotStats) r.stats;
         if (r.isPart("intake", self)) {
+            boolean canGear = !stats.differentiateBetweenIntakes || r.isPart("gear", self);
+            boolean canFuel = !stats.differentiateBetweenIntakes || r.isPart("fuel", self);
             if (e.getName().equalsIgnoreCase("peg")) {
-                peg = e;
+                if (canGear) peg = e;
                 contact.setEnabled(false);
             } else if (e instanceof Gear) {
-                intakeableGear = e;
+                if (canGear) intakeableGear = e;
                 contact.setEnabled(false);
             } else if (e instanceof Fuel) {
-                if (!intakeableFuel.contains(e)) intakeableFuel.add(e);
+                if (canFuel && !intakeableFuel.contains(e)) intakeableFuel.add(e);
                 contact.setEnabled(false);
             }
         }
@@ -176,13 +178,16 @@ public class SteamworksMetadata extends RobotMetadata {
 
     @Override
     public void collideEnd(Robot r, Entity e, Body self, Body other, Contact contact) {
+        SteamRobotStats stats = (SteamRobotStats) r.stats;
+        boolean canGear = !stats.differentiateBetweenIntakes || r.isPart("gear", self);
+        boolean canFuel = !stats.differentiateBetweenIntakes || r.isPart("fuel", self);
         if (r.isPart("intake", self)) {
-            if (e == peg) {
+            if (e == peg && canGear) {
                 peg = null;
-            } else if (e == intakeableGear) {
+            } else if (e == intakeableGear && canGear) {
                 intakeableGear = null;
                 gearIntakeStart = null;
-            } else if (intakeableFuel.contains(e)) {
+            } else if (intakeableFuel.contains(e) && canFuel) {
                 intakeableFuel.remove(e);
                 fuelIntakeTimes.remove(e);
             }

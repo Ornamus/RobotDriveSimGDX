@@ -6,6 +6,7 @@ import ryan.game.bcnlib_pieces.Command;
 import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Robot;
 import ryan.game.entity.parts.Intake;
+import ryan.game.entity.parts.Part;
 
 public class Steam254 extends SteamRobotStats {
 
@@ -18,6 +19,9 @@ public class Steam254 extends SteamRobotStats {
         fuelIntake = true;
         fuelIntakeRate = 220;
 
+        differentiateBetweenIntakes = true;
+
+        maxFuel = 70;
         timePerShoot = 143f;
         shootHeight = 1.15f;
         shootPower = 24;
@@ -30,14 +34,20 @@ public class Steam254 extends SteamRobotStats {
         recolorIndex = 1;
     }
 
-    //TODO: fix buggy physics with this extra intake
     @Override
     public void addParts(float x, float y, Robot r) {
-        super.addParts(x, y, r);
+        float width = intakeWidth, height = robotHeight / 4;
+        Body in = BodyFactory.getRectangleDynamic(x - (robotWidth / 2), y + robotHeight + height, width, height, width * height);
+        Part p = new Intake(width * 2, height * 2, in);
+        p.addTags("gear");
+        r.addPart(p);
 
-        float width = robotWidth, height = robotHeight / 5;
-        Body in = BodyFactory.getRectangleDynamic(x - (robotWidth / 2), y - robotHeight - height - .01f, width, height, 0.0000000001f);
-        r.addPart(new Intake("fuel intake", width * 2, height * 2, in));
+        width = robotWidth;
+        height = robotHeight / 5;
+        in = BodyFactory.getRectangleDynamic(x - (robotWidth / 2), y - robotHeight - height - .01f, width, height, 0.05f);
+        p = new Intake(width * 2, height * 2, in);
+        p.addTags("fuel");
+        r.addPart(p);
     }
 
     @Override

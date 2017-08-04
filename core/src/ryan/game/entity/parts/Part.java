@@ -11,14 +11,30 @@ import java.util.List;
 public class Part extends Drawable {
 
     public List<Body> bodies = new ArrayList<>();
-    public String name = "Unnamed Part";
+    public List<String> tags = new ArrayList<>();
     public Object metadata = null;
+    public boolean collideWithSelf = false;
 
-    public Part(String name, Body...b) {
-        this.name = name;
+    public Part(String tag, Body...b) {
+        tags.add(tag);
         for (Body bod : b) {
             bodies.add(bod);
         }
+    }
+
+    public void addTags(String... newTags) {
+        for (String s : newTags) {
+            tags.add(s);
+        }
+    }
+
+    public boolean hasTag(String tag) {
+        for (String s : tags) {
+            if (s.equalsIgnoreCase(tag)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void onRobotColorChange(Color c) {}

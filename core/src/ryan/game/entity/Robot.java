@@ -242,6 +242,7 @@ public class Robot extends Entity {
 
     @Override
     public void collideStart(Entity e, Body self, Body other, Contact c) {
+        super.collideStart(e, self, other, c);
         if (metadata != null) metadata.collideStart(this, e, self, other, c);
     }
 

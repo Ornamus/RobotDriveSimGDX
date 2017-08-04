@@ -21,6 +21,7 @@ import ryan.game.competition.Team;
 import ryan.game.controls.Gamepad;
 import ryan.game.controls.Gamepads;
 import ryan.game.entity.*;
+import ryan.game.entity.parts.Part;
 import ryan.game.games.AllianceSelection;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
@@ -283,6 +284,13 @@ public class Main extends ApplicationAdapter {
         batch.begin();
         for (Drawable e : drawables) {
             if (e.isDrawScaled() && !drawablesRemove.contains(e)) e.draw(batch);
+        }
+        for (Drawable d : drawables) {
+            if (d instanceof Entity && !drawablesRemove.contains(d)) {
+                for (Part p : ((Entity)d).getParts()) {
+                    p.draw(batch);
+                }
+            }
         }
         gameField.draw(batch);
         batch.end();

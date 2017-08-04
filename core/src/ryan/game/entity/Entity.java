@@ -75,20 +75,39 @@ public class Entity extends Drawable {
         parts.remove(p);
     }
 
-    public List<Part> getPart(String partName) {
+    public List<Part> getPart(String partTag) {
         List<Part> matches = new ArrayList<>();
         for (Part p : parts) {
-            if (p.name.equalsIgnoreCase(partName)) {
-                matches.add(p);
+            for (String s : p.tags) {
+                if (s.equalsIgnoreCase(partTag)) {
+                    matches.add(p);
+                }
             }
         }
         return matches;
     }
 
-    public boolean isPart(String partName, Body b) {
+    public Part getPart(Body b) {
         for (Part p : parts) {
-            if (p.belongsTo(b) && p.name.equalsIgnoreCase(partName)) {
-                return true;
+            if (p.belongsTo(b)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public List<Part> getParts() {
+        return new ArrayList<>(parts);
+    }
+
+    public boolean isPart(String partTag, Body b) {
+        for (Part p : parts) {
+            if (p.belongsTo(b)) {
+                for (String s : p.tags) {
+                    if (s.equalsIgnoreCase(partTag)) {
+                        return true;
+                    }
+                }
             }
         }
         return false;
@@ -158,7 +177,14 @@ public class Entity extends Drawable {
         return 0;
     }
 
-    public void collideStart(Entity e, Body self, Body other, Contact contact) {}
+    public void collideStart(Entity e, Body self, Body other, Contact contact) {
+        Part p = getPart(self);
+        if (p != null) {
+            if (bodies.contains(other)) {
+                if (!p.collideWithSelf) contact.setEnabled(false);
+            }
+        }
+    }
     public void onCollide(Entity e, Body self, Body other, Contact contact) {}
     public void collideEnd(Entity e, Body self, Body other, Contact contact) {}
 
@@ -179,9 +205,6 @@ public class Entity extends Drawable {
             s.setOriginCenter();
             s.setRotation(angle);
             s.draw(b);
-        }
-        for (Part p : parts) {
-            p.draw(b);
         }
     }
 

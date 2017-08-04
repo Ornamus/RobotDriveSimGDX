@@ -13,6 +13,7 @@ public class Steam118 extends SteamRobotStats {
         shooterPosition = new Vector2(-.5f, -.5f);
         timePerShoot = 163f;
 
+        maxFuel = 70;
         shootHeight = 1.15f;
         shootPower = 23;
         shootPowerVariance = 2.5f;

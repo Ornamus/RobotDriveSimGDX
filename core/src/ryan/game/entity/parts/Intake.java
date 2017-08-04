@@ -19,8 +19,8 @@ public class Intake extends Part {
         onRobotColorChange(Main.BLUE);
     }
 
-    public Intake(String name, float width, float height, Body b) {
-        super(name, b);
+    public Intake(String tag, float width, float height, Body b) {
+        super(tag, b);
         this.width = width;
         this.height = height;
         body = b;
