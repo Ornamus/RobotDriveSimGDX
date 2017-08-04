@@ -23,7 +23,7 @@ public class Ship extends Entity {
     public List<Robot> topRampRobots = new ArrayList<>(), bottomRampRobots = new ArrayList<>();
 
     public Ship(float x, float y, boolean blue) {
-        super(new Body[]{});
+        super();
         this.blue = blue;
         float flip = blue ? 1 : -1;
         PolygonShape s = new PolygonShape();

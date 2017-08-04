@@ -3,7 +3,6 @@ package ryan.game.controls;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.lwjgl3.Lwjgl3ControllerManager;
 import ryan.game.entity.Robot;
-import ryan.game.games.Game;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -62,7 +61,6 @@ public class Gamepads {
                 return g;
             }
         }
-        //TODO do we make a new gamepad and return it?
         return null;
     }
 }

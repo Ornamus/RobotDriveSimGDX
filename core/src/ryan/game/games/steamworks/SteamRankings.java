@@ -13,7 +13,7 @@ public class SteamRankings extends Rankings<SteamTeamData> {
     }
 
     @Override
-    public void update(SteamTeamData data, Match.MatchAlliance alliance, Match.MatchAlliance other) {;
+    public void update(SteamTeamData data, Match.MatchAlliance alliance, Match.MatchAlliance other) {
         AllianceScoreData scoreInfo = (AllianceScoreData) alliance.breakdown;
         if (scoreInfo == null) Utils.log("Score info is null");
         if (data == null) Utils.log("Data is null");

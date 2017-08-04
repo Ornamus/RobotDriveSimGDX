@@ -38,7 +38,6 @@ public abstract class ScoreDisplay extends Drawable {
         setX(display.getX());
         setY(display.getY());
 
-        //TODO: constantly recalculate these positions and sizes like for display
         timerBacking = new Sprite(new Texture("core/assets/timer_backing.png"));
         timerBacking.setSize(timerBacking.getWidth() * .75f, timerBacking.getHeight() * .75f);
         timerBacking.setAlpha(.75f);

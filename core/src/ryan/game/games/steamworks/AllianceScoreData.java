@@ -1,7 +1,5 @@
 package ryan.game.games.steamworks;
 
-import com.google.gson.Gson;
-
 import java.io.Serializable;
 
 public class AllianceScoreData implements Serializable {

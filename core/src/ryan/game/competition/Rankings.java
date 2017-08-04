@@ -11,8 +11,8 @@ import java.util.List;
 public abstract class Rankings<T extends RankData> {
 
     protected Schedule s;
-    private List<T> previousRanks = new ArrayList<T>();
-    private List<T> currentRanks = new ArrayList<T>();
+    private List<T> previousRanks = new ArrayList<>();
+    private List<T> currentRanks = new ArrayList<>();
 
     public abstract T generate(Team team);
     public abstract void update(T data, Match.MatchAlliance alliance, Match.MatchAlliance other);

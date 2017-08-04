@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import ryan.game.entity.Robot;
 import ryan.game.render.Drawable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Part extends Drawable {
@@ -17,15 +18,11 @@ public class Part extends Drawable {
 
     public Part(String tag, Body...b) {
         tags.add(tag);
-        for (Body bod : b) {
-            bodies.add(bod);
-        }
+        Collections.addAll(bodies, b);
     }
 
     public void addTags(String... newTags) {
-        for (String s : newTags) {
-            tags.add(s);
-        }
+        Collections.addAll(tags, newTags);
     }
 
     public boolean hasTag(String tag) {

@@ -7,9 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.entity.Robot;
-import ryan.game.games.steamworks.SteamworksMetadata;
 import ryan.game.games.steamworks.robots.SteamDefault;
-
 import java.util.HashMap;
 
 public class GamepadListener implements ControllerListener {

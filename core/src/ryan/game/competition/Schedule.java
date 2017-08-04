@@ -6,8 +6,6 @@ import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.games.AllianceSelection;
 import ryan.game.games.steamworks.AllianceScoreData;
-import ryan.game.team254.utils.Path;
-
 import java.io.*;
 import java.util.*;
 
@@ -31,9 +29,7 @@ public class Schedule {
         if (f.exists()) {
             Team[] teamArray = new Team[0];
             teamArray = Utils.fromJSON(f, teamArray.getClass());
-            for (Team t : teamArray) {
-                teams.add(t);
-            }
+            Collections.addAll(teams, teamArray);
             Utils.log("Loaded " + teams.size() + " teams");
         } else {
             List<Integer> taken = new ArrayList<>();
@@ -58,7 +54,7 @@ public class Schedule {
                     Gson g = new Gson();
                     Match m = Utils.fromJSON(matchFile, Match.class);
 
-                    //TODO: This is Steamworks-specific unfortunately
+                    //TODO: This is Steamworks-specific unfortunately, let's make this game generic
                     if (m.complete && m.blue.breakdown != null && m.red.breakdown != null) {
                         m.blue.breakdown = g.fromJson(m.blue.breakdown.toString(), AllianceScoreData.class);
                         m.red.breakdown = g.fromJson(m.red.breakdown.toString(), AllianceScoreData.class);
@@ -276,7 +272,7 @@ public class Schedule {
                 generateNextElimMatches();
                 Main.getInstance().gameField.updateMatchInfo();
             } else {
-                //TODO: properly end the game
+                //TODO: properly end the game (and actually display who won)
                 Utils.log((wonSet.get(remainingAlliances[0]) ? arrayToString(remainingAlliances[0]) : arrayToString(remainingAlliances[1])) + " wins!");
             }
         } else {

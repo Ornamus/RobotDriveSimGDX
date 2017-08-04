@@ -138,15 +138,6 @@ public class Match implements Serializable {
         Utils.writeFile(Main.eventKey + "/matches/" + level + (tiebreaker ?  "_tb" : "") + "_" + number, g.toJson(this));
     }
 
-    public static Match loadMatch(String level, int number) {
-        return loadMatch(Main.eventKey, level, number);
-    }
-
-    public static Match loadMatch(String event, String level, int number) {
-        //TODO
-        return null;
-    }
-
     public class MatchAlliance implements Serializable {
         public int[] teams;
         public int score = 0;

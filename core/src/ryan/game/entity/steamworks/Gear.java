@@ -7,7 +7,6 @@ import ryan.game.Main;
 import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
-import ryan.game.games.steamworks.Steamworks;
 import ryan.game.games.steamworks.SteamworksMetadata;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
 

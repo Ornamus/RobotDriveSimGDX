@@ -91,8 +91,7 @@ public class BodyFactory {
             shape.dispose();
             return body;
         } else {
-            Utils.log("TYPE OR SHAPE IS NULL");
-            //TODO: error message
+            Utils.log("BodyFactory.create() error: TYPE or SHAPE is NULL!");
             return null;
         }
     }

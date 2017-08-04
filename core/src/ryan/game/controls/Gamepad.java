@@ -58,7 +58,6 @@ public class Gamepad {
         Utils.log("Please Press: " + mapOrder[mapIndex].display);
         if (mapOrder[mapIndex].optional) {
             Utils.log("(This field is optional. If your controller does not have it, press 'X' on the keyboard.)");
-            //TODO: implement this
         }
     }
 

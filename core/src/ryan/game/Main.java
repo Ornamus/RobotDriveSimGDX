@@ -208,6 +208,7 @@ public class Main extends ApplicationAdapter {
         heightScale = screenHeight/630f;
 
         //TODO: probably calculate this better
+        //TODO: default window size fontscale is not one
         fontScale = (Math.max(widthScale, heightScale));
         Fonts.init(fontScale);
     }

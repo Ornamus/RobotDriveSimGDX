@@ -24,7 +24,6 @@ import ryan.game.entity.parts.Part;
 import ryan.game.entity.steamworks.Boiler;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
-import ryan.game.games.overboard.robots.OverRobotStats;
 import ryan.game.games.steamworks.robots.*;
 import ryan.game.render.Fonts;
 import ryan.game.sensors.Gyro;
@@ -218,7 +217,6 @@ public class Robot extends Entity {
      */
     public boolean onGamepadDisconnect() {
         if (Game.isPlaying() || Main.makeSchedule) {
-            //TODO: display disconnect icon
             controllerDisconnect = true;
             return false;
         } else {
@@ -334,10 +332,6 @@ public class Robot extends Entity {
             turretAngle = Utils.fixAngle(turretAngle);
             while (turretAngle > 360) turretAngle -= 360;
             while (turretAngle < 0) turretAngle = 360 + turretAngle;
-            Vector2 pos = getShooterPosition();
-            turretSprite.setBounds(pos.x - turretSprite.getWidth()/2, pos.y - turretSprite.getHeight()/2, steam.turretWidth * 2, steam.turretHeight * 2);
-            turretSprite.setOriginCenter();
-            turretSprite.setRotation(getAngle() + turretAngle);
         }
         if (Gamepads.getGamepads().isEmpty()) {
             //TODO: ?????
@@ -467,7 +461,8 @@ public class Robot extends Entity {
     }
 
     public Vector2 getShooterPosition() {
-        Vector2 pos = new Vector2(getX(), getY());
+        Vector2 roPos = getPhysicsPosition();
+        Vector2 pos = new Vector2(roPos.x, roPos.y);
         //if (hasTurret) {
             SteamRobotStats steam = (SteamRobotStats) stats;
             Vector2 copy = new Vector2(steam.shooterPosition.x, steam.shooterPosition.y);
@@ -483,7 +478,14 @@ public class Robot extends Entity {
         if (icon != null) icon.draw(b);
         //if (intake != null && intakeSprite != null) intakeSprite.draw(b);
         if (metadata != null) metadata.draw(b, this);
-        if (hasTurret) turretSprite.draw(b);
+        if (hasTurret) {
+            SteamRobotStats steam = (SteamRobotStats) stats;
+            Vector2 pos = getShooterPosition();
+            turretSprite.setBounds(pos.x - turretSprite.getWidth()/2, pos.y - turretSprite.getHeight()/2, steam.turretWidth * 2, steam.turretHeight * 2);
+            turretSprite.setOriginCenter();
+            turretSprite.setRotation(getAngle() + turretAngle);
+            turretSprite.draw(b);
+        }
         outline.draw(b);
     }
 
@@ -654,7 +656,6 @@ public class Robot extends Entity {
         return currentRightNormal.scl(magic, magic);
     }
 
-    //TODO: multi controller support
     public Gamepad getController() {
         if (Main.currentRobot == -1) {
             return Gamepads.getGamepad(this);
@@ -663,6 +664,11 @@ public class Robot extends Entity {
         } else {
             return null;
         }
+    }
+
+    //TODO: use this
+    public List<Gamepad> getControllers() {
+        return Gamepads.getGamepads(this);
     }
 
     public Gyro getGyro() {

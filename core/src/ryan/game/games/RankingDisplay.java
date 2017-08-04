@@ -26,7 +26,7 @@ public class RankingDisplay extends ImageDrawer {
 
     public RankingDisplay() {
         super(0, 0, tex);
-        sprite.setSize(1100, 631);
+        sprite.setSize(1100, 630);
         sprite.setPosition(0-sprite.getWidth() /2, 0-sprite.getHeight()/2);
         setDrawScaled(false);
 
@@ -62,22 +62,28 @@ public class RankingDisplay extends ImageDrawer {
 
     @Override
     public void draw(SpriteBatch batch) {
+        sprite.setSize(Main.screenWidth, Main.screenHeight);
+        sprite.setPosition(0-sprite.getWidth() /2, 0-sprite.getHeight()/2);
         super.draw(batch);
-        Fonts.drawCentered(Main.eventName + " Rankings", getCenterX(), getCenterY() + 305 - 15, Fonts.fmsBlack, batch);
+
+        allianceBar = new Sprite(new Texture("core/assets/alliance_selection_bar.png"));
+        resize(allianceBar, .225f * Main.fontScale);
+
+        Fonts.drawCentered(Fonts.fmsBlack, Main.eventName + " Rankings", getCenterX(), getCenterY(), 0, 305-15, batch);
         int index = 0;
         for (int gridX = 0; gridX<2; gridX++) {
             for (int gridY = 0; gridY < 8; gridY++) {
                 if (rankings.size() > (currentPage*16)+index) {
                     RankData data = rankings.get((currentPage*16)+index);
 
-                    float x = -485 + (500 * gridX);
-                    float y = 135;
-                    y -= (gridY * 56);
+                    float x = -485 + (500 * gridX) * Main.widthScale;
+                    float y = 135 * Main.heightScale;
+                    y -= (gridY * 56 * Main.heightScale);
 
                     allianceBar.setPosition(x, y);
                     allianceBar.draw(batch);
 
-                    Fonts.drawCentered(data.rank + "", x + 44.5f, y + 32.5f, Fonts.fmsBlack, batch);
+                    Fonts.drawCentered(Fonts.fmsBlack, data.rank + "", x, y, 44.5f, 32.5f, batch);
 
                     SteamTeamData d = (SteamTeamData) data; //TODO: this will crash for any game other than Steamworks
 
@@ -85,7 +91,7 @@ public class RankingDisplay extends ImageDrawer {
 
                     //teamString = teamString.substring(0, teamString.length() - 3);
 
-                    Fonts.fmsBlack.draw(batch, teamString, x + 90f, y + 31.5f);
+                    Fonts.draw(Fonts.fmsBlack, teamString, x, y, 90, 31.5f, batch);
                 }
                 index++;
             }

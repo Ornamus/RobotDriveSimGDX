@@ -17,15 +17,12 @@ import ryan.game.entity.steamworks.Rope;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
-
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class SteamworksMetadata extends RobotMetadata {
-
-    //TODO: support for the specific gear and fuel intakes
 
     Sprite gear;
 

@@ -53,7 +53,6 @@ public class DesktopLauncher {
 			}
 			if (s.equalsIgnoreCase("controller-mapping")) {
 				mapping = true;
-				//TODO: put application into mapping mode instead of simulator play more
 			}
 		}
 		new Lwjgl3Application(mapping ? new ControllerMapper() : new Main(), config);

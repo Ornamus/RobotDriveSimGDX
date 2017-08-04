@@ -1,10 +1,6 @@
 package ryan.game.competition;
 
-import com.badlogic.gdx.physics.box2d.Body;
 import ryan.game.bcnlib_pieces.Command;
-import ryan.game.entity.BodyFactory;
-import ryan.game.entity.parts.Intake;
-import ryan.game.entity.parts.Part;
 import ryan.game.entity.Robot;
 import ryan.game.games.Game;
 

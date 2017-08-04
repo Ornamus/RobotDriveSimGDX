@@ -12,8 +12,6 @@ import java.io.*;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Utils {
 
@@ -171,7 +169,7 @@ public class Utils {
         front.draw(b);
     }
 
-    //TODO: fix this for the new upscaling and make this also not a bad copy of the above function
+    //TODO: make this also not a bad copy of the above function
     public static void drawUnscaledProgressBar(float x, float y, float width, float height, float progress, SpriteBatch b) {
         width *= Main.widthScale;
         height *= Main.heightScale;
@@ -221,7 +219,6 @@ public class Utils {
         }
     }
 
-    //TODO: fix problem where this gets angry if any folders don't exist
     public static void writeFile(String fileName, String content) {
         BufferedWriter bw = null;
         try {

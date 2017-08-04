@@ -9,8 +9,6 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.competition.Match;
-import ryan.game.competition.Schedule;
-import ryan.game.competition.Team;
 import ryan.game.entity.*;
 import ryan.game.entity.steamworks.*;
 import ryan.game.games.Field;
@@ -178,7 +176,7 @@ public class Steamworks extends Field {
                 r.metadata = m;
             }
             m.hasGear = stats.gearHPStation || stats.gearIntake;
-            m.fuel = stats.shooter ? 10 : 0;;
+            m.fuel = stats.shooter ? 10 : 0;
             m.crossedBaseline = false;
         }
     }
@@ -198,7 +196,7 @@ public class Steamworks extends Field {
         if (blue.score > red.score) winner = 0;
         else if (red.score > blue.score) winner = 1;
         else {
-            //TODO: add auto points here
+            //TODO: add auto points tiebreaker here
             if (blue.fouls < red.fouls) winner = 0;
             else if (red.fouls < blue.fouls) winner = 1;
             else {

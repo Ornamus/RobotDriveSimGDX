@@ -42,7 +42,9 @@ public class Rope extends Entity {
         }
 
         Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, robotTouching || (Game.isPlaying() && Game.getMatchTime() > 30) ? .2f : 1);
-        Fonts.drawCentered(num + "", getX() * Main.meterToPixelWidth, (getY() * Main.meterToPixelHeight) + (Main.meterToPixelHeight * 4f), Fonts.fmsWhiteVerySmall, b);
+
+        Fonts.drawCentered(Fonts.fmsWhiteVerySmall, num + "", getX()*Main.meterToPixelWidth, getY()*Main.meterToPixelHeight, 0, 80, b);
+
         Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, 1);
     }
 

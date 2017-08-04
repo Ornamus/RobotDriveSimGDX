@@ -12,7 +12,6 @@ import ryan.game.entity.overboard.Ship;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
 import ryan.game.games.ScoreDisplay;
-import ryan.game.games.steamworks.SteamworksMetadata;
 import ryan.game.render.Drawable;
 import ryan.game.render.ImageDrawer;
 import java.util.ArrayList;

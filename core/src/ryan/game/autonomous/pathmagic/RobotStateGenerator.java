@@ -1,7 +1,6 @@
 package ryan.game.autonomous.pathmagic;
 
 import ryan.game.Main;
-import ryan.game.Utils;
 import ryan.game.entity.Robot;
 import ryan.game.team254.utils.RigidTransform2d;
 import ryan.game.team254.utils.Rotation2d;
