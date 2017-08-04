@@ -22,10 +22,10 @@ import ryan.game.controls.Gamepad;
 import ryan.game.controls.Gamepads;
 import ryan.game.entity.*;
 import ryan.game.entity.parts.Part;
-import ryan.game.games.AllianceSelection;
-import ryan.game.games.Field;
-import ryan.game.games.Game;
-import ryan.game.games.RankingDisplay;
+import ryan.game.games.*;
+import ryan.game.games.overboard.PirateField;
+import ryan.game.games.overboard.PirateMetadata;
+import ryan.game.games.overboard.robots.OverRobotStats;
 import ryan.game.games.steamworks.SteamRankings;
 import ryan.game.games.steamworks.Steamworks;
 import ryan.game.games.steamworks.robots.SteamDefault;
@@ -119,7 +119,7 @@ public class Main extends ApplicationAdapter {
         if (extraRobots > 0) currentRobot = 0;
 
         for (int i = 0; i< Gamepads.getGamepads().size() + extraRobots; i++) {
-            Robot r = Robot.create(new SteamDefault(), 2 + (index * 3), -11);
+            Robot r = Robot.create(new OverRobotStats(), 2 + (index * 3), -11);
             robots.add(r);
             if (i < Gamepads.getGamepads().size()) {
                 r.claimGamepad(Gamepads.getGamepad(i));
@@ -127,8 +127,8 @@ public class Main extends ApplicationAdapter {
             index++;
         }
 
-        //gameField = new PirateField();
-        gameField = new Steamworks();
+        gameField = new PirateField();
+        //gameField = new Steamworks();
         gameField.affectRobots();
         drawables.addAll(gameField.generateField());
 

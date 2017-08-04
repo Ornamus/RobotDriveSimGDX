@@ -24,6 +24,7 @@ import ryan.game.entity.parts.Part;
 import ryan.game.entity.steamworks.Boiler;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
+import ryan.game.games.overboard.robots.OverRobotStats;
 import ryan.game.games.steamworks.robots.*;
 import ryan.game.render.Fonts;
 import ryan.game.sensors.Gyro;
@@ -50,9 +51,9 @@ public class Robot extends Entity {
     private float middleMotor = 0;
 
     private int statsIndex = 0;
-    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
-            new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething()};
-    //private RobotStats[] statsOptions = {new OverRobotStats()};
+    //private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
+      //      new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething()};
+    private RobotStats[] statsOptions = {new OverRobotStats()};
 
     public RobotStats stats = statsOptions[statsIndex];
 
@@ -246,6 +247,7 @@ public class Robot extends Entity {
 
     @Override
     public void onCollide(Entity e, Body self, Body other, Contact c) {
+        super.collideStart(e, self, other, c);
         if (metadata != null) metadata.onCollide(this, e, self, other, c);
     }
 

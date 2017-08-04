@@ -179,13 +179,41 @@ public class Entity extends Drawable {
 
     public void collideStart(Entity e, Body self, Body other, Contact contact) {
         Part p = getPart(self);
+        boolean usingOther = false;
+        if (p == null) {
+            p = getPart(other);
+            usingOther = true;
+        }
+        boolean cancel = false;
         if (p != null) {
-            if (bodies.contains(other)) {
-                if (!p.collideWithSelf) contact.setEnabled(false);
+            if (bodies.contains(usingOther ? self : other)) {
+                if (!p.collideWithSelf) {
+                    contact.setEnabled(false);
+                    cancel = true;
+                }
+            }
+            if (p.hasTag("wheel")) {
+                Utils.log("the hwheel has started touch. status: " + cancel);
             }
         }
     }
-    public void onCollide(Entity e, Body self, Body other, Contact contact) {}
+    public void onCollide(Entity e, Body self, Body other, Contact contact) {
+        Part p = getPart(self);
+        boolean usingOther = false;
+        if (p == null) {
+            p = getPart(other);
+            usingOther = true;
+        }
+        boolean cancel = false;
+        if (p != null) {
+            if (bodies.contains(usingOther ? self : other)) {
+                if (!p.collideWithSelf) {
+                    contact.setEnabled(false);
+                    cancel = true;
+                }
+            }
+        }
+    }
     public void collideEnd(Entity e, Body self, Body other, Contact contact) {}
 
     public float getAngle() {
