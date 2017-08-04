@@ -3,6 +3,7 @@ package ryan.game.controls;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.PovDirection;
 import ryan.game.Utils;
+import ryan.game.entity.Robot;
 
 public class Gamepad {
 
@@ -25,7 +26,10 @@ public class Gamepad {
 
 
     public final int id;
+    public final String name;
     protected Controller c;
+
+    public Robot r = null;
 
     protected GamepadConfig config = null;
 
@@ -39,9 +43,8 @@ public class Gamepad {
 
     protected Gamepad(Controller c) {
         this.c = c;
-
+        name = c.getName();
         config = Utils.fromJSON("core/assets/controller_configs/" + getSimpleName() + ".json", GamepadConfig.class);
-        //config = null; //TODO: remove
         if (config == null) { //TODO: check if in mapping mode or not
             Utils.log("NULL GAMEPAD");
             noConfig = true;
@@ -74,16 +77,19 @@ public class Gamepad {
     }
 
     public float getX() {
+        if (c == null) return 0;
         if (hasSecondJoystick() && reverseSticks) return c.getAxis(config.xAxis2);
         return c.getAxis(config.xAxis);
     }
 
     public float getY() {
+        if (c == null) return 0;
         if (hasSecondJoystick() && reverseSticks) return -c.getAxis(config.yAxis2);
         return -c.getAxis(config.yAxis);
     }
 
     public float getX2() {
+        if (c == null) return 0;
         if (config.xAxis2 != -1) {
             if (reverseSticks) return c.getAxis(config.xAxis);
             return c.getAxis(config.xAxis2);
@@ -92,6 +98,7 @@ public class Gamepad {
     }
 
     public float getY2() {
+        if (c == null) return 0;
         if (config.yAxis2 != -1) {
             if (reverseSticks) return -c.getAxis(config.yAxis);
             return -c.getAxis(config.yAxis2);
@@ -100,11 +107,13 @@ public class Gamepad {
     }
 
     public float getZ() {
+        if (c == null) return 0;
         if (config.zAxis != -1) c.getAxis(config.zAxis);
         return 0;
     }
 
     public PovDirection getDPad() {
+        if (c == null) return PovDirection.center;
         if (getButton(DPAD_UP)) {
             if (getButton(DPAD_LEFT)) return PovDirection.northWest;
             else if (getButton(DPAD_RIGHT)) return PovDirection.northEast;
@@ -119,12 +128,14 @@ public class Gamepad {
     }
 
     public boolean isLeftTriggerPressed() {
+        if (c == null) return false;
         //Utils.log(hasZAxis() + " for axis, " + getZ() + " axis val, " + getButton(TRIGGER_LEFT) + " trig");
         if (hasZAxis()) return getZ() > 0.1;
         else return getButton(TRIGGER_LEFT);
     }
 
     public boolean isRightTriggerPressed() {
+        if (c == null) return false;
         if (hasZAxis()) return getZ() < -0.1;
         else return getButton(TRIGGER_RIGHT);
     }
@@ -150,12 +161,12 @@ public class Gamepad {
     }
 
     public boolean getButton(int id) {
-        if (id > -1) return c.getButton(config.getMapping(id));
+        if (c != null && id > -1) return c.getButton(config.getMapping(id));
         return false;
     }
 
     public String getName() {
-        return c.getName();
+        return name;
     }
 
     public String getSimpleName() {

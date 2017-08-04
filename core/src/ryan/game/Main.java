@@ -79,7 +79,7 @@ public class Main extends ApplicationAdapter {
     public static long matchStart = 0;
     public static long matchEnd = 0;
 
-    public Sound matchStartSound, teleopStartSound, ropeDropSound, matchEndSound, foghornSound;
+    public Sound matchStartSound, teleopStartSound, ropeDropSound, matchEndSound, foghornSound, popSound;
     Pathfinding pathfinding;
     List<Point2D.Float> points;
 
@@ -118,7 +118,11 @@ public class Main extends ApplicationAdapter {
         if (extraRobots > 0) currentRobot = 0;
 
         for (int i = 0; i< Gamepads.getGamepads().size() + extraRobots; i++) {
-            robots.add(Robot.create(new SteamDefault(), 2 + (index * 3), -11));
+            Robot r = Robot.create(new SteamDefault(), 2 + (index * 3), -11);
+            robots.add(r);
+            if (i < Gamepads.getGamepads().size()) {
+                r.claimGamepad(Gamepads.getGamepad(i));
+            }
             index++;
         }
 
@@ -150,6 +154,7 @@ public class Main extends ApplicationAdapter {
         ropeDropSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/whoop.wav"));
         matchEndSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/end.wav"));
         foghornSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/foghorn.wav"));
+        popSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/pop.wav"));
 
         musicChoices = Gdx.files.internal("core/assets/music").list();
 

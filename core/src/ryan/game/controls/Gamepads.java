@@ -2,6 +2,8 @@ package ryan.game.controls;
 
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.lwjgl3.Lwjgl3ControllerManager;
+import ryan.game.entity.Robot;
+import ryan.game.games.Game;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -30,6 +32,25 @@ public class Gamepads {
         return new ArrayList<>(gamepads);
     }
 
+    public static Gamepad getGamepad(Robot r) {
+        for (Gamepad g : gamepads) {
+            if (g.r == r) {
+                return g;
+            }
+        }
+        return null;
+    }
+
+    public static List<Gamepad> getGamepads(Robot r) {
+        List<Gamepad> claimed = new ArrayList<>();
+        for (Gamepad g : gamepads) {
+            if (g.r == r) {
+                claimed.add(g);
+            }
+        }
+        return claimed;
+    }
+
     public static Gamepad getGamepad(int id) {
         //Gamepads are added in order of ID, so this SHOULD be fine
         return gamepads.get(id);
@@ -37,7 +58,7 @@ public class Gamepads {
 
     public static Gamepad getGamepad(Controller c) {
         for (Gamepad g : gamepads) {
-            if (g.c.equals(c)) {
+            if (g.c != null && g.c.equals(c)) {
                 return g;
             }
         }

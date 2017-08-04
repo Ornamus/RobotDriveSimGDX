@@ -173,6 +173,10 @@ public class Steamworks extends Field {
             r.auto = r.stats.getAutonomous(r);
             SteamworksMetadata m = (SteamworksMetadata) r.metadata;
             SteamRobotStats stats = (SteamRobotStats) r.stats;
+            if (m == null || !(m instanceof SteamworksMetadata)) {
+                m = new SteamworksMetadata();
+                r.metadata = m;
+            }
             m.hasGear = stats.gearHPStation || stats.gearIntake;
             m.fuel = stats.shooter ? 10 : 0;;
             m.crossedBaseline = false;

@@ -82,6 +82,8 @@ public class Robot extends Entity {
 
     public float turretAngle = 0;
 
+    public boolean controllerDisconnect = false;
+
     private static int robots = 0;
 
     private Robot(RobotStats stats, Body left, Body right, int id) {
@@ -206,6 +208,30 @@ public class Robot extends Entity {
         return vel;
     }
 
+    public void claimGamepad(Gamepad g) {
+        g.r = this;
+    }
+
+    /**
+     *
+     * @return If the Robot has been removed from existence.
+     */
+    public boolean onGamepadDisconnect() {
+        if (Game.isPlaying() || Main.makeSchedule) {
+            //TODO: display disconnect icon
+            controllerDisconnect = true;
+            return false;
+        } else {
+            destroy();
+            Main.getInstance().popSound.play(0.75f);
+            return true;
+        }
+    }
+
+    public void onGamepadReconnect() {
+        controllerDisconnect = false;
+    }
+
     boolean changeAllianceWasTrue = false;
     boolean changeControlsWasTrue = false;
     boolean statsToggleWasTrue = false;
@@ -270,8 +296,10 @@ public class Robot extends Entity {
         if (icon != null) {
             icon.setPosition(getX() - icon.getWidth() / 2, getY() + 1f);
             icon.setAlpha(iconAlpha);
-            iconAlpha -= 0.01;
-            if (iconAlpha <= 0) icon = null;
+            if (!controllerDisconnect) {
+                iconAlpha -= 0.01;
+                if (iconAlpha <= 0) icon = null;
+            }
         }
         /*if (intakeSprite != null && intake != null) {
             Vector2 pos = intake.getPosition();
@@ -341,6 +369,13 @@ public class Robot extends Entity {
                 icon.setBounds(-999, -999, 1.25f, 1.25f);
                 iconAlpha = 1f;
             }
+
+            if (controllerDisconnect && icon == null) {
+                icon = new Sprite(new Texture("core/assets/disconnect.png"));
+                icon.setBounds(-999, -999, 1.25f, 1.25f);
+                iconAlpha = 1f;
+            }
+
             changeControlsWasTrue = val;
 
             if ((!Game.isPlaying() || Game.getMatchTime() <= 134) && g != null) {
@@ -372,12 +407,14 @@ public class Robot extends Entity {
                 }
                 RobotStats oldStats = stats;
                 stats = statsOptions[statsIndex];
-                state = null;
-                if (generator != null) generator.actuallyStop();
-                generator = null;
-                Main.getInstance().removeEntity(this);
-                Main.robots.remove(this);
+
                 Robot replacement = create(stats, getX()+(oldStats.robotWidth/2), getY(), id);
+                for (Gamepad pad : Gamepads.getGamepads(this)) {
+                    replacement.claimGamepad(pad);
+                }
+
+                destroy();
+
                 replacement.blue = blue;
                 replacement.statsToggleWasTrue = true;
                 replacement.controllerIndex = controllerIndex;
@@ -415,6 +452,17 @@ public class Robot extends Entity {
         }
 
         if (metadata != null) metadata.tick(this);
+    }
+
+    public void destroy() {
+        state = null;
+        if (generator != null) generator.actuallyStop();
+        generator = null;
+        Main.getInstance().removeEntity(this);
+        Main.robots.remove(this);
+        for (Gamepad g : Gamepads.getGamepads(this)) {
+            g.r = null;
+        }
     }
 
     public Vector2 getShooterPosition() {
@@ -540,6 +588,7 @@ public class Robot extends Entity {
             weldJoint(left, b);
             weldJoint(right, b);
         }
+        p.onRobotColorChange(blue ? Main.BLUE : Main.RED);
     }
 
     private static void weldJoint(Body a, Body b) {
@@ -604,9 +653,10 @@ public class Robot extends Entity {
         return currentRightNormal.scl(magic, magic);
     }
 
+    //TODO: multi controller support
     public Gamepad getController() {
         if (Main.currentRobot == -1) {
-            return Gamepads.getGamepad(id);
+            return Gamepads.getGamepad(this);
         } else if (Main.currentRobot == id) {
             return Gamepads.getGamepad(0);
         } else {
