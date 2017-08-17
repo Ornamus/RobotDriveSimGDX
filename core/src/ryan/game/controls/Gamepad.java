@@ -21,7 +21,7 @@ public class Gamepad {
             new GamepadConfigPart(TRIGGER_LEFT, "Left Trigger Button", true), new GamepadConfigPart(TRIGGER_RIGHT, "Right Trigger Button", true),
             new GamepadConfigPart(DPAD_UP, "DPad Up"), new GamepadConfigPart(DPAD_LEFT, "DPad Left"), new GamepadConfigPart(DPAD_DOWN, "DPad Down"), new GamepadConfigPart(DPAD_RIGHT, "DPad Right"),
             new GamepadConfigPart(94, "Joystick X Axis"), new GamepadConfigPart(95, "Joystick Y Axis"), new GamepadConfigPart(96, "Joystick X Axis 2", true),
-            new GamepadConfigPart(97, "Joystick Y Axis 2", true), new GamepadConfigPart(98, "Joystick Z Axis (Triggers)", true)
+            new GamepadConfigPart(97, "Joystick Y Axis 2", true), new GamepadConfigPart(98, "Left Trigger Axis", true), new GamepadConfigPart(99, "Right Trigger Axis", true)
     };
 
 
@@ -61,7 +61,14 @@ public class Gamepad {
         }
     }
 
+    boolean mapEmpty = true;
+
+    public boolean isMapEmpty() {
+        return mapEmpty;
+    }
+
     public void updateMap(int index) {
+        mapEmpty = false;
         int key = mapOrder[mapIndex].key;
         Utils.log("[DEBUG] Mapping " + key + " to " + index);
         config.setMapping(key, index);
@@ -83,8 +90,8 @@ public class Gamepad {
 
     public float getY() {
         if (c == null) return 0;
-        if (hasSecondJoystick() && reverseSticks) return -c.getAxis(config.yAxis2);
-        return -c.getAxis(config.yAxis);
+        if (hasSecondJoystick() && reverseSticks) return c.getAxis(config.yAxis2);
+        return c.getAxis(config.yAxis);
     }
 
     public float getX2() {
@@ -99,16 +106,22 @@ public class Gamepad {
     public float getY2() {
         if (c == null) return 0;
         if (config.yAxis2 != -1) {
-            if (reverseSticks) return -c.getAxis(config.yAxis);
-            return -c.getAxis(config.yAxis2);
+            if (reverseSticks) return c.getAxis(config.yAxis);
+            return c.getAxis(config.yAxis2);
         }
         return 0;
     }
 
-    public float getZ() {
+    public float getLeftTrigger() {
         if (c == null) return 0;
-        if (config.zAxis != -1) c.getAxis(config.zAxis);
-        return 0;
+        if (config.zAxis1 != -1) return c.getAxis(config.zAxis1);
+        return getButton(TRIGGER_LEFT) ? 1 : 0;
+    }
+
+    public float getRightTrigger() {
+        if (c == null) return 0;
+        if (config.zAxis2 != -1) return c.getAxis(config.zAxis2);
+        return getButton(TRIGGER_RIGHT) ? 1 : 0;
     }
 
     public PovDirection getDPad() {
@@ -128,19 +141,16 @@ public class Gamepad {
 
     public boolean isLeftTriggerPressed() {
         if (c == null) return false;
-        //Utils.log(hasZAxis() + " for axis, " + getZ() + " axis val, " + getButton(TRIGGER_LEFT) + " trig");
-        if (hasZAxis()) return getZ() > 0.1;
-        else return getButton(TRIGGER_LEFT);
+        return getLeftTrigger() > 0.1;
     }
 
     public boolean isRightTriggerPressed() {
         if (c == null) return false;
-        if (hasZAxis()) return getZ() < -0.1;
-        else return getButton(TRIGGER_RIGHT);
+        return getRightTrigger() > 0.1;
     }
 
     public boolean hasZAxis() {
-        return config.zAxis != -1;
+        return config.zAxis1 != -1 || config.zAxis2 != -1;
     }
 
     public boolean hasSecondJoystick() {

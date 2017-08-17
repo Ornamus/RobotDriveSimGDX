@@ -119,7 +119,8 @@ public class Main extends ApplicationAdapter {
         if (extraRobots > 0) currentRobot = 0;
 
         for (int i = 0; i< Gamepads.getGamepads().size() + extraRobots; i++) {
-            Robot r = Robot.create(new OverRobotStats(), 2 + (index * 3), -11);
+            //TODO: make this not game specific
+            Robot r = Robot.create(new SteamDefault(), 2 + (index * 3), -11);
             robots.add(r);
             if (i < Gamepads.getGamepads().size()) {
                 r.claimGamepad(Gamepads.getGamepad(i));
@@ -127,8 +128,8 @@ public class Main extends ApplicationAdapter {
             index++;
         }
 
-        gameField = new PirateField();
-        //gameField = new Steamworks();
+        //gameField = new PirateField();
+        gameField = new Steamworks();
         gameField.affectRobots();
         drawables.addAll(gameField.generateField());
 
@@ -176,6 +177,8 @@ public class Main extends ApplicationAdapter {
 
         //schedule.getRankings().addFakeRankings();
         //drawables.add(new AllianceSelection());
+
+        gameField.updateMatchInfo();
     }
 
     public static float widthScale = 1, heightScale = 1, fontScale = 1;

@@ -64,7 +64,7 @@ public class Fonts {
 
         generator.dispose();
 
-        generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/segoe-ui.ttf")); //generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/Kozuka.otf"));
+        generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/segoe-ui.ttf"));
         param = new FreeTypeFontGenerator.FreeTypeFontParameter();
         param.size = Math.round(52f*scale);
         param.borderColor = Color.BLACK;

@@ -46,6 +46,7 @@ public class OverRobotStats extends RobotStats {
         r.addPart(new Intake(width*2, height*2, in));
 
         //TODO: why do wheel rectangles turn turning robots into vortexes of death 70% of the time? why do they not the other 30%?
+/*
         for (int s=0;s<2;s++) {
             for (int i = 0; i < 3; i++) {
 
@@ -60,6 +61,6 @@ public class OverRobotStats extends RobotStats {
                 r.addPart(p);
                 //Utils.log("made a wheel rectangle");
             }
-        }
+        }*/
     }
 }

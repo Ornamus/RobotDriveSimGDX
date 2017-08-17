@@ -51,9 +51,11 @@ public class Robot extends Entity {
     private float middleMotor = 0;
 
     private int statsIndex = 0;
-    //private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
-      //      new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething()};
-    private RobotStats[] statsOptions = {new OverRobotStats()};
+
+    //TODO: make this not game-specific
+    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
+    new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething()};
+    //private RobotStats[] statsOptions = {new OverRobotStats()};
 
     public RobotStats stats = statsOptions[statsIndex];
 
@@ -308,8 +310,6 @@ public class Robot extends Entity {
             intakeSprite.setOriginCenter();
             intakeSprite.setRotation((float)Math.toDegrees(intake.getAngle()));
         }*/
-        outline.setBounds(getX() - 1, getY() - 1.95f, 2f, .7f);
-        outline.setAlpha(getAngle() > 110 && getAngle() < 250 ? .3f : .6f);
         if (hasTurret) {
             SteamRobotStats steam = (SteamRobotStats) stats;
             for (Entity e : Main.getInstance().getEntities()) {
@@ -488,6 +488,10 @@ public class Robot extends Entity {
             turretSprite.setRotation(getAngle() + turretAngle);
             turretSprite.draw(b);
         }
+
+        Vector2 pos = getPhysicsPosition();
+        outline.setBounds(pos.x - 1, pos.y - 1.95f, 2f, .7f);
+        outline.setAlpha(getAngle() > 110 && getAngle() < 250 ? .3f : .6f);
         outline.draw(b);
     }
 
@@ -495,9 +499,10 @@ public class Robot extends Entity {
          Match m = Main.schedule.getCurrentMatch();
          if (m != null) {
              Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, getAngle() > 110 && getAngle() < 250 ? .3f : 1);
- 
+
+             Vector2 pos = getPhysicsPosition();
              //TODO: fix bug where this ONE piece of text doesn't scale 100% perfectly on the y axis
-             Fonts.drawCentered(Fonts.fmsWhiteVerySmall, getNumber() + "", getX()*Main.meterToPixelWidth, getY()*Main.meterToPixelHeight, 0, 53, b);
+             Fonts.drawCentered(Fonts.fmsWhiteVerySmall, getNumber() + "", pos.x*Main.meterToPixelWidth, pos.y*Main.meterToPixelHeight, 0, 53, b);
  
             Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, 1);
         }

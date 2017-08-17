@@ -178,7 +178,6 @@ public class Schedule {
                                 m.setRedSurrogates(redSurrs);
                                 matches.add(m);
                                 m.save();
-                                //Utils.log(m.toString());
                             }
                         }
                         Main.getInstance().gameField.updateMatchInfo();
@@ -187,11 +186,10 @@ public class Schedule {
                     }
                 } else {
                     Utils.log("[ERROR] A schedule requires at least 6 teams!");
-                    //error: need 6 teams minimum
                 }
             }
         } else {
-            Match m = new Match(1, new int[]{1902, 254, 987}, new int[]{118, 811, 254});
+            Match m = new Match(1, new int[]{1902, 254, 987}, new int[]{118, 1678, 1987});
             m.qualifier = false;
             matches.add(m);
         }

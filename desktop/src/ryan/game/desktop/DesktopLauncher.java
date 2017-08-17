@@ -51,7 +51,7 @@ public class DesktopLauncher {
 			if (s.equalsIgnoreCase("debug_view")) {
 				Main.DEBUG_RENDER = true;
 			}
-			if (s.equalsIgnoreCase("controller-mapping")) {
+			if (s.equalsIgnoreCase("controller_mapping")) {
 				mapping = true;
 			}
 		}

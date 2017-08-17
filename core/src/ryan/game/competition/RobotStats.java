@@ -18,6 +18,8 @@ public abstract class RobotStats {
     public float fieldCentricStrafeMult = .7f;
     public int recolorIndex = 0;
 
+    public float turnPivotOffset = 0.75f;
+
     public String texture = "core/assets/robot_recolor.png";
 
     public RobotStats(Game g) {

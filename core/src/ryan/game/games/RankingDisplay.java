@@ -85,7 +85,7 @@ public class RankingDisplay extends ImageDrawer {
 
                     Fonts.drawCentered(Fonts.fmsBlack, data.rank + "", x, y, 44.5f, 32.5f, batch);
 
-                    SteamTeamData d = (SteamTeamData) data; //TODO: this will crash for any game other than Steamworks
+                    SteamTeamData d = (SteamTeamData) data; //TODO: make this not game-specific
 
                     String teamString = d.getTeam() + "  |  " + Utils.roundToPlace(d.rankingPoints/d.matchesPlayed, 2) + " RP  |  " + d.scores + " points";
 

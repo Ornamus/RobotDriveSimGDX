@@ -1,1 +1,1 @@
-java -jar RobotDriveSimGDX.jar controller-mapping
+java -jar RobotDriveSimGDX.jar controller_mapping

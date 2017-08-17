@@ -7,8 +7,14 @@ import com.badlogic.gdx.math.Vector3;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.entity.Robot;
+import ryan.game.games.overboard.PirateMetadata;
+import ryan.game.games.overboard.robots.OverRobotStats;
 import ryan.game.games.steamworks.robots.SteamDefault;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 public class GamepadListener implements ControllerListener {
 
@@ -30,7 +36,8 @@ public class GamepadListener implements ControllerListener {
             Utils.log(g.getName() + " gamepad connected!");
 
             //TODO: make this game generic
-            Robot r = Robot.create(new SteamDefault(), 2, -11);
+            Robot r = Robot.create(new OverRobotStats(), 2, -11);
+            r.metadata = new PirateMetadata();
 
             r.claimGamepad(g);
             Main.robots.add(r);
@@ -61,17 +68,21 @@ public class GamepadListener implements ControllerListener {
         return false;
     }
 
-    HashMap<Controller, Integer> movingAxises = new HashMap<>();
+    HashMap<Controller, List<Integer>> inRange = new HashMap<>();
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
         Gamepad g = Gamepads.getGamepad(controller);
-        if (Math.abs(value) == 1) {
-            if (movingAxises.get(controller) != null) {
+        List<Integer> codes = inRange.get(controller);
+        if (codes == null) codes = new ArrayList<>();
+        if (Math.abs(value) >= .7  && !g.isMapEmpty()) {
+            if (!codes.contains(axisCode)) {
                 if (g.mapping) g.updateMap(axisCode);
-                movingAxises.remove(controller);
+                codes.add(axisCode);
+                inRange.put(controller, codes);
             }
         } else {
-            movingAxises.put(controller, axisCode);
+            boolean b = codes.remove((Object)axisCode);
+            inRange.put(controller, codes);
         }
         return false;
     }
