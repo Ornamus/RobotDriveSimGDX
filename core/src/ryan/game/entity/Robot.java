@@ -7,11 +7,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.autonomous.pathmagic.RobotState;
+import ryan.game.autonomous.pathmagic.RobotStateGenerator;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.bcnlib_pieces.PIDSource;
 import ryan.game.competition.Match;
@@ -19,15 +22,14 @@ import ryan.game.competition.RobotStats;
 import ryan.game.controls.Gamepad;
 import ryan.game.controls.Gamepads;
 import ryan.game.drive.*;
-import ryan.game.autonomous.pathmagic.RobotStateGenerator;
 import ryan.game.entity.parts.Part;
 import ryan.game.entity.steamworks.Boiler;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
-import ryan.game.games.overboard.robots.OverRobotStats;
 import ryan.game.games.steamworks.robots.*;
 import ryan.game.render.Fonts;
 import ryan.game.sensors.Gyro;
+
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +56,7 @@ public class Robot extends Entity {
 
     //TODO: make this not game-specific
     private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
-    new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething()};
+    new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething(), new SteamTitanium(), new Steam1678()};
     //private RobotStats[] statsOptions = {new OverRobotStats()};
 
     public RobotStats stats = statsOptions[statsIndex];
