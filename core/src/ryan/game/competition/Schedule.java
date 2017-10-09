@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.games.AllianceSelection;
+import ryan.game.games.overboard.Overboard;
 import ryan.game.games.steamworks.AllianceScoreData;
 import java.io.*;
 import java.util.*;
@@ -27,11 +28,13 @@ public class Schedule {
         r.s = this;
         File f = new File(Main.eventKey  + "/teams.json");
         if (f.exists()) {
+            //TODO: somehow make the teams loaded by the correct subclass, i.e. OverboardTeam
             Team[] teamArray = new Team[0];
             teamArray = Utils.fromJSON(f, teamArray.getClass());
             Collections.addAll(teams, teamArray);
             Utils.log("Loaded " + teams.size() + " teams");
         } else {
+            /*
             List<Integer> taken = new ArrayList<>();
             for (int i = 0; i < Main.randomTeams; i++) {
                 int num;
@@ -39,6 +42,11 @@ public class Schedule {
                 }
                 taken.add(num);
                 teams.add(new Team(num, "null"));
+            }
+            */
+            //TODO: super temporary, only for bacon's overboard tournament
+            for (Team t : Overboard.createBaconTeams()) {
+                teams.add(t);
             }
             Gson g = new GsonBuilder().setPrettyPrinting().create();
             Utils.writeFile(Main.eventKey + "/teams.json", g.toJson(teams));
@@ -180,6 +188,7 @@ public class Schedule {
                                 m.save();
                             }
                         }
+                        Utils.log(matches.size() + " matches");
                         Main.getInstance().gameField.updateMatchInfo();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -407,6 +416,15 @@ public class Schedule {
         }
 
         current++;
+    }
+
+    public Team getTeam(int number) {
+        for (Team t : teams) {
+            if (t.number == number) {
+                return t;
+            }
+        }
+        return null;
     }
 
     public List<Team> getTeams() {

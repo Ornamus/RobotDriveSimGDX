@@ -48,7 +48,7 @@ public class DesktopLauncher {
 			if (s.startsWith("event_key=")) {
 				Main.eventKey = s.replace("event_key=", "");
 			}
-			if (s.equalsIgnoreCase("debug_view")) {
+			if (s.equalsIgnoreCase("debug")) {
 				Main.DEBUG_RENDER = true;
 			}
 			if (s.equalsIgnoreCase("controller_mapping")) {

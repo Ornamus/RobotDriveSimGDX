@@ -6,10 +6,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import ryan.game.Main;
 import ryan.game.competition.Match;
 import ryan.game.competition.Rankings;
+import ryan.game.games.ResultDisplay;
 import ryan.game.render.Fonts;
 import ryan.game.render.ImageDrawer;
 
-public class SteamResultDisplay extends ImageDrawer {
+public class SteamResultDisplay extends ResultDisplay {
 
     Sprite blueWin, redWin;
     Sprite arrowUp, arrowDown;

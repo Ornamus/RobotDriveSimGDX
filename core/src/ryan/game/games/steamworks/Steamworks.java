@@ -215,9 +215,7 @@ public class Steamworks extends Field {
 
         Main.schedule.completeCurrentMatch(blue.score, red.score, blue, red, winner);
 
-        Main.getInstance().results = new SteamResultDisplay(current);
-        Main.getInstance().addDrawable(Main.getInstance().results);
-        Main.getInstance().isShowingResults = true;
+        showResults(new SteamResultDisplay(current));
 
         updateMatchInfo();
         blue = new AllianceScoreData(true);

@@ -125,10 +125,10 @@ public class Utils {
                     } else if (rgb[0] != 0 && rgb[1] == 0 && rgb[2] == 0) { //Red
                         changeAmount = rgb[0] / 255f;
                         colorType = 1;
-                    } else if (rgb[0] == 0 && rgb[1] != 0 && rgb[2] == 0) { //Blue
+                    } else if (rgb[0] == 0 && rgb[1] != 0 && rgb[2] == 0) { //Green
                         changeAmount = rgb[1] / 255f;
                         colorType = 2;
-                    } else if (rgb[0] == 0 && rgb[1] == 0 && rgb[2] != 0) { //Green
+                    } else if (rgb[0] == 0 && rgb[1] == 0 && rgb[2] != 0) { //Blue
                         changeAmount = rgb[2] / 255f;
                         colorType = 3;
                     }

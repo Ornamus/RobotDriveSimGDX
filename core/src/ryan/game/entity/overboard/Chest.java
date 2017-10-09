@@ -20,6 +20,8 @@ public class Chest extends Entity {
     public final Game.ALLIANCE alliance;
     private boolean heavy = false;
 
+    public long cameFromHP = 0;
+
     public Chest(float x, float y, boolean heavy, Game.ALLIANCE a) {
         this(x, y, 0, heavy, a);
     }
@@ -40,5 +42,19 @@ public class Chest extends Entity {
 
     public boolean isHeavy() {
         return heavy;
+    }
+
+    public ChestInfo getInfo() {
+        return new ChestInfo(heavy, alliance);
+    }
+
+    public class ChestInfo {
+        public boolean heavy;
+        public Game.ALLIANCE alliance;
+
+        public ChestInfo(boolean heavy, Game.ALLIANCE alliance) {
+            this.heavy = heavy;
+            this.alliance = alliance;
+        }
     }
 }

@@ -2,6 +2,7 @@ package ryan.game.games;
 
 import ryan.game.Main;
 import ryan.game.competition.Match;
+import ryan.game.games.steamworks.SteamResultDisplay;
 import ryan.game.render.Drawable;
 import java.util.List;
 
@@ -29,5 +30,11 @@ public abstract class Field extends Drawable {
                 d.setMatchName(m.getName());
             }
         }
+    }
+
+    public void showResults(ResultDisplay d) {
+        Main.getInstance().results = d;
+        Main.getInstance().addDrawable(Main.getInstance().results);
+        Main.getInstance().isShowingResults = true;
     }
 }

@@ -25,7 +25,7 @@ public class PirateMetadata extends RobotMetadata {
 
     private boolean intaking = false;
 
-    public List<ChestInfo> chests = new ArrayList<>();
+    public List<Chest.ChestInfo> chests = new ArrayList<>();
 
     public int ejectGearButton = 5;
     boolean ejectChestWasHeld = false;
@@ -58,7 +58,7 @@ public class PirateMetadata extends RobotMetadata {
                             intakeableChests.remove(e);
                             chestIntakeTimes.remove(e);
                             Chest c = (Chest) e;
-                            chests.add(new ChestInfo(c.isHeavy(), c.alliance));
+                            chests.add(c.getInfo());
                         }
                     }
                 }
@@ -123,7 +123,7 @@ public class PirateMetadata extends RobotMetadata {
             float xChange = -distance * (float) Math.sin(Math.toRadians(r.getAngle()));
             float yChange = distance * (float) Math.cos(Math.toRadians(r.getAngle()));
 
-            ChestInfo f = chests.get(0);
+            Chest.ChestInfo f = chests.get(0);
             Entity e = new Chest(r.getX() + xChange, r.getY() + yChange, r.getAngle(), f.heavy, f.alliance);
 
             Main.getInstance().spawnEntity(e);
@@ -135,16 +135,6 @@ public class PirateMetadata extends RobotMetadata {
                 }
             }
             chests.remove(f);
-        }
-    }
-
-    class ChestInfo {
-        boolean heavy;
-        Game.ALLIANCE alliance;
-
-        public ChestInfo(boolean heavy, Game.ALLIANCE alliance) {
-            this.heavy = heavy;
-            this.alliance = alliance;
         }
     }
 }

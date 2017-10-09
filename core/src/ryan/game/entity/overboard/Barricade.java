@@ -14,7 +14,7 @@ public class Barricade extends Entity {
 
     public static final float WIDTH = 0.125f/2;
     public static final float HEIGHT = 26;
-    public static final float SPEED_REQUIREMENT = 1.75f;
+    public static final float SPEED_REQUIREMENT = 1.85f; //1.75f
     public static final float SLOWDOWN = 500;
 
     public List<Body> allowingEntry = new ArrayList<>();

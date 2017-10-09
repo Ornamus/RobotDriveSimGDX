@@ -19,7 +19,7 @@ public class PirateDisplay extends ScoreDisplay {
     public int calculateScore(Game.ALLIANCE alliance) {
         int score = 0;
         boolean blue = alliance == Game.ALLIANCE.BLUE;
-        for (Ship s : PirateField.ships) {
+        for (Ship s : Overboard.ships) {
             if (s.blue == blue) {
                 for (Chest c : s.scoredChests.keySet()) {
                     int secondsOfScore = s.scoredChests.get(c);

@@ -23,12 +23,9 @@ import ryan.game.controls.Gamepads;
 import ryan.game.entity.*;
 import ryan.game.entity.parts.Part;
 import ryan.game.games.*;
-import ryan.game.games.overboard.PirateField;
-import ryan.game.games.overboard.PirateMetadata;
+import ryan.game.games.overboard.OverRankings;
+import ryan.game.games.overboard.Overboard;
 import ryan.game.games.overboard.robots.OverRobotStats;
-import ryan.game.games.steamworks.SteamRankings;
-import ryan.game.games.steamworks.Steamworks;
-import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.render.Drawable;
 import ryan.game.render.Fonts;
 import java.awt.geom.Point2D;
@@ -120,7 +117,7 @@ public class Main extends ApplicationAdapter {
 
         for (int i = 0; i< Gamepads.getGamepads().size() + extraRobots; i++) {
             //TODO: make this not game specific
-            Robot r = Robot.create(new SteamDefault(), 2 + (index * 3), -11);
+            Robot r = Robot.create(new OverRobotStats(), 2 + (index * 3), -11);
             robots.add(r);
             if (i < Gamepads.getGamepads().size()) {
                 r.claimGamepad(Gamepads.getGamepad(i));
@@ -128,8 +125,8 @@ public class Main extends ApplicationAdapter {
             index++;
         }
 
-        //gameField = new PirateField();
-        gameField = new Steamworks();
+        gameField = new Overboard();
+        //gameField = new Steamworks();
         gameField.affectRobots();
         drawables.addAll(gameField.generateField());
 
@@ -142,8 +139,6 @@ public class Main extends ApplicationAdapter {
         */
 
         robots.forEach(this::spawnEntity);
-
-        gameField.updateMatchInfo();
 
 		batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
@@ -164,8 +159,10 @@ public class Main extends ApplicationAdapter {
         shape.setAutoShapeType(true);
         shape.setProjectionMatrix(camera.combined);
 
-        schedule = new Schedule(new SteamRankings());
+        schedule = new Schedule(new OverRankings());
         schedule.generate(scheduleRounds);
+
+        gameField.updateMatchInfo();
 
         /*
         Match fake = new Match(4, new int[]{1,2,3}, new int[]{4,5,6});

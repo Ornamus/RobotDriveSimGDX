@@ -147,6 +147,14 @@ public class Match implements Serializable {
         public MatchAlliance(int[] teams) {
             this.teams = teams;
         }
+
+        public List<Team> getTeams() {
+            List<Team> t = new ArrayList<>();
+            for (int i : teams) {
+                t.add(Main.schedule.getTeam(i));
+            }
+            return t;
+        }
     }
 }
 

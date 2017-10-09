@@ -16,6 +16,7 @@ import ryan.game.bcnlib_pieces.Command;
 import ryan.game.bcnlib_pieces.PIDSource;
 import ryan.game.competition.Match;
 import ryan.game.competition.RobotStats;
+import ryan.game.competition.Team;
 import ryan.game.controls.Gamepad;
 import ryan.game.controls.Gamepads;
 import ryan.game.drive.*;
@@ -53,9 +54,9 @@ public class Robot extends Entity {
     private int statsIndex = 0;
 
     //TODO: make this not game-specific
-    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
-    new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething()};
-    //private RobotStats[] statsOptions = {new OverRobotStats()};
+    //private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
+    //new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething()};
+    private RobotStats[] statsOptions = {new OverRobotStats()};
 
     public RobotStats stats = statsOptions[statsIndex];
 
@@ -153,16 +154,22 @@ public class Robot extends Entity {
     }
 
     public void updateSprite() {
-        Color c;
-        if (blue) c = Main.BLUE;
-        else c = Main.RED;
+        Color[] newColors;
+        Color alliance = blue ? Main.BLUE : Main.RED;
+        Team t = null;
+        if (Main.schedule != null) t = Main.schedule.getTeam(getNumber());
+        if (t != null) {
+            newColors = new Color[]{alliance, t.primary, t.secondary};
+        } else {
+            newColors = new Color[]{alliance, alliance, alliance};
+        }
         String tex;
         tex = stats.texture;
-        if (stats.recolorIndex == 0) setSprite(Utils.colorImage(tex, c));
-        else if (stats.recolorIndex == 1) setSprite(Utils.colorImage(tex, null, c));
-        else if (stats.recolorIndex == 2) setSprite(Utils.colorImage(tex, null, null, c));
+        if (stats.recolorIndex == 0) setSprite(Utils.colorImage(tex, newColors));
+        else if (stats.recolorIndex == 1) setSprite(Utils.colorImage(tex, null, alliance));
+        else if (stats.recolorIndex == 2) setSprite(Utils.colorImage(tex, null, null, alliance));
         for (Part p : parts) {
-            p.onRobotColorChange(c);
+            p.onRobotColorChange(alliance);
         }
 
         /*
@@ -509,6 +516,7 @@ public class Robot extends Entity {
      }
 
     public int getNumber() {
+        //return 1114;//temp
         Match m = Main.schedule.getCurrentMatch();
         if (m != null) {
             if (blue) return Main.schedule.getCurrentMatch().blue.teams[numberIndex];
