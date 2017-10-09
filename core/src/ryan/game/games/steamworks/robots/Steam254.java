@@ -1,25 +1,21 @@
 package ryan.game.games.steamworks.robots;
 
-import com.badlogic.gdx.physics.box2d.Body;
 import ryan.game.autonomous.steamworks.Auto254;
 import ryan.game.bcnlib_pieces.Command;
-import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Robot;
-import ryan.game.entity.parts.Intake;
-import ryan.game.entity.parts.Part;
 
 public class Steam254 extends SteamRobotStats {
 
     public Steam254() {
         super();
-        intakeWidth = robotWidth*.6f;
+        intakeWidth = robotWidth;
 
         gearIntake = true;
 
         fuelIntake = true;
         fuelIntakeRate = 220;
 
-        differentiateBetweenIntakes = true;
+      //  differentiateBetweenIntakes = true;
 
         maxFuel = 70;
         timePerShoot = 143f;
@@ -33,8 +29,7 @@ public class Steam254 extends SteamRobotStats {
         texture = "core/assets/254.png";
         recolorIndex = 1;
     }
-
-    @Override
+    /*@Override
     public void addParts(float x, float y, Robot r) {
         float width = intakeWidth, height = robotHeight / 4;
         Body in = BodyFactory.getRectangleDynamic(x - (robotWidth / 2), y + robotHeight + height, width, height, width * height);
@@ -49,7 +44,7 @@ public class Steam254 extends SteamRobotStats {
         p.addTags("fuel");
         r.addPart(p);
     }
-
+    */
     @Override
     public Command getAutonomous(Robot r) {
         return new Auto254(r);
