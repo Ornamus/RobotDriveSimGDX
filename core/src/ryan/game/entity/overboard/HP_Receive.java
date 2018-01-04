@@ -8,12 +8,10 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import ryan.game.Main;
 import ryan.game.Utils;
-import ryan.game.competition.Team;
 import ryan.game.competition.overboard.OverboardTeam;
 import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.games.overboard.robots.OverRobotStats;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -23,9 +23,9 @@ import ryan.game.controls.Gamepads;
 import ryan.game.entity.*;
 import ryan.game.entity.parts.Part;
 import ryan.game.games.*;
-import ryan.game.games.overboard.OverRankings;
-import ryan.game.games.overboard.Overboard;
-import ryan.game.games.overboard.robots.OverRobotStats;
+import ryan.game.games.power.PowerRankings;
+import ryan.game.games.power.PowerUp;
+import ryan.game.games.power.robots.PowerRobotBase;
 import ryan.game.render.Drawable;
 import ryan.game.render.Fonts;
 import java.awt.geom.Point2D;
@@ -117,7 +117,7 @@ public class Main extends ApplicationAdapter {
 
         for (int i = 0; i< Gamepads.getGamepads().size() + extraRobots; i++) {
             //TODO: make this not game specific
-            Robot r = Robot.create(new OverRobotStats(), 2 + (index * 3), -11);
+            Robot r = Robot.create(new PowerRobotBase(), 2 + (index * 3), -11);
             robots.add(r);
             if (i < Gamepads.getGamepads().size()) {
                 r.claimGamepad(Gamepads.getGamepad(i));
@@ -125,7 +125,7 @@ public class Main extends ApplicationAdapter {
             index++;
         }
 
-        gameField = new Overboard();
+        gameField = new PowerUp();
         //gameField = new Steamworks();
         gameField.affectRobots();
         drawables.addAll(gameField.generateField());
@@ -159,7 +159,7 @@ public class Main extends ApplicationAdapter {
         shape.setAutoShapeType(true);
         shape.setProjectionMatrix(camera.combined);
 
-        schedule = new Schedule(new OverRankings());
+        schedule = new Schedule(new PowerRankings());
         schedule.generate(scheduleRounds);
 
         gameField.updateMatchInfo();

@@ -7,12 +7,10 @@ import com.badlogic.gdx.math.Vector3;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.entity.Robot;
-import ryan.game.games.overboard.PirateMetadata;
-import ryan.game.games.overboard.robots.OverRobotStats;
-import ryan.game.games.steamworks.robots.SteamDefault;
+import ryan.game.games.power.PowerMetadata;
+import ryan.game.games.power.robots.PowerRobotBase;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,8 +34,8 @@ public class GamepadListener implements ControllerListener {
             Utils.log(g.getName() + " gamepad connected!");
 
             //TODO: make this game generic
-            Robot r = Robot.create(new OverRobotStats(), 2, -11);
-            r.metadata = new PirateMetadata();
+            Robot r = Robot.create(new PowerRobotBase(), 2, -11);
+            r.metadata = new PowerMetadata();
 
             r.claimGamepad(g);
             Main.robots.add(r);

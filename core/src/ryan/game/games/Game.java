@@ -5,6 +5,7 @@ import ryan.game.Main;
 public enum Game {
 
     STEAMWORKS,
+    POWERUP,
     OVERBOARD;
 
 
