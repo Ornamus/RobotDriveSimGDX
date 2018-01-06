@@ -11,6 +11,9 @@ import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.entity.overboard.Cannonball;
 import ryan.game.entity.overboard.Chest;
+import ryan.game.entity.powerup.DrivableWall;
+import ryan.game.entity.powerup.Pixel;
+import ryan.game.entity.steamworks.LoadingStation;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
 import ryan.game.games.ScoreDisplay;
@@ -32,24 +35,49 @@ public class PowerUp extends Field {
     public List<Drawable> generateField() {
         List<Drawable> drawables = new ArrayList<>();
 
-        drawables.add(new ImageDrawer(-width/2, -height/2 - .5f, width, height, "core/assets/overboard.png"));
+        drawables.add(new ImageDrawer(-width/2, -height/2 - .5f, width, height, "core/assets/powerup_nocubes.png"));
 
-        Entity ent = Entity.barrier(0, 11.75f, width, .5f); //Top wall
-        ent.initVisuals(width, .5f);
+        Entity ent = Entity.barrier(0, 10.2f, width, .5f); //Top wall
+        //ent.initVisuals(width, .5f);
         drawables.add(ent);
 
-        ent = Entity.barrier(0, -12.75f, width, .5f); //Bottom wall
-        ent.initVisuals(width, .5f);
+        ent = Entity.barrier(0, -11.2f, width, .5f); //Bottom wall
+        //ent.initVisuals(width, .5f);
         drawables.add(ent);
 
-        ent = Entity.barrier((width / 2)-3.2f, 0, .5f, height); //Right wall
-        ent.initVisuals(.5f, height);
+        ent = Entity.barrier((width / 2)-1.4f, 0, .5f, height); //Right wall
+        //ent.initVisuals(.5f, height);
         drawables.add(ent);
 
-        ent = Entity.barrier((-width / 2)+2.9f, 0, .5f, height); //Left wall
-        ent.initVisuals(.5f, height);
+        ent = Entity.barrier((-width / 2)+1.5f, 0, .5f, height); //Left wall
+        //ent.initVisuals(.5f, height);
         drawables.add(ent);
 
+        ent = Entity.barrier((-width / 2)+2.5f, 9.5f, 1.7f, 1); //Top Left HP
+        ent.setAngle(37);
+        drawables.add(ent);
+
+        ent = Entity.barrier((-width / 2)+2.5f, -10.5f, 1.7f, 1); //Bottom Left HP
+        ent.setAngle(180-37);
+        drawables.add(ent);
+
+        ent = Entity.barrier((width / 2)-2.5f, 9.5f, 1.7f, 1); //Top Right HP
+        ent.setAngle(360-37);
+        drawables.add(ent);
+
+        ent = Entity.barrier((width / 2)-2.5f, -10.5f, 1.7f, 1); //Bottom Right HP
+        ent.setAngle(37);
+        drawables.add(ent);
+
+        //(width/2)+10f for blue line
+
+        float wall =0.1f;
+
+        drawables.add(new DrivableWall((width / 2)-14.75f, -0.5f, wall, 5f, true)); //blue left wallthing
+        drawables.add(new DrivableWall((width / 2)-14.75f+3.6f, -0.5f, wall, 5f, true)); //blue right wallthing
+        drawables.add(new DrivableWall((width / 2)-14.75f+1.8f, 4.3f, 1.8f, wall, false)); //blue top wallthing
+
+        drawables.addAll(generatePixels());
 
         display = new PowerDisplay();
         drawables.add(display);
@@ -57,37 +85,15 @@ public class PowerUp extends Field {
         return drawables;
     }
 
-    public List<Chest> generateChests() {
+    public List<Entity> generatePixels() {
+        List<Entity> pixels = new ArrayList<>();
 
-        List<Chest> chests = new ArrayList<>();
-        /*
-        int heavy = Utils.randomInt(0, 11);
-        int current = 0;
-        for (int bX=0; bX<4; bX++) {
-            for (int bY=0; bY<3; bY++) {
-                chests.add(new Chest(bX + 16, bY - 11, current == heavy, Game.ALLIANCE.RED));
-                current++;
+        for (int i=0; i<2; i++) {
+            for (int pY=0; pY<6; pY++) {
+                pixels.add(new Pixel(8 * (i==0?-1:1), (pY*1.75f)-5));
             }
         }
-
-        heavy = Utils.randomInt(0, 11);
-        current = 0;
-        for (int bX=0; bX<4; bX++) {
-            for (int bY=0; bY<3; bY++) {
-                chests.add(new Chest(bX - 19.5f, bY + 8, current == heavy, Game.ALLIANCE.BLUE));
-                current++;
-            }
-        }
-
-        heavy = Utils.randomInt(0, 11);
-        current = 0;
-        for (int bX=0; bX<2; bX++) {
-            for (int bY=0; bY<6; bY++) {
-                chests.add(new Chest(bX - 0.7f, bY - 3.5f, current == heavy, Game.ALLIANCE.NEUTRAL));
-                current++;
-            }
-        }*/
-        return chests;
+        return pixels;
     }
 
     public List<Cannonball> generateCannonballs() {

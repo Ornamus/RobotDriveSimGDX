@@ -49,13 +49,5 @@ public class PowerRobotBase extends RobotStats {
         Intake in = new Intake(width*2, height*2, b);
         in.addTags("chest");
         r.addPart(in);
-
-        //TODO: fix this intake floating behind the robot
-        width = robotWidth;
-        height = robotHeight / 8;
-        b = BodyFactory.getRectangleDynamic(x - (robotWidth/2), y - (robotHeight * 1.25f), width, height, width*height);
-        in = new Intake(width*2, height*2, b);
-        in.addTags("ball");
-        r.addPart(in);
     }
 }

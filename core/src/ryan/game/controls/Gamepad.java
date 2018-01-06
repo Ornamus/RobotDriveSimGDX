@@ -91,7 +91,7 @@ public class Gamepad {
     public float getY() {
         if (c == null) return 0;
         if (hasSecondJoystick() && reverseSticks) return c.getAxis(config.yAxis2);
-        return c.getAxis(config.yAxis);
+        return -c.getAxis(config.yAxis);
     }
 
     public float getX2() {

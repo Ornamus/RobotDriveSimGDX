@@ -128,7 +128,8 @@ public class Main extends ApplicationAdapter {
         gameField = new PowerUp();
         //gameField = new Steamworks();
         gameField.affectRobots();
-        drawables.addAll(gameField.generateField());
+
+        drawablesAdd.addAll(gameField.generateField());
 
         /*
         Match fake = new Match(5, new int[]{1114,2056,1902}, new int[]{987,1557,180});
