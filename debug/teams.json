@@ -1,0 +1,482 @@
+[
+  {
+    "number": 1738,
+    "name": "Team 1738",
+    "primary": {
+      "r": 0.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 1.0,
+      "g": 1.0,
+      "b": 1.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 5916,
+    "name": "Baking Bot",
+    "primary": {
+      "r": 1.0,
+      "g": 0.4117647,
+      "b": 0.7058824,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.0,
+      "g": 0.0,
+      "b": 1.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 452,
+    "name": "The Aluminuns",
+    "primary": {
+      "r": 0.7490196,
+      "g": 0.7490196,
+      "b": 0.7490196,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 1776,
+    "name": "Freedom Fighters",
+    "primary": {
+      "r": 1.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.0,
+      "g": 0.0,
+      "b": 1.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 72,
+    "name": "Team Cody",
+    "primary": {
+      "r": 1.0,
+      "g": 1.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 1.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 404,
+    "name": "Team Name Not Found",
+    "primary": {
+      "r": 0.0,
+      "g": 1.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 1.0,
+      "g": 0.4117647,
+      "b": 0.7058824,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 1432,
+    "name": "Sheared Sprockets",
+    "primary": {
+      "r": 0.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.7490196,
+      "g": 0.7490196,
+      "b": 0.7490196,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 4010,
+    "name": "Merlin\u0027s Mechanics",
+    "primary": {
+      "r": 0.0,
+      "g": 0.0,
+      "b": 1.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 1.0,
+      "g": 0.84313726,
+      "b": 0.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 62,
+    "name": "DinoBotz",
+    "primary": {
+      "r": 0.0,
+      "g": 1.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.54509807,
+      "g": 0.27058825,
+      "b": 0.07450981,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 5827,
+    "name": "Milkshake Ninjas",
+    "primary": {
+      "r": 1.0,
+      "g": 0.4117647,
+      "b": 0.7058824,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 6868,
+    "name": "Team Tofu",
+    "primary": {
+      "r": 0.0,
+      "g": 1.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 1.0,
+      "g": 1.0,
+      "b": 1.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 2450,
+    "name": "Larr-E",
+    "primary": {
+      "r": 0.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 1.0,
+      "g": 1.0,
+      "b": 0.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 4200,
+    "name": "Team Turnip",
+    "primary": {
+      "r": 0.627451,
+      "g": 0.1254902,
+      "b": 0.9411765,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.0,
+      "g": 1.0,
+      "b": 0.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 2051,
+    "name": "U.F.B.",
+    "primary": {
+      "r": 0.0,
+      "g": 1.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.49803922,
+      "g": 0.49803922,
+      "b": 0.49803922,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 4769,
+    "name": "That OTHER Team",
+    "primary": {
+      "r": 1.0,
+      "g": 1.0,
+      "b": 1.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 1.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 4664,
+    "name": "The Riddlers",
+    "primary": {
+      "r": 0.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 1.0,
+      "g": 1.0,
+      "b": 1.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 964,
+    "name": "Las Harambes",
+    "primary": {
+      "r": 1.0,
+      "g": 1.0,
+      "b": 1.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 6809,
+    "name": "Burning Butterflies",
+    "primary": {
+      "r": 1.0,
+      "g": 1.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 1.0,
+      "g": 0.64705884,
+      "b": 0.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 130,
+    "name": "Cincinnati\u0027s Team",
+    "primary": {
+      "r": 1.0,
+      "g": 1.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.0,
+      "g": 0.0,
+      "b": 1.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 4502,
+    "name": "Garglesquid",
+    "primary": {
+      "r": 0.0,
+      "g": 0.0,
+      "b": 1.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.627451,
+      "g": 0.1254902,
+      "b": 0.9411765,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 1880,
+    "name": "L.O.O.F.A.H.",
+    "primary": {
+      "r": 0.0,
+      "g": 0.0,
+      "b": 1.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 1.0,
+      "g": 1.0,
+      "b": 1.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 6015,
+    "name": "Death Star Robotics",
+    "primary": {
+      "r": 1.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 332,
+    "name": "Cerulean",
+    "primary": {
+      "r": 0.0,
+      "g": 0.5,
+      "b": 0.5,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 1.0,
+      "g": 1.0,
+      "b": 1.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 5567,
+    "name": "Space Pirates",
+    "primary": {
+      "r": 1.0,
+      "g": 0.84313726,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 1.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 1687,
+    "name": "Citric Acid",
+    "primary": {
+      "r": 1.0,
+      "g": 1.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 1264,
+    "name": "ARES (Arizona Robotics Engineering School)",
+    "primary": {
+      "r": 1.0,
+      "g": 0.84313726,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 1.0,
+      "g": 1.0,
+      "b": 1.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 4862,
+    "name": "Renegade",
+    "primary": {
+      "r": 1.0,
+      "g": 0.64705884,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 2977,
+    "name": "Team H.E.C.K.",
+    "primary": {
+      "r": 0.0,
+      "g": 1.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.0,
+      "g": 1.0,
+      "b": 0.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 76,
+    "name": "Team Scorch",
+    "primary": {
+      "r": 1.0,
+      "g": 1.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 1.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    }
+  },
+  {
+    "number": 2213,
+    "name": "Aftershock",
+    "primary": {
+      "r": 1.0,
+      "g": 0.0,
+      "b": 0.0,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.54509807,
+      "g": 0.27058825,
+      "b": 0.07450981,
+      "a": 1.0
+    }
+  }
+]

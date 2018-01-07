@@ -1,6 +1,7 @@
 package ryan.game.games.power.robots;
 
 import com.badlogic.gdx.physics.box2d.Body;
+import ryan.game.autonomous.BlankAuto;
 import ryan.game.autonomous.overboard.Auto254Over;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.competition.RobotStats;
@@ -11,35 +12,29 @@ import ryan.game.games.Game;
 
 public class PowerRobotBase extends RobotStats {
 
-    public boolean chestIntake = true;
-    public int maxChestIntakeAtOnce = 1;
-    public final int maxChests = 1;
-    public float chestIntakeStrength = 5.75f;
-    public float chestIntakeTime = 500;
+    public boolean pixelIntake = true;
+    public int maxPixelIntakeAtOnce = 1;
+    public int maxPixels = 1;
+    public float pixelIntakeStrength = 6.75f;
+    public float pixelIntakeTime = 600;
 
-    public boolean cannonballIntake = false;
-    public int maxCannonballs = 2;
+    public boolean tallPixelScore = true;
 
-    public boolean detectWeightOnIntake = false;
-    public float detectWeightIntakeTime = 750;
-
-    public boolean detectWeightWithMechanism = false;
-    public float  detectWeightMechanismTime = 750;
+    public boolean canClimb = true;
+    public float climbTime = 2;
 
     public PowerRobotBase() {
-        super(Game.OVERBOARD);
+        super(Game.POWERUP);
         robotWidth = 0.8128f;
         intakeWidth = robotWidth*.75f;
-        needsStateGenerator = true; //TODO: remove this once this class is properly treated as a stats default
+        needsStateGenerator = false;
 
-        texture="core/assets/robot_multicolor.png";
-        //texture="core/assets/1114.png";
-        //recolorIndex=2;
+        texture="core/assets/16.png";
     }
 
     @Override
     public Command getAutonomous(Robot r) {
-        return new Auto254Over(r);
+        return new BlankAuto(r);
     }
 
     @Override

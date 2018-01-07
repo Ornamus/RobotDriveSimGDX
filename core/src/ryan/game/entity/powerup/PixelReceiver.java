@@ -1,0 +1,103 @@
+package ryan.game.entity.powerup;
+
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Contact;
+import ryan.game.Main;
+import ryan.game.controls.Gamepad;
+import ryan.game.entity.BodyFactory;
+import ryan.game.entity.Entity;
+import ryan.game.entity.Robot;
+import ryan.game.games.power.PowerDisplay;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class PixelReceiver extends Entity {
+
+    static float WIDTH =.75f;
+    static float HEIGHT = .75f;
+
+    public int totalPixels = 0;
+    public int pixels = 0;
+
+    public boolean blue;
+
+    public boolean boostDone = false;
+    public boolean forceDone = false;
+
+    public PixelReceiver(float x, float y, boolean blue) {
+        super(BodyFactory.getRectangleStatic(x, y, WIDTH, HEIGHT, 0.1f));
+        this.blue = blue;
+    }
+
+    @Override
+    public void tick(){
+        super.tick();
+        if (!Main.matchPlay) {
+            boostDone = false;
+            forceDone = false;
+        }
+        for (Robot r : Main.robots) {
+            if (blue == r.blue) {
+                Gamepad g = r.getController();
+                if (g != null && pixels > 0) {
+                    int level = pixels;
+                    if (level > 3) level = 3;
+                    if (blue) {
+                        PowerDisplay.blue_powLevel = level;
+                    } else {
+                        PowerDisplay.red_powLevel = level;
+                    }
+                    if (PowerDisplay.powerUp == PowerDisplay.LiteralPowerUp.NONE) {
+                        int forceClimbs = blue ? PowerDisplay.blue_forceClimbs : PowerDisplay.red_forceClimbs;
+                        if (g.getButton(Gamepad.TWO) && !boostDone) {
+                            PowerDisplay.powerUp = PowerDisplay.LiteralPowerUp.BOOST;
+                            PowerDisplay.powerUpLevel = level;
+                            PowerDisplay.powerUpStart = System.currentTimeMillis();
+
+                            if (pixels > 3) pixels -= 3;
+                            else pixels = 0;
+
+                            PowerDisplay.powerUpForBlue = blue;
+                            boostDone = true;
+                        } else if (g.getButton(Gamepad.ONE) && !forceDone) {
+                            PowerDisplay.powerUp = PowerDisplay.LiteralPowerUp.FORCE;
+                            PowerDisplay.powerUpLevel = level;
+                            PowerDisplay.powerUpStart = System.currentTimeMillis();
+
+                            if (pixels > 3) pixels -= 3;
+                            else pixels = 0;
+
+                            PowerDisplay.powerUpForBlue = blue;
+                            forceDone = true;
+                        } else if (g.getButton(Gamepad.FOUR) && level == 3 && forceClimbs == 0) {
+                            pixels = 0;
+                            if (blue) {
+                                PowerDisplay.blue_forceClimbs++;
+                            } else {
+                                PowerDisplay.red_forceClimbs++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onCollide(Entity e, Body self, Body other, Contact contact) {
+        contact.setEnabled(false);
+        if (e instanceof Pixel) {
+            Main.getInstance().removeEntity(e);
+            pixels++;
+            totalPixels++;
+            if (totalPixels <= 9) {
+                if (blue) {
+                    PowerDisplay.blue_vault += 5;
+                } else {
+                    PowerDisplay.red_vault += 5;
+                }
+            }
+        }
+    }
+}
