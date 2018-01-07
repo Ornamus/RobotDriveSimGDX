@@ -1,5 +1,7 @@
 package ryan.game.entity.powerup;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import ryan.game.Main;
@@ -8,6 +10,7 @@ import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.games.power.PowerDisplay;
+import ryan.game.render.Fonts;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +39,7 @@ public class PixelReceiver extends Entity {
         if (!Main.matchPlay) {
             boostDone = false;
             forceDone = false;
+            totalPixels = 0;
         }
         for (Robot r : Main.robots) {
             if (blue == r.blue) {
@@ -99,5 +103,12 @@ public class PixelReceiver extends Entity {
                 }
             }
         }
+    }
+
+    @Override
+    public void drawUnscaled(SpriteBatch b) {
+        super.drawUnscaled(b);
+        Vector2 pos = getPhysicsPosition();
+        Fonts.drawCentered(Fonts.fmsWhiteVerySmall, totalPixels + "", pos.x*Main.meterToPixelWidth, pos.y*Main.meterToPixelHeight, 0, 53, b);
     }
 }
