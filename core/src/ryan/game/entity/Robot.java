@@ -276,7 +276,6 @@ public class Robot extends Entity {
     public void tick() {
         super.tick();
 
-
         float angle = (float) Math.toRadians(getPhysicsAngle());
 
         Vector2 leftPos = left.getPosition();
@@ -287,7 +286,6 @@ public class Robot extends Entity {
             float angleDiff = angle - angleOld;
             leftDistance += diff.y;
             leftDistance += (angleDiff * (stats.robotWidth / 2)) * 1000;
-            //Utils.log(Utils.roundToPlace(rightDistance, 0) + "");
         }
         leftPosOld = new Vector2(leftPos.x, leftPos.y);
 
@@ -299,7 +297,6 @@ public class Robot extends Entity {
             float angleDiff = angle - angleOld;
             rightDistance += diff.y;
             rightDistance += (angleDiff * (stats.robotWidth / 2)) * 1000;
-            //Utils.log(Utils.roundToPlace(rightDistance, 0) + "");
         }
         rightPosOld = new Vector2(rightPos.x, rightPos.y);
 

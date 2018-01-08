@@ -67,6 +67,9 @@ public class PowerUp extends Field {
         ent = new HumanStation((width / 2)-2.5f, -10.5f, 270-37-15, false, false); //Bottom Right HP
         drawables.add(ent);
 
+        drawables.add(new Baseline(13.4f, 0, true));
+        drawables.add(new Baseline(-13.25f, 0, false));
+
         //(width/2)+10f for blue line
 
         float wall =0.1f;
@@ -110,7 +113,7 @@ public class PowerUp extends Field {
         drawables.add(new ClimbingBar(.9f,-0.5f,true));
         drawables.add(new ClimbingBar(-.7f,-0.5f,false));
 
-        drawables.add(Entity.barrier(0,-0.5f,.6f, .5f));
+        drawables.add(Entity.barrier(0,-0.5f,.6f, 4.2f)); //.5f
 
         drawables.addAll(generatePixels());
 
@@ -131,10 +134,25 @@ public class PowerUp extends Field {
 
         for (int i=0; i<2; i++) {
             for (int pY=0; pY<10; pY++) {
-                pixels.add(new Pixel((13+(pY<4?1:0)) * (i==0?-1:1), ((pY-(pY>4?4:0))*0.5f)-1.5f));
+                pixels.add(new Pixel((13+(pY<4?1:0)) * (i==0?-1:1), ((pY-(pY>4?4:0))*0.5f)-1.5f-(pY>=4?.5f:0)));
             }
         }
         return pixels;
+    }
+
+    @Override
+    public String getGameString(Game.ALLIANCE alliance) {
+        String s = "";
+        if (alliance == Game.ALLIANCE.BLUE) {
+            s += blue_bottom.alliance == alliance ? "L" : "R";
+            s += tall_bottom.alliance == alliance ? "L" : "R";
+            s += red_bottom.alliance == alliance ? "L" : "R";
+        } else {
+            s += red_top.alliance == alliance ? "L" : "R";
+            s += tall_top.alliance == alliance ? "L" : "R";
+            s += blue_top.alliance == alliance ? "L" : "R";
+        }
+        return s;
     }
 
     @Override
@@ -149,7 +167,7 @@ public class PowerUp extends Field {
         for (Robot r : Main.robots) {
             r.auto = r.stats.getAutonomous(r);
             PowerMetadata m = (PowerMetadata) r.metadata;
-            m.pixels=0;
+            m.pixels=1;
         }
         int ran = Utils.randomInt(0,1);
         blue_bottom.alliance = ran == 0 ? Game.ALLIANCE.BLUE : Game.ALLIANCE.RED;

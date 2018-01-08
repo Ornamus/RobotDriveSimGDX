@@ -36,6 +36,8 @@ public class PowerMetadata extends RobotMetadata {
     List<Entity> intakeablePixels = new ArrayList<>();
     public HashMap<Entity, Long> pixelIntakeTimes = new HashMap<>();
 
+    public boolean crossedBaseline = false;
+
     public Long climb = null;
 
     public PowerMetadata() {

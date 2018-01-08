@@ -103,10 +103,13 @@ public class PowerDisplay extends ScoreDisplay {
         boolean blue = alliance == Game.ALLIANCE.BLUE;
 
         int climbs = 0;
-        if (Game.getMatchTime() <= 30) {
-            for (Robot r : Main.robots) {
-                if (r.blue == blue) {
-                    PowerMetadata meta = (PowerMetadata) r.metadata;
+        int baselines = 0;
+
+        for (Robot r : Main.robots) {
+            if (r.blue == blue) {
+                PowerMetadata meta = (PowerMetadata) r.metadata;
+                if (meta.crossedBaseline) baselines++;
+                if (Game.getMatchTime() <= 30) {
                     PowerRobotBase stats = (PowerRobotBase) r.stats;
                     if (meta.climb != null) Utils.log((Main.getTime() - meta.climb) + "");
                     if (meta.climb != null && Main.getTime() - meta.climb >= (stats.climbTime * 1000)) {
@@ -115,6 +118,7 @@ public class PowerDisplay extends ScoreDisplay {
                 }
             }
         }
+
         if (blue) {
             climbs += blue_forceClimbs;
         } else {
@@ -128,45 +132,53 @@ public class PowerDisplay extends ScoreDisplay {
         if (System.currentTimeMillis() - timeSince >= 1000) {
             if (PowerUp.blue_bottom.alliance == alliance) {
                 if (PowerUp.blue_bottom.pixels.size() > PowerUp.blue_top.pixels.size()) {
-                    if (blue) acc++;
+                    if (blue) {
+                        acc++;
+                        if (Game.isAutonomous()) acc++;
+                    }
                     if (powerUp == LiteralPowerUp.BOOST && powerUpForBlue && blue && powerUpLevel != 2) {
                         acc++;
                     }
-                    //TODO: auto points
                 } else if (powerUp == LiteralPowerUp.FORCE  && powerUpForBlue && blue && powerUpLevel != 2) {
                     acc++;
                 }
             }
             if (PowerUp.blue_top.alliance == alliance) {
                 if (PowerUp.blue_top.pixels.size() > PowerUp.blue_bottom.pixels.size()) {
-                    if (blue) acc++;
+                    if (blue) {
+                        acc++;
+                        if (Game.isAutonomous()) acc++;
+                    }
                     if (powerUp == LiteralPowerUp.BOOST && powerUpForBlue && blue && powerUpLevel != 2) {
                         acc++;
                     }
                 } else if (powerUp == LiteralPowerUp.FORCE  && powerUpForBlue && blue && powerUpLevel != 2) {
                     acc++;
                 }
-                //TODO: auto points
             }
 
             if (PowerUp.red_bottom.alliance == alliance) {
                 if (PowerUp.red_bottom.pixels.size() > PowerUp.red_top.pixels.size()) {
-                    if (!blue) acc++;
+                    if (!blue) {
+                        acc++;
+                        if (Game.isAutonomous()) acc++;
+                    }
                     if (powerUp == LiteralPowerUp.BOOST && !powerUpForBlue && !blue && powerUpLevel != 2) {
                         acc++;
                     }
-                    //TODO: auto points
                 } else if (powerUp == LiteralPowerUp.FORCE  && !powerUpForBlue && !blue && powerUpLevel != 2) {
                     acc++;
                 }
             }
             if (PowerUp.red_top.alliance == alliance) {
                 if (PowerUp.red_top.pixels.size() > PowerUp.red_bottom.pixels.size()) {
-                    if (!blue) acc++;
+                    if (!blue) {
+                        acc++;
+                        if (Game.isAutonomous()) acc++;
+                    }
                     if (powerUp == LiteralPowerUp.BOOST && !powerUpForBlue && !blue && powerUpLevel != 2) {
                         acc++;
                     }
-                    //TODO: auto points
                 } else if (powerUp == LiteralPowerUp.FORCE  && !powerUpForBlue && !blue && powerUpLevel != 2) {
                     acc++;
                 }
@@ -175,10 +187,10 @@ public class PowerDisplay extends ScoreDisplay {
             if (PowerUp.tall_bottom.alliance == alliance) {
                 if (PowerUp.tall_bottom.pixels.size() > PowerUp.tall_top.pixels.size()) {
                     acc++;
+                    if (Game.isAutonomous()) acc++;
                     if (powerUp == LiteralPowerUp.BOOST && powerUpForBlue == blue && powerUpLevel != 1) {
                         acc++;
                     }
-                    //TODO: auto points
                 } else if (powerUp == LiteralPowerUp.FORCE && powerUpForBlue == blue && powerUpLevel != 1) {
                     acc++;
                 }
@@ -186,13 +198,13 @@ public class PowerDisplay extends ScoreDisplay {
             if (PowerUp.tall_top.alliance == alliance) {
                 if (PowerUp.tall_top.pixels.size() > PowerUp.tall_bottom.pixels.size()) {
                     acc++;
+                    if (Game.isAutonomous()) acc++;
                     if (powerUp == LiteralPowerUp.BOOST && powerUpForBlue == blue && powerUpLevel != 1) {
                         acc++;
                     }
                 } else if (powerUp == LiteralPowerUp.FORCE && powerUpForBlue == blue && powerUpLevel != 1) {
                     acc++;
                 }
-                //TODO: auto points
             }
             if (blue) {
                 blue_lastSecond = System.currentTimeMillis();
@@ -203,10 +215,14 @@ public class PowerDisplay extends ScoreDisplay {
             }
         }
 
+        int points = (baselines*5) + (climbs*30);
+
         if (blue) {
-            return blueTimeAcc + blue_vault + (climbs*30);
+            points += blueTimeAcc + blue_vault;
         } else {
-            return redTimeAcc + red_vault + (climbs*30);
+            points += redTimeAcc + red_vault;
         }
+
+        return points;
     }
 }

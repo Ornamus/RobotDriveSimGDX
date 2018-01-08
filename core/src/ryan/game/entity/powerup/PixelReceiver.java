@@ -39,6 +39,7 @@ public class PixelReceiver extends Entity {
         if (!Main.matchPlay) {
             boostDone = false;
             forceDone = false;
+            pixels = 0;
             totalPixels = 0;
         }
         for (Robot r : Main.robots) {
@@ -52,8 +53,8 @@ public class PixelReceiver extends Entity {
                     } else {
                         PowerDisplay.red_powLevel = level;
                     }
+                    int forceClimbs = blue ? PowerDisplay.blue_forceClimbs : PowerDisplay.red_forceClimbs;
                     if (PowerDisplay.powerUp == PowerDisplay.LiteralPowerUp.NONE) {
-                        int forceClimbs = blue ? PowerDisplay.blue_forceClimbs : PowerDisplay.red_forceClimbs;
                         if (g.getButton(Gamepad.TWO) && !boostDone) {
                             PowerDisplay.powerUp = PowerDisplay.LiteralPowerUp.BOOST;
                             PowerDisplay.powerUpLevel = level;
@@ -74,13 +75,15 @@ public class PixelReceiver extends Entity {
 
                             PowerDisplay.powerUpForBlue = blue;
                             forceDone = true;
-                        } else if (g.getButton(Gamepad.FOUR) && level == 3 && forceClimbs == 0) {
-                            pixels = 0;
-                            if (blue) {
-                                PowerDisplay.blue_forceClimbs++;
-                            } else {
-                                PowerDisplay.red_forceClimbs++;
-                            }
+                        }
+                    }
+                    if (g.getButton(Gamepad.FOUR) && level == 3 && forceClimbs == 0) {
+                        if (pixels > 3) pixels -= 3;
+                        else pixels = 0;
+                        if (blue) {
+                            PowerDisplay.blue_forceClimbs++;
+                        } else {
+                            PowerDisplay.red_forceClimbs++;
                         }
                     }
                 }

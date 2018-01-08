@@ -20,6 +20,10 @@ public abstract class Field extends Drawable {
 
     public abstract ScoreDisplay getDisplay();
 
+    public String getGameString(Game.ALLIANCE alliance) {
+        return null;
+    }
+
     public void updateMatchInfo() {
         if (Main.schedule != null) {
             Match m = Main.schedule.getCurrentMatch();
