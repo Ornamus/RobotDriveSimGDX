@@ -27,10 +27,7 @@ import ryan.game.entity.parts.Part;
 import ryan.game.entity.steamworks.Boiler;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
-import ryan.game.games.power.robots.Landfill;
-import ryan.game.games.power.robots.Paperweight;
-import ryan.game.games.power.robots.PowerRobotBase;
-import ryan.game.games.power.robots.WhyNoClimb;
+import ryan.game.games.power.robots.*;
 import ryan.game.games.steamworks.robots.*;
 import ryan.game.render.Fonts;
 import ryan.game.sensors.Gyro;
@@ -62,7 +59,7 @@ public class Robot extends Entity {
     //TODO: make this not game-specific
     //private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
     //new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething(), new SteamTitanium(), new Steam1678()};
-    private RobotStats[] statsOptions = {new PowerRobotBase(), new Landfill(), new WhyNoClimb(), new Paperweight()};
+    private RobotStats[] statsOptions = {new PowerRobotBase(),new Backtake(), new Bacon()};
 
     public RobotStats stats = statsOptions[statsIndex];
 
@@ -546,14 +543,20 @@ public class Robot extends Entity {
         float lAngle = -left.getAngle();
         float rAngle = -right.getAngle();
 
-        float leftX = (stats.maxMPS * l) * (float) Math.sin(lAngle);
-        float leftY = (stats.maxMPS * l) * (float) Math.cos(lAngle);
+        float maxSpeed = stats.maxMPS;
+        Gamepad g = getController();
+        if (g != null && stats.maxMPS != stats.maxMPSLow && (g.isLeftTriggerPressed() || g.isRightTriggerPressed())) {
+            maxSpeed = stats.maxMPSLow;
+        }
+
+        float leftX = (maxSpeed * l) * (float) Math.sin(lAngle);
+        float leftY = (maxSpeed * l) * (float) Math.cos(lAngle);
 
         left.applyForceToCenter(Utils.cap(k * (leftX - speed.x), stats.maxAccel), Utils.cap(k * (leftY - speed.y), stats.maxAccel), true);
 
 
-        float rightX = (stats.maxMPS * r) * (float) Math.sin(rAngle);
-        float rightY = (stats.maxMPS * r) * (float) Math.cos(rAngle);
+        float rightX = (maxSpeed * r) * (float) Math.sin(rAngle);
+        float rightY = (maxSpeed * r) * (float) Math.cos(rAngle);
 
         right.applyForceToCenter(Utils.cap(k * (rightX - speed.x), stats.maxAccel), Utils.cap(k * (rightY - speed.y), stats.maxAccel), true);
 
@@ -581,13 +584,14 @@ public class Robot extends Entity {
         m = Utils.deadzone(m, 0.1f);
         float pow = m * 1;
 
-        float strafeSpeed = stats.maxMPS * 5.2f;
+        float maxSpeed = stats.maxMPS;
+        float strafeSpeed = maxSpeed * 5.2f;
 
         float forceX = (strafeSpeed * pow) * (float) Math.sin(Math.toRadians(angle));
         float forceY = (strafeSpeed  * pow) * (float) Math.cos(Math.toRadians(angle));
 
-        forceX = Math.abs(speed.x) > stats.maxMPS * stats.fieldCentricStrafeMult ? 0 : forceX;
-        forceY = Math.abs(speed.y) > stats.maxMPS * stats.fieldCentricStrafeMult ? 0 : forceY;
+        forceX = Math.abs(speed.x) > maxSpeed * stats.fieldCentricStrafeMult ? 0 : forceX;
+        forceY = Math.abs(speed.y) > maxSpeed * stats.fieldCentricStrafeMult ? 0 : forceY;
 
         float accel = stats.maxAccel * 1.7f;
 

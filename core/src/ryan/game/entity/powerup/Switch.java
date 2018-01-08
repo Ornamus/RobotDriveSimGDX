@@ -35,6 +35,14 @@ public class Switch extends Entity {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        if (!Main.matchPlay) {
+            alliance = Game.ALLIANCE.NEUTRAL;
+        }
+    }
+
+    @Override
     public void drawUnscaled(SpriteBatch b) {
         super.drawUnscaled(b);
         if (alliance == Game.ALLIANCE.BLUE) {
@@ -53,12 +61,11 @@ public class Switch extends Entity {
     public void collideStart(Entity e, Body self, Body other, Contact contact) {
         if (e instanceof Pixel) {
             Pixel p = (Pixel) e;
-            if ((!tall || System.currentTimeMillis()-((Pixel)e).ejected <= 250) && ((PowerRobotBase)p.owner.stats).tallPixelScore && !pixels.contains(e)) {
+            if (!pixels.contains(e) && (!tall || (tall && System.currentTimeMillis()-((Pixel)e).ejected <= 250 && ((PowerRobotBase)p.owner.stats).tallPixelScore))) {
                 pixels.add(e);
                 if (tall) {
                     ((Pixel)e).inTall = true;
                 }
-                //Utils.log("pixel added");
             }
             contact.setEnabled(false);
         } else if (e instanceof Robot) {
@@ -80,7 +87,6 @@ public class Switch extends Entity {
             if (tall) {
                 ((Pixel)e).inTall = false;
             }
-            //tils.log("pixel removed");
         }
     }
 }

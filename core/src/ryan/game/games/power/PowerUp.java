@@ -101,10 +101,10 @@ public class PowerUp extends Field {
         tall_bottom = new Switch(0,-5.3f, true); //tall bottom
         drawables.add(tall_bottom);
 
-        blue_receiver = new PixelReceiver(22,-2.5f, true); //blue pixel receiver
+        blue_receiver = new PixelReceiver(22.1f,-2.4f, true); //blue pixel receiver
         drawables.add(blue_receiver);
 
-        red_receiver = new PixelReceiver(-22,1.5f, false); //blue pixel receiver
+        red_receiver = new PixelReceiver(-22,1.35f, false); //blue pixel receiver
         drawables.add(red_receiver);
 
         drawables.add(new ClimbingBar(.9f,-0.5f,true));

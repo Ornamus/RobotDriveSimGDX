@@ -5,6 +5,7 @@
   "yAxis2": 3,
   "zAxis1": -1,
   "zAxis2": -1,
+  "reverseY": true,
   "mappings": [
     3,
     0,

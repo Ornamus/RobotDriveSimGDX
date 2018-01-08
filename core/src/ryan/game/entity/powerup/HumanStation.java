@@ -1,5 +1,6 @@
 package ryan.game.entity.powerup;
 
+import com.badlogic.gdx.controllers.PovDirection;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.controls.Gamepad;
@@ -38,7 +39,7 @@ public class HumanStation extends Entity {
                 Gamepad g = r.getController();
                 if (g != null) {
                     boolean val;
-                    val = left ? g.isLeftTriggerPressed() : g.isRightTriggerPressed();
+                    val = left ? g.getDPad() == PovDirection.north : g.getDPad() == PovDirection.south;
                     wasHeld.putIfAbsent(g.id, false);
                     if (val && !wasHeld.get(g.id) && pixels > 0) {
                         wasHeld.put(g.id, val);

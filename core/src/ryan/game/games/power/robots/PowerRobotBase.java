@@ -10,12 +10,13 @@ import ryan.game.entity.Robot;
 import ryan.game.entity.parts.Intake;
 import ryan.game.games.Game;
 
-public class PowerRobotBase extends RobotStats {
+public class PowerRobotBase extends RobotStats { //28 by 33
 
     public boolean pixelIntake = true;
+    public boolean outtakeBack = false;
     public int maxPixelIntakeAtOnce = 1;
     public int maxPixels = 1;
-    public float pixelIntakeStrength = 6.75f;
+    public float pixelIntakeStrength = 8.75f;
     public float pixelIntakeTime = 600;
 
     public boolean tallPixelScore = true;
@@ -25,7 +26,9 @@ public class PowerRobotBase extends RobotStats {
 
     public PowerRobotBase() {
         super(Game.POWERUP);
-        robotWidth = 0.8128f;
+        robotWidth = 0.7112f; //28 inches
+        robotHeight = 0.8382f; //33 inches
+
         intakeWidth = robotWidth*.75f;
         needsStateGenerator = false;
 

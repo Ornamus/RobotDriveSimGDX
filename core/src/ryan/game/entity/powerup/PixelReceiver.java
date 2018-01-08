@@ -17,8 +17,8 @@ import java.util.List;
 
 public class PixelReceiver extends Entity {
 
-    static float WIDTH =.75f;
-    static float HEIGHT = .75f;
+    static float WIDTH =.7f;
+    static float HEIGHT = .5f;
 
     public int totalPixels = 0;
     public int pixels = 0;

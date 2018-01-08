@@ -31,6 +31,7 @@ public class PowerMetadata extends RobotMetadata {
 
     public int ejectGearButton = 5;
     boolean ejectChestWasHeld = false;
+    boolean ejectPixelBackWasHeld = false;
 
     List<Entity> intakeablePixels = new ArrayList<>();
     public HashMap<Entity, Long> pixelIntakeTimes = new HashMap<>();
@@ -68,10 +69,15 @@ public class PowerMetadata extends RobotMetadata {
             }
             boolean val = gamepad.getButton(ejectGearButton);
             if (val && !ejectChestWasHeld) {
-                ejectChest(r);
+                ejectChest(r, false);
             }
-
             ejectChestWasHeld = val;
+
+            boolean valBack = gamepad.getButton(Gamepad.BUMPER_LEFT);
+            if (valBack && stats.outtakeBack && !ejectPixelBackWasHeld) {
+                ejectChest(r, true);
+            }
+            ejectPixelBackWasHeld = valBack;
         }
     }
 
@@ -123,11 +129,16 @@ public class PowerMetadata extends RobotMetadata {
         intaking = b;
     }
 
-    public void ejectChest(Robot r) {
+    public void ejectChest(Robot r, boolean back) {
+        PowerRobotBase stats = (PowerRobotBase) r.stats;
         if (pixels > 0) {
             float distance = 1.25f;
-            float xChange = -distance * (float) Math.sin(Math.toRadians(r.getAngle()));
-            float yChange = distance * (float) Math.cos(Math.toRadians(r.getAngle()));
+            float angle = r.getAngle();
+            if (back) {
+               distance = -1.35f;
+            }
+            float xChange = -distance * (float) Math.sin(Math.toRadians(angle));
+            float yChange = distance * (float) Math.cos(Math.toRadians(angle));
 
             Pixel e = new Pixel(r.getX() + xChange, r.getY() + yChange, r.getAngle());//new Chest(r.getX() + xChange, r.getY() + yChange, r.getAngle(), f.heavy, f.alliance);
             e.owner = r;
@@ -136,8 +147,10 @@ public class PowerMetadata extends RobotMetadata {
             Main.getInstance().spawnEntity(e);
             synchronized (Main.WORLD_USE) {
                 for (Body b : e.getBodies()) {
-                    float xPow = 10 * (float) Math.sin(Math.toRadians(-r.getAngle()));
-                    float yPow = 10 * (float) Math.cos(Math.toRadians(-r.getAngle()));
+                    float ejectAngle = -angle;
+                    if (back) ejectAngle = angle;
+                    float xPow = 10 * (float) Math.sin(Math.toRadians(ejectAngle));
+                    float yPow = 10 * (float) Math.cos(Math.toRadians(ejectAngle));
                     b.applyForceToCenter(xPow, yPow, true);
                 }
             }

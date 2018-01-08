@@ -10,6 +10,8 @@ public class GamepadConfig {
             xAxis2 = 96, yAxis2 = 97,
             zAxis1 = 98, zAxis2=99;
 
+    public boolean reverseY = false;
+
     private int[] mappings;
 
     public GamepadConfig() {
