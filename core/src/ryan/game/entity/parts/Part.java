@@ -15,6 +15,7 @@ public class Part extends Drawable {
     public List<String> tags = new ArrayList<>();
     public Object metadata = null;
     public boolean collideWithSelf = false;
+    public boolean show = true;
 
     public Part(String tag, Body...b) {
         tags.add(tag);

@@ -19,6 +19,8 @@ public class PowerRobotBase extends RobotStats { //28 by 33
     public float pixelIntakeStrength = 8.75f;
     public float pixelIntakeTime = 600;
 
+    public boolean arm = false;
+
     public boolean tallPixelScore = true;
 
     public boolean canClimb = true;

@@ -10,6 +10,7 @@ import ryan.game.Utils;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
+import ryan.game.entity.parts.Part;
 import ryan.game.entity.powerup.ClimbingBar;
 import ryan.game.entity.powerup.Pixel;
 import ryan.game.games.Game;
@@ -26,6 +27,8 @@ public class PowerMetadata extends RobotMetadata {
     Sprite chest;
 
     private boolean intaking = false;
+
+    public boolean armFront = true;
 
     public int pixels = 0;
 
@@ -45,13 +48,20 @@ public class PowerMetadata extends RobotMetadata {
         chest.setBounds(-999, -999, .5f, 1f);
     }
 
+    boolean heldArmSwap = false;
+
     @Override
     public void tick(Robot r) {
-        Gamepad gamepad = r.getController();
+        Gamepad gamepad = r.getManipulator();
         PowerRobotBase stats = (PowerRobotBase) r.stats;
 
-        boolean hasChests = pixels > 0;
         if (gamepad != null) {
+            boolean armSwap = gamepad.getButton(Gamepad.ONE);
+            if (stats.arm && armSwap && !heldArmSwap) {
+                Utils.log("swoppo");
+                armFront = !armFront;
+            }
+            heldArmSwap = armSwap;
             if (stats.pixelIntake && (gamepad.getButton(Gamepad.BUMPER_RIGHT) || intaking)) {
                 for (Entity e : new ArrayList<>(intakeablePixels)) {
                     if (!intakeablePixels.isEmpty() && pixels < stats.maxPixels) {
@@ -69,17 +79,18 @@ public class PowerMetadata extends RobotMetadata {
                     }
                 }
             }
-            boolean val = gamepad.getButton(ejectGearButton);
+
+            boolean val = gamepad.getButton(Gamepad.BUMPER_LEFT);
             if (val && !ejectChestWasHeld) {
-                ejectChest(r, false);
+                ejectChest(r, stats.arm ? !armFront : false);
             }
             ejectChestWasHeld = val;
 
-            boolean valBack = gamepad.getButton(Gamepad.BUMPER_LEFT);
+            /*boolean valBack = gamepad.getButton(Gamepad.BUMPER_LEFT);
             if (valBack && stats.outtakeBack && !ejectPixelBackWasHeld) {
                 ejectChest(r, true);
             }
-            ejectPixelBackWasHeld = valBack;
+            ejectPixelBackWasHeld = valBack;*/
         }
     }
 
@@ -87,6 +98,13 @@ public class PowerMetadata extends RobotMetadata {
     public void collideStart(Robot r, Entity e, Body self, Body other, Contact contact) {
         PowerRobotBase stats = (PowerRobotBase) r.stats;
         if (r.isPart("intake", self)) {
+            Part intake = r.getPart(self);
+            if (stats.arm && ((r.isPart("arm_front", self) && !armFront) || (r.isPart("arm_back", self) && armFront))) {
+                contact.setEnabled(false);
+                intake.show = false;
+                return;
+            }
+            intake.show = true;
             if (e instanceof Pixel) {
                 contact.setEnabled(false);
                 if (intakeablePixels.size() < stats.maxPixelIntakeAtOnce && !intakeablePixels.contains(e) && !((Pixel)e).inTall) {

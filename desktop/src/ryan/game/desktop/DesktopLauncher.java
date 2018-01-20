@@ -51,6 +51,9 @@ public class DesktopLauncher {
 			if (s.equalsIgnoreCase("debug")) {
 				Main.DEBUG_RENDER = true;
 			}
+			if (s.equalsIgnoreCase("manipulators")) {
+				Main.MANIPULATORS = true;
+			}
 			if (s.equalsIgnoreCase("controller_mapping")) {
 				mapping = true;
 			}

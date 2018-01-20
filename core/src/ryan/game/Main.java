@@ -38,6 +38,8 @@ public class Main extends ApplicationAdapter {
 
     public static boolean DEBUG_RENDER = false;
 
+    public static boolean MANIPULATORS = false;
+
     public static final Color BLUE = Utils.toColor(50, 50, 245);//Utils.toColor(63, 72, 204);
     public static final Color RED = Utils.toColor(237, 28, 36);
 
@@ -115,14 +117,36 @@ public class Main extends ApplicationAdapter {
 
         if (extraRobots > 0) currentRobot = 0;
 
-        for (int i = 0; i< Gamepads.getGamepads().size() + extraRobots; i++) {
-            //TODO: make this not game specific
-            Robot r = Robot.create(new PowerRobotBase(), 2 + (index * 3), -11);
-            robots.add(r);
-            if (i < Gamepads.getGamepads().size()) {
-                r.claimGamepad(Gamepads.getGamepad(i));
+        if (MANIPULATORS) {
+            boolean newRobot = true;
+            Robot robot = null;
+            Utils.log(Gamepads.getGamepads().size() + " controls");
+            for (int i = 0; i < Gamepads.getGamepads().size(); i++) {
+                //TODO: make this not game specific
+                if (newRobot) {
+                    robot = Robot.create(new PowerRobotBase(), 2 + (index * 3), -11);
+                    robots.add(robot);
+                    newRobot = false;
+                } else {
+                    newRobot = true;
+                }
+                if (i < Gamepads.getGamepads().size()) {
+                    robot.claimGamepad(Gamepads.getGamepad(i));
+                    Utils.log("Controller");
+                }
+                index++;
             }
-            index++;
+        } else {
+            for (int i = 0; i < Gamepads.getGamepads().size() + extraRobots; i++) {
+                //TODO: make this not game specific
+                Robot r = Robot.create(new PowerRobotBase(), 2 + (index * 3), -11);
+                robots.add(r);
+                if (i < Gamepads.getGamepads().size()) {
+                    r.claimGamepad(Gamepads.getGamepad(i));
+
+                }
+                index++;
+            }
         }
 
         gameField = new PowerUp();
@@ -290,7 +314,7 @@ public class Main extends ApplicationAdapter {
         for (Drawable d : drawables) {
             if (d instanceof Entity && !drawablesRemove.contains(d)) {
                 for (Part p : ((Entity)d).getParts()) {
-                    p.draw(batch);
+                    if (p.show) p.draw(batch);
                 }
             }
         }

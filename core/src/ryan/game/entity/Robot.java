@@ -345,7 +345,7 @@ public class Robot extends Entity {
         if (Gamepads.getGamepads().isEmpty()) {
             //TODO: ?????
         } else {
-            Gamepad g = getController();
+            Gamepad g = getControllers().get(0);
             setupButtons(g);
 
             /*
@@ -688,9 +688,23 @@ public class Robot extends Entity {
         }
     }
 
-    //TODO: use this
+    public Gamepad getManipulator() {
+        List<Gamepad> controllers = getControllers();
+        if (!controllers.isEmpty()) {
+            if (Main.MANIPULATORS) {
+                return controllers.get(1);
+            }
+            return controllers.get(0);
+        }
+        return null;
+    }
+
     public List<Gamepad> getControllers() {
-        return Gamepads.getGamepads(this);
+        List<Gamepad> gamepads = Gamepads.getGamepads(this);
+        if (Main.MANIPULATORS && gamepads.size() == 1) {
+            gamepads.add(gamepads.get(0));
+        }
+        return gamepads;
     }
 
     public Gyro getGyro() {

@@ -1,6 +1,7 @@
 package ryan.game.entity.powerup;
 
 import com.badlogic.gdx.controllers.PovDirection;
+import org.omg.CORBA.MARSHAL;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.controls.Gamepad;
@@ -36,7 +37,7 @@ public class HumanStation extends Entity {
         if (!Main.matchPlay) pixels=6;
         for (Robot r : Main.robots) {
             if (blue == r.blue) {
-                Gamepad g = r.getController();
+                Gamepad g = r.getControllers().get(Main.MANIPULATORS ? 1 : 0);
                 if (g != null) {
                     boolean val;
                     val = left ? g.getDPad() == PovDirection.north : g.getDPad() == PovDirection.south;
