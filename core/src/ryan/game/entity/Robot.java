@@ -59,7 +59,8 @@ public class Robot extends Entity {
     //TODO: make this not game-specific
     //private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
     //new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething(), new SteamTitanium(), new Steam1678()};
-    private RobotStats[] statsOptions = {new PowerRobotBase(),new Backtake(), new Bacon()};
+    private RobotStats[] statsOptions = {new PowerRobotBase(), new Mikal1(), new Mikal2(), new Mikal3(), new Mikal4(), new Mikal5(), new Mikal6(), new Mikal7(), new Mikal8(), new Mikal9(), new Mikal10(),
+    new Mikal11(), new Mikal12(), new Mikal13(), new Mikal14(), new Mikal15(), new Mikal16(), new Mikal17()};
 
     public RobotStats stats = statsOptions[statsIndex];
 
@@ -542,7 +543,7 @@ public class Robot extends Entity {
 
         float maxSpeed = stats.maxMPS;
         Gamepad g = getController();
-        if (g != null && stats.maxMPS != stats.maxMPSLow && (g.isLeftTriggerPressed() || g.isRightTriggerPressed())) {
+        if (g != null && stats.maxMPSLow != 0 && (g.isLeftTriggerPressed() || g.isRightTriggerPressed())) {
             maxSpeed = stats.maxMPSLow;
         }
 

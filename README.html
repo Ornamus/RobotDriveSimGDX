@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulator Instructions</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!--<link rel="stylesheet" href="css/bootstrap.css">-->
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="js/bootstrap.bundle.js"></script>-->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<br>
+<div class="container">
+    <h1 class="text-primary">Simulator Instructions</h1>
+    <small class="h5 text-muted">How to run the Power Up Simulator by Ryan Shavell from Team 1902</small>
+    <br><br>
+
+    <p>
+    Oh boy, quickly writing simulator instructions that should have been written ages ago! Hopefully these are sufficient
+        and help you get everything going. If not, well... I'll know what to change for the public release's instructions! :)
+    </p>
+
+    <hr><h3>Launching and Setup</h3><br>
+
+    <li>
+        You launch the simulator with <code>run.bat</code>. If you want to change the program arguments, you change them in <code>run.bat</code>.
+       </li><br>
+
+    <li>You need one USB controller per robot you want on the field. If you want to have drivers AND manipulators, you'll need two USB controllers per robot. To enable this,
+    add the keyword <code>manipulators</code> to the program arguments in <code>run.bat</code>.</li><br>
+
+    <li>The USB controller needs to be similar in basic functionality to a Playstation or XBox controller; you'll
+    want two joysticks, the four button thingy, a DPad, bumpers, triggers, and start/select present on the
+    controller. If it's not a super generic XBox or Logitech controller, you'll need to map it first using
+        the controller mapping tool, called <code>Controller Mapping.bat</code>. Launch
+    it with the controller(s) you want to map plugged in, follow the instructions, close it when you're done.
+        The controller should work in the main game now.</li>
+
+    <hr><h3>Controls</h3><br>
+
+    <h5 class="text-primary">Configuring Robots <small class="text-muted">(Done in sandbox mode/before a match)</small></h5>
+    <li>Start (the left button on the middle): change drive controls (options are arcade, split arcade, tank, chezy drive)</li>
+    <li>Select (the right button on the middle): change robot alliance color</li>
+    <li>DPad Right: Change robot's team number</li>
+    <li>DPad Down: Change robot type (different robots have different stats/abilities)</li>
+
+    <br><h5 class="text-primary">Playing a Robot</h5>
+    <p class="text-muted">Note: A blue <b class="text-primary">M</b> means that this control is available to the manipulator if there is one.</p>
+
+    <li>Right Bumper: Intake Cube (<b class="text-primary">M</b>)
+    <li>Right Bumper: Outtake Cube (<b class="text-primary">M</b>)
+    <li>Left Bumper: Outtake Cube from Back <small class="text-muted">(not all robots have this)</small> (<b class="text-primary">M</b>)
+    <li>DPad Up: Eject a cube from the top alliance portal (<b class="text-primary">M</b>)</li>
+    <li>DPad Down: Eject a cube from the bottom alliance portal (<b class="text-primary">M</b>)</li>
+    <li>Activating Powerup #1 (Boost): Left button in the 4 button grid</li>
+    <li>Activating Powerup #2 (Force): Bottom button in the 4 button grid</li>
+    <li>Activating Powerup #3 (Levitate): Right button in the 4 button grid</li>
+    <li>Flipping An Arm: Top button in the 4 button grid <small class="text-muted">(not all robots have this)</small> (<b class="text-primary">M</b>)
+    <li>Holding Left or Right trigger: Low Gear (robot drives slower) <small class="text-muted">(not all robots have this)</small></li>
+
+
+
+    <br><h5 class="text-primary">Non-Robot Controls</h5>
+    <li><kbd>P</kbd> (keyboard): Start a match</li>
+    <li><kbd>I</kbd> (keyboard): Cancel a Match</li>
+    <li><kbd>R</kbd> (keyboard): Reset the field</li>
+
+    <hr><h3>Gameplay</h3><br>
+    The game is designed to as closely mirror Power Up in all ways; during a match, point values and criteria should almost exactly
+    match the FRC game manual. The only exceptions/differences are as follows:<br><br>
+    <li>There's no automated penalities. This means the game doesn't penalize you for, say, getting hit in your opponent's null zone.</li>
+    <li>The simulator hasn't been updated for Team Update 3, so the two switches won't match each other like Team Update 3 dictates (I'll be correcting this very soon)</li>
+    <li>There's a couple <i>graphical</i> issues with the Scale: robots appear to drive over it, and cubes appear to phase over it as well. This is a graphical glitch; robots
+    who can score on the switch can place cubes onto the Scale, and robots will be able to drive "under" these cubes despite it graphically not appearing as such. Similarly,
+    robots who can't score on the Scale can't actually place cubes <i>onto</i> the scale; they won't be counted and can be ran into by other robots. This will make more sense
+    once you play and try this out for yourself.</li>
+
+
+    <hr><h3>Support</h3><br>
+    <p>The simulator is rough around the edges and this isn't even a public release build; because of this, there will be bugs
+    and problems. Most (some?) of them can be fixed by rebooting the simulator. If not, message me (Ryan S) on Discord or email me at
+        <a href="mailto:ryan.shavell@gmail.com">ryan.shavell@gmail.com</a>.</p>
+</div>
+<br><br>
+
+</body>
+</html>

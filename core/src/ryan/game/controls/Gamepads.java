@@ -3,7 +3,6 @@ package ryan.game.controls;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.lwjgl3.Lwjgl3ControllerManager;
 import ryan.game.entity.Robot;
-
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;

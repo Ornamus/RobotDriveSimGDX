@@ -10,7 +10,7 @@ public abstract class RobotStats {
     public float robotWidth = 0.9144f;
     public float robotHeight = robotWidth;
     public float maxMPS = 16 / 3.28084f;
-    public float maxMPSLow = maxMPS;
+    public float maxMPSLow = 0;
     public float maxAccel = (15.5448f) * (robotWidth / 0.9144f); //TODO: recalculate when width changes
     public boolean hasIntake = true;
     public float intakeWidth = robotWidth;//*.95f;

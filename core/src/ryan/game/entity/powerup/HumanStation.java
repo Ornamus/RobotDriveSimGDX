@@ -34,7 +34,7 @@ public class HumanStation extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (!Main.matchPlay) pixels=6;
+        if (!Main.matchPlay) pixels=7;
         for (Robot r : Main.robots) {
             if (blue == r.blue) {
                 Gamepad g = r.getControllers().get(Main.MANIPULATORS ? 1 : 0);

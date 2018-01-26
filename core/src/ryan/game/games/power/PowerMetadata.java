@@ -80,17 +80,17 @@ public class PowerMetadata extends RobotMetadata {
                 }
             }
 
-            boolean val = gamepad.getButton(Gamepad.BUMPER_LEFT);
+            boolean val = gamepad.getButton(Gamepad.BUMPER_RIGHT);
             if (val && !ejectChestWasHeld) {
                 ejectChest(r, stats.arm ? !armFront : false);
             }
             ejectChestWasHeld = val;
 
-            /*boolean valBack = gamepad.getButton(Gamepad.BUMPER_LEFT);
+            boolean valBack = gamepad.getButton(Gamepad.BUMPER_LEFT);
             if (valBack && stats.outtakeBack && !ejectPixelBackWasHeld) {
                 ejectChest(r, true);
             }
-            ejectPixelBackWasHeld = valBack;*/
+            ejectPixelBackWasHeld = valBack;
         }
     }
 
