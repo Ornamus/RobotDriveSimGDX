@@ -12,6 +12,7 @@ import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.entity.parts.Part;
 import ryan.game.entity.powerup.ClimbingBar;
+import ryan.game.entity.powerup.NullTerritory;
 import ryan.game.entity.powerup.Pixel;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
@@ -41,6 +42,8 @@ public class PowerMetadata extends RobotMetadata {
 
     public boolean crossedBaseline = false;
 
+    public boolean protectedInNull = false;
+
     public Long climb = null;
 
     public PowerMetadata() {
@@ -58,7 +61,6 @@ public class PowerMetadata extends RobotMetadata {
         if (gamepad != null) {
             boolean armSwap = gamepad.getButton(Gamepad.ONE);
             if (stats.arm && armSwap && !heldArmSwap) {
-                Utils.log("swoppo");
                 armFront = !armFront;
             }
             heldArmSwap = armSwap;
@@ -80,23 +82,39 @@ public class PowerMetadata extends RobotMetadata {
                 }
             }
 
-            boolean val = gamepad.getButton(Gamepad.BUMPER_RIGHT);
+            boolean val = gamepad.getButton(Gamepad.BUMPER_LEFT);
             if (val && !ejectChestWasHeld) {
                 ejectChest(r, stats.arm ? !armFront : false);
             }
             ejectChestWasHeld = val;
 
-            boolean valBack = gamepad.getButton(Gamepad.BUMPER_LEFT);
+            /*boolean valBack = gamepad.getButton(Gamepad.BUMPER_LEFT);
             if (valBack && stats.outtakeBack && !ejectPixelBackWasHeld) {
                 ejectChest(r, true);
             }
-            ejectPixelBackWasHeld = valBack;
+            ejectPixelBackWasHeld = valBack;*/
         }
     }
+
+    long nullFoul = 0;
 
     @Override
     public void collideStart(Robot r, Entity e, Body self, Body other, Contact contact) {
         PowerRobotBase stats = (PowerRobotBase) r.stats;
+        if (e instanceof Robot) {
+            Robot oR = (Robot) e;
+            PowerMetadata oMeta = (PowerMetadata) oR.metadata;
+            if (Main.matchPlay && r.blue != oR.blue && oMeta.protectedInNull && Main.getTime() - nullFoul >= 2000) {
+                if (r.blue) {
+                    Utils.log("The BLUE alliance has gotten a null zone technical foul");
+                    PowerDisplay.red_foul += 25;
+                } else {
+                    Utils.log("The RED alliance has gotten a null zone technical foul");
+                    PowerDisplay.blue_foul += 25;
+                }
+                nullFoul = Main.getTime();
+            }
+        }
         if (r.isPart("intake", self)) {
             Part intake = r.getPart(self);
             if (stats.arm && ((r.isPart("arm_front", self) && !armFront) || (r.isPart("arm_back", self) && armFront))) {
@@ -111,6 +129,13 @@ public class PowerMetadata extends RobotMetadata {
                     intakeablePixels.add(e);
                 }
             }
+        } else {
+            if (e instanceof NullTerritory) {
+                NullTerritory n = (NullTerritory) e;
+                if (n.blue == r.blue && Main.matchPlay) {
+                    protectedInNull = true;
+                }
+            }
         }
     }
 
@@ -123,6 +148,13 @@ public class PowerMetadata extends RobotMetadata {
             if (intakeablePixels.contains(e)) {
                 intakeablePixels.remove(e);
                 pixelIntakeTimes.remove(e);
+            }
+        } else {
+            if (e instanceof NullTerritory) {
+                NullTerritory n = (NullTerritory) e;
+                if (n.blue == r.blue) {
+                    protectedInNull = false;
+                }
             }
         }
     }

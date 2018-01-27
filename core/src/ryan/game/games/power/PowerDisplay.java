@@ -22,6 +22,9 @@ public class PowerDisplay extends ScoreDisplay {
     public static int blue_forceClimbs = 0;
     public static int red_forceClimbs = 0;
 
+    public static int blue_foul = 0;
+    public static int red_foul = 0;
+
     public enum LiteralPowerUp {
         NONE,
         BOOST,
@@ -111,7 +114,6 @@ public class PowerDisplay extends ScoreDisplay {
                 if (meta.crossedBaseline) baselines++;
                 if (Game.getMatchTime() <= 30) {
                     PowerRobotBase stats = (PowerRobotBase) r.stats;
-                    if (meta.climb != null) Utils.log((Main.getTime() - meta.climb) + "");
                     if (meta.climb != null && Main.getTime() - meta.climb >= (stats.climbTime * 1000)) {
                         climbs++;
                     }
@@ -218,9 +220,9 @@ public class PowerDisplay extends ScoreDisplay {
         int points = (baselines*5) + (climbs*30);
 
         if (blue) {
-            points += blueTimeAcc + blue_vault;
+            points += blueTimeAcc + blue_vault + blue_foul;
         } else {
-            points += redTimeAcc + red_vault;
+            points += redTimeAcc + red_vault + red_foul;
         }
 
         return points;

@@ -31,6 +31,7 @@ public class PowerUp extends Field {
     PowerDisplay display;
     public static Switch blue_top, blue_bottom, red_top, red_bottom, tall_top, tall_bottom;
     public static PixelReceiver blue_receiver = null, red_receiver = null;
+    public static NullTerritory top = null, bottom =  null;
 
     @Override
     public List<Drawable> generateField() {
@@ -66,6 +67,12 @@ public class PowerUp extends Field {
 
         ent = new HumanStation((width / 2)-2.5f, -10.5f, 270-37-15, false, false); //Bottom Right HP
         drawables.add(ent);
+
+        top = new NullTerritory(0.05f, 6.7f);
+        drawables.add(top);
+
+        bottom = new NullTerritory(0.05f, -7.7f);
+        drawables.add(bottom);
 
         drawables.add(new Baseline(13.4f, 0, true));
         drawables.add(new Baseline(-13.25f, 0, false));
@@ -173,13 +180,15 @@ public class PowerUp extends Field {
         blue_bottom.alliance = ran == 0 ? Game.ALLIANCE.BLUE : Game.ALLIANCE.RED;
         blue_top.alliance = ran == 1 ? Game.ALLIANCE.BLUE : Game.ALLIANCE.RED;
 
-        ran = Utils.randomInt(0,1);
-        red_bottom.alliance = ran == 0 ? Game.ALLIANCE.BLUE : Game.ALLIANCE.RED;
-        red_top.alliance = ran == 1 ? Game.ALLIANCE.BLUE : Game.ALLIANCE.RED;
+        red_bottom.alliance = blue_bottom.alliance;
+        red_top.alliance = blue_top.alliance;
 
         ran = Utils.randomInt(0,1);
         tall_top.alliance = ran == 0 ? Game.ALLIANCE.BLUE : Game.ALLIANCE.RED;
         tall_bottom.alliance = ran == 1 ? Game.ALLIANCE.BLUE : Game.ALLIANCE.RED;
+
+        top.blue = ran == 0;
+        bottom.blue = !top.blue;
 
 
         PowerDisplay.blueTimeAcc = 0;
@@ -194,6 +203,8 @@ public class PowerUp extends Field {
         PowerDisplay.powerUpStart = 0;
         PowerDisplay.blue_forceClimbs = 0;
         PowerDisplay.red_forceClimbs = 0;
+        PowerDisplay.blue_foul = 0;
+        PowerDisplay.red_foul = 0;
     }
 
     @Override
@@ -209,7 +220,7 @@ public class PowerUp extends Field {
     @Override
     public void updateMatchInfo() {
         super.updateMatchInfo();
-        Match m = Main.schedule.getCurrentMatch();
+        //Match m = Main.schedule.getCurrentMatch();
     }
 
     @Override

@@ -32,9 +32,7 @@ public class Auto1902 extends Command {
             long start = Main.getTime();
             while (Main.getTime() - start < 3000) {
                 meta.shootFuel(robot);
-                Utils.log("shoot");
             }
-            Utils.log("releas me");
             robot.setMotors(-1, -1);
             Thread.sleep(600);
             robot.setMotors(0, 0);
