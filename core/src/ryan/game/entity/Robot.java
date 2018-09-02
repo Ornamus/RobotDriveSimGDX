@@ -19,6 +19,7 @@ import ryan.game.bcnlib_pieces.Command;
 import ryan.game.bcnlib_pieces.PIDSource;
 import ryan.game.competition.Match;
 import ryan.game.competition.RobotStats;
+import ryan.game.competition.Schedule;
 import ryan.game.competition.Team;
 import ryan.game.controls.Gamepad;
 import ryan.game.controls.Gamepads;
@@ -57,10 +58,9 @@ public class Robot extends Entity {
     private int statsIndex = 0;
 
     //TODO: make this not game-specific
-    //private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
-    //new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething(), new SteamTitanium(), new Steam1678()};
-    private RobotStats[] statsOptions = {new PowerRobotBase(), new Mikal1(), new Mikal2(), new Mikal3(), new Mikal4(), new Mikal5(), new Mikal6(), new Mikal7(), new Mikal8(), new Mikal9(), new Mikal10(),
-    new Mikal11(), new Mikal12(), new Mikal13(), new Mikal14(), new Mikal15(), new Mikal16(), new Mikal17()};
+    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
+    new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething()/*, new SteamTitanium(), new Steam1678()*/};
+    //private RobotStats[] statsOptions = {new PowerRobotBase(), new Bacon()};
 
     public RobotStats stats = statsOptions[statsIndex];
 
@@ -410,25 +410,7 @@ public class Robot extends Entity {
                 if (statsIndex >= statsOptions.length) {
                     statsIndex = 0;
                 }
-                RobotStats oldStats = stats;
-                stats = statsOptions[statsIndex];
-
-                Robot replacement = create(stats, getX()+(oldStats.robotWidth/2), getY(), id);
-                for (Gamepad pad : Gamepads.getGamepads(this)) {
-                    replacement.claimGamepad(pad);
-                }
-
-                destroy();
-
-                replacement.blue = blue;
-                replacement.statsToggleWasTrue = true;
-                replacement.controllerIndex = controllerIndex;
-                replacement.statsIndex = statsIndex;
-                replacement.numberIndex = numberIndex;
-                replacement.metadata = metadata;
-                replacement.updateSprite();
-                Main.robots.add(replacement);
-                Main.getInstance().spawnEntity(replacement);
+                if (!Main.makeSchedule) updateStats();
             }
             statsToggleWasTrue = val;
 
@@ -438,6 +420,7 @@ public class Robot extends Entity {
                 if (numberIndex > 2) {
                     numberIndex = 0;
                 }
+                if (Main.makeSchedule) updateStats();
             }
             numberChangeWasTrue = val;
 
@@ -446,6 +429,7 @@ public class Robot extends Entity {
                 blue = !blue;
                 metadata = metadata.getNewInstance();
                 updateSprite();
+                if (Main.makeSchedule) updateStats();
             }
             changeAllianceWasTrue = val;
 
@@ -457,6 +441,37 @@ public class Robot extends Entity {
         }
 
         if (metadata != null) metadata.tick(this);
+    }
+
+    public void updateStats() {
+        boolean schedule = Main.makeSchedule;
+        RobotStats oldStats = stats;
+        stats = statsOptions[statsIndex];
+
+        Team t;
+        if (schedule && (t = Main.schedule.getTeam(getNumber())) !=  null) {
+            stats = t.robotStats;
+            //System.out.println("Using " + t.number + "'s stats.");
+        }
+
+        Robot replacement = create(stats, getX()+(oldStats.robotWidth/2), getY(), id);
+        for (Gamepad pad : Gamepads.getGamepads(this)) {
+            replacement.claimGamepad(pad);
+        }
+
+        destroy();
+
+        replacement.blue = blue;
+        replacement.statsToggleWasTrue = true;
+        replacement.numberChangeWasTrue = true;
+        replacement.changeAllianceWasTrue = true;
+        replacement.controllerIndex = controllerIndex;
+        replacement.statsIndex = statsIndex;
+        replacement.numberIndex = numberIndex;
+        replacement.metadata = metadata;
+        replacement.updateSprite();
+        Main.robots.add(replacement);
+        Main.getInstance().spawnEntity(replacement);
     }
 
     public void destroy() {

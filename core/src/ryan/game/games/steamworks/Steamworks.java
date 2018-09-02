@@ -9,11 +9,13 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.competition.Match;
+import ryan.game.competition.RobotStats;
 import ryan.game.entity.*;
 import ryan.game.entity.steamworks.*;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
 import ryan.game.games.ScoreDisplay;
+import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
 import ryan.game.render.Drawable;
 import ryan.game.render.ImageDrawer;
@@ -242,6 +244,11 @@ public class Steamworks extends Field {
     @Override
     public ScoreDisplay getDisplay() {
         return display;
+    }
+
+    @Override
+    public RobotStats getDefaultRobotStats() {
+        return new SteamDefault();
     }
 
     int blueSpinning, redSpinning;

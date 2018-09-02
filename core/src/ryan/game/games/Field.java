@@ -2,6 +2,7 @@ package ryan.game.games;
 
 import ryan.game.Main;
 import ryan.game.competition.Match;
+import ryan.game.competition.RobotStats;
 import ryan.game.games.steamworks.SteamResultDisplay;
 import ryan.game.render.Drawable;
 import java.util.List;
@@ -41,4 +42,6 @@ public abstract class Field extends Drawable {
         Main.getInstance().addDrawable(Main.getInstance().results);
         Main.getInstance().isShowingResults = true;
     }
+
+    public abstract RobotStats getDefaultRobotStats();
 }

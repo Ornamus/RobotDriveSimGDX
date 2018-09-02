@@ -1,5 +1,6 @@
 package ryan.game.competition;
 
+import com.badlogic.gdx.graphics.Color;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ryan.game.Main;
@@ -7,6 +8,9 @@ import ryan.game.Utils;
 import ryan.game.games.AllianceSelection;
 import ryan.game.games.overboard.Overboard;
 import ryan.game.games.steamworks.AllianceScoreData;
+import ryan.game.games.steamworks.robots.Steam254;
+import ryan.game.games.steamworks.robots.SteamDefault;
+
 import java.io.*;
 import java.util.*;
 
@@ -34,20 +38,16 @@ public class Schedule {
             Collections.addAll(teams, teamArray);
             Utils.log("Loaded " + teams.size() + " teams");
         } else {
-            /*
+
             List<Integer> taken = new ArrayList<>();
             for (int i = 0; i < Main.randomTeams; i++) {
                 int num;
-                while (taken.contains((num = Utils.randomInt(1, 6499)))) {
-                }
+                while (taken.contains((num = Utils.randomInt(1, 6499)))) {}
                 taken.add(num);
-                teams.add(new Team(num, "null"));
+                //TODO: temporary
+                teams.add(new Team(num, Color.BLACK, Color.BROWN, new Steam254()));
             }
-            */
-            //TODO: super temporary, only for bacon's overboard tournament
-            for (Team t : Overboard.createBaconTeams()) {
-                teams.add(t);
-            }
+
             Gson g = new GsonBuilder().setPrettyPrinting().create();
             Utils.writeFile(Main.eventKey + "/teams.json", g.toJson(teams));
         }

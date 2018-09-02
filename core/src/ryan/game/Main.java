@@ -26,6 +26,8 @@ import ryan.game.games.*;
 import ryan.game.games.power.PowerRankings;
 import ryan.game.games.power.PowerUp;
 import ryan.game.games.power.robots.PowerRobotBase;
+import ryan.game.games.steamworks.Steamworks;
+import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.render.Drawable;
 import ryan.game.render.Fonts;
 import java.awt.geom.Point2D;
@@ -113,6 +115,9 @@ public class Main extends ApplicationAdapter {
         camera.update();
         nonScaledCamera = new OrthographicCamera(1100, 630);
         nonScaledCamera.update();
+
+        gameField = new Steamworks();
+
         int index = 0;
 
         if (extraRobots > 0) currentRobot = 0;
@@ -122,9 +127,8 @@ public class Main extends ApplicationAdapter {
             Robot robot = null;
             Utils.log(Gamepads.getGamepads().size() + " controls");
             for (int i = 0; i < Gamepads.getGamepads().size(); i++) {
-                //TODO: make this not game specific
                 if (newRobot) {
-                    robot = Robot.create(new PowerRobotBase(), 2 + (index * 3), -11);
+                    robot = Robot.create(gameField.getDefaultRobotStats(), 2 + (index * 3), -11);
                     robots.add(robot);
                     newRobot = false;
                 } else {
@@ -138,8 +142,7 @@ public class Main extends ApplicationAdapter {
             }
         } else {
             for (int i = 0; i < Gamepads.getGamepads().size() + extraRobots; i++) {
-                //TODO: make this not game specific
-                Robot r = Robot.create(new PowerRobotBase(), 2 + (index * 3), -11);
+                Robot r = Robot.create(gameField.getDefaultRobotStats(), 2 + (index * 3), -11);
                 robots.add(r);
                 if (i < Gamepads.getGamepads().size()) {
                     r.claimGamepad(Gamepads.getGamepad(i));
@@ -149,8 +152,7 @@ public class Main extends ApplicationAdapter {
             }
         }
 
-        gameField = new PowerUp();
-        //gameField = new Steamworks();
+        //gameField = new PowerUp();
         gameField.affectRobots();
 
         drawablesAdd.addAll(gameField.generateField());

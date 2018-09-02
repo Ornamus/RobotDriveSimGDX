@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.competition.Match;
+import ryan.game.competition.RobotStats;
 import ryan.game.competition.overboard.OverboardTeam;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
@@ -16,6 +17,7 @@ import ryan.game.entity.steamworks.LoadingStation;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
 import ryan.game.games.ScoreDisplay;
+import ryan.game.games.power.robots.PowerRobotBase;
 import ryan.game.render.Drawable;
 import ryan.game.render.ImageDrawer;
 
@@ -221,6 +223,11 @@ public class PowerUp extends Field {
     public void updateMatchInfo() {
         super.updateMatchInfo();
         //Match m = Main.schedule.getCurrentMatch();
+    }
+
+    @Override
+    public RobotStats getDefaultRobotStats() {
+        return new PowerRobotBase();
     }
 
     @Override

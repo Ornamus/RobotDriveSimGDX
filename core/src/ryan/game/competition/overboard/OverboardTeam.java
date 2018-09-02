@@ -6,11 +6,10 @@ import ryan.game.games.overboard.robots.OverRobotStats;
 
 public class OverboardTeam extends Team {
 
-
     public final OverRobotStats stats;
 
     public OverboardTeam(int number, String name, Color primary, Color secondary, OverRobotStats s) {
-        super(number, name, primary, secondary);
+        super(number, primary, secondary, s);
         stats = s;
     }
 }

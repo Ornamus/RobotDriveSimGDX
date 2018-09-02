@@ -7,18 +7,12 @@ public class Team {
     public int number;
     public String name;
     public final Color primary, secondary;
+    public RobotStats robotStats;
 
-    public Team(int number, String name) {
-        this(number, name, Color.BLUE, Color.DARK_GRAY);
-    }
-
-    public Team(int number, String name, Color primary, Color secondary) {
+    public Team(int number, Color primary, Color secondary, RobotStats robotStats) {
         this.number = number;
-        this.name = name;
         this.primary = primary;
         this.secondary = secondary;
-        if (name.equals("null")) {
-            this.name = NameMagic.generateName();
-        }
+        this.robotStats = robotStats;
     }
 }

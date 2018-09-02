@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.competition.Match;
+import ryan.game.competition.RobotStats;
 import ryan.game.competition.Schedule;
 import ryan.game.competition.overboard.OverboardTeam;
 import ryan.game.entity.Entity;
@@ -14,6 +15,7 @@ import ryan.game.entity.overboard.*;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
 import ryan.game.games.ScoreDisplay;
+import ryan.game.games.overboard.robots.OverRobotStats;
 import ryan.game.games.steamworks.SteamResultDisplay;
 import ryan.game.render.Drawable;
 import ryan.game.render.ImageDrawer;
@@ -168,6 +170,11 @@ public class Overboard extends Field {
 
         red_hp[0].updateStats((OverboardTeam)m.red.getTeams().get(0));
         red_hp[1].updateStats((OverboardTeam)m.red.getTeams().get(1));
+    }
+
+    @Override
+    public RobotStats getDefaultRobotStats() {
+        return new OverRobotStats();
     }
 
     @Override
