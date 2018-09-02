@@ -19,6 +19,7 @@ import ryan.game.games.overboard.robots.OverRobotStats;
 import ryan.game.games.steamworks.SteamResultDisplay;
 import ryan.game.render.Drawable;
 import ryan.game.render.ImageDrawer;
+import ryan.game.screens.GameScreen;
 
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import java.util.ArrayList;
@@ -137,14 +138,14 @@ public class Overboard extends Field {
 
     @Override
     public void affectRobots() {
-        for (Robot r : Main.robots) {
+        for (Robot r : GameScreen.robots) {
             r.metadata = new PirateMetadata();
         }
     }
 
     @Override
     public void onMatchStart() {
-        for (Robot r : Main.robots) {
+        for (Robot r : GameScreen.robots) {
             r.auto = r.stats.getAutonomous(r);
             PirateMetadata m = (PirateMetadata) r.metadata;
             m.chests.clear();
@@ -153,8 +154,8 @@ public class Overboard extends Field {
 
     @Override
     public void onMatchEnd() {
-        Match current = Main.schedule.getCurrentMatch();
-        Main.schedule.completeCurrentMatch(0,0,null,null,0);
+        Match current = GameScreen.schedule.getCurrentMatch();
+        GameScreen.schedule.completeCurrentMatch(0,0,null,null,0);
 
         //showResults(new SteamResultDisplay(current));
 
@@ -164,7 +165,7 @@ public class Overboard extends Field {
     @Override
     public void updateMatchInfo() {
         super.updateMatchInfo();
-        Match m = Main.schedule.getCurrentMatch();
+        Match m = GameScreen.schedule.getCurrentMatch();
         blue_hp[0].updateStats((OverboardTeam)m.blue.getTeams().get(0));
         blue_hp[1].updateStats((OverboardTeam)m.blue.getTeams().get(1));
 
@@ -205,7 +206,7 @@ public class Overboard extends Field {
     public void tick() {
         super.tick();
         if (Game.getMatchTime() == 30 && !did30SecWhoop) {
-            Main.getInstance().ropeDropSound.play(.35f);
+            GameScreen.ropeDropSound.play(.35f);
             did30SecWhoop = true;
         }
     }

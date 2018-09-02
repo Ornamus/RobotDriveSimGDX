@@ -23,10 +23,6 @@ public class Fonts {
 
     private Fonts() {}
 
-    public static void init() {
-        init(1);
-    }
-
     public static void init(float scale) {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/fonts/DTM-Mono.otf"));
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -101,10 +97,20 @@ public class Fonts {
         layout = new GlyphLayout(monoWhiteLarge, "");
     }
 
-    public static void draw(BitmapFont f, String s, float x, float y, float offsetX, float offsetY, SpriteBatch b) {
-        f.draw(b, s, x + (offsetX*Main.widthScale), y + (offsetY * Main.heightScale));
+    public static void draw(BitmapFont f, String s, float x, float y, SpriteBatch b) {
+        f.draw(b, s, x, y);
     }
 
+    public static void drawCentered(BitmapFont f, String s, float x, float y, SpriteBatch b) {
+        draw(f, s, x-(getWidth(s,f)/2), y, b);
+    }
+
+    @Deprecated
+    public static void draw(BitmapFont f, String s, float x, float y, float offsetX, float offsetY, SpriteBatch b) {
+        f.draw(b, s, x + offsetX, y + offsetY);
+    }
+
+    @Deprecated
     public static void drawCentered(BitmapFont f, String s, float x, float y, float oX, float oY, SpriteBatch b) {
         draw(f, s, x-(getWidth(s,f)/2), y, oX, oY, b);
     }

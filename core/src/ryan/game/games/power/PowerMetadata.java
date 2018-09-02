@@ -17,6 +17,7 @@ import ryan.game.entity.powerup.Pixel;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
 import ryan.game.games.power.robots.PowerRobotBase;
+import ryan.game.screens.GameScreen;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -104,7 +105,7 @@ public class PowerMetadata extends RobotMetadata {
         if (e instanceof Robot) {
             Robot oR = (Robot) e;
             PowerMetadata oMeta = (PowerMetadata) oR.metadata;
-            if (Main.matchPlay && r.blue != oR.blue && oMeta.protectedInNull && Main.getTime() - nullFoul >= 2000) {
+            if (GameScreen.matchPlay && r.blue != oR.blue && oMeta.protectedInNull && Main.getTime() - nullFoul >= 2000) {
                 if (r.blue) {
                     Utils.log("The BLUE alliance has gotten a null zone technical foul");
                     PowerDisplay.red_foul += 25;
@@ -132,7 +133,7 @@ public class PowerMetadata extends RobotMetadata {
         } else {
             if (e instanceof NullTerritory) {
                 NullTerritory n = (NullTerritory) e;
-                if (n.blue == r.blue && Main.matchPlay) {
+                if (n.blue == r.blue && GameScreen.matchPlay) {
                     protectedInNull = true;
                 }
             }

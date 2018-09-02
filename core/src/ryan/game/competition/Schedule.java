@@ -10,6 +10,7 @@ import ryan.game.games.overboard.Overboard;
 import ryan.game.games.steamworks.AllianceScoreData;
 import ryan.game.games.steamworks.robots.Steam254;
 import ryan.game.games.steamworks.robots.SteamDefault;
+import ryan.game.screens.GameScreen;
 
 import java.io.*;
 import java.util.*;
@@ -30,7 +31,7 @@ public class Schedule {
     public Schedule(Rankings r) {
         this.r = r;
         r.s = this;
-        File f = new File(Main.eventKey  + "/teams.json");
+        File f = new File(GameScreen.EVENT_KEY  + "/teams.json");
         if (f.exists()) {
             //TODO: somehow make the teams loaded by the correct subclass, i.e. OverboardTeam
             Team[] teamArray = new Team[0];
@@ -40,7 +41,7 @@ public class Schedule {
         } else {
 
             List<Integer> taken = new ArrayList<>();
-            for (int i = 0; i < Main.randomTeams; i++) {
+            for (int i = 0; i < GameScreen.RANDOM_TEAMS; i++) {
                 int num;
                 while (taken.contains((num = Utils.randomInt(1, 6499)))) {}
                 taken.add(num);
@@ -54,8 +55,8 @@ public class Schedule {
     }
 
     public void generate(int rounds) {
-        if (Main.makeSchedule) {
-            File f = new File(Main.eventKey + "/matches");
+        if (GameScreen.MAKE_SCHEDULE) {
+            File f = new File(GameScreen.EVENT_KEY + "/matches");
             File[] matchFiles;
             if (f.exists() && (matchFiles = f.listFiles()).length > 0) {
                 for (File matchFile : matchFiles) {
@@ -90,16 +91,16 @@ public class Schedule {
                     Main.getInstance().gameField.updateMatchInfo();
                     Utils.log("Left off at qualifier index " + index + ", restarting there.");
                 } else if (!found) { //All qualifiers completed
-                    f = new File(Main.eventKey + "/alliance_selection.json");
+                    f = new File(GameScreen.EVENT_KEY + "/alliance_selection.json");
                     if (f.exists()) { //We have alliance selection data
                         Utils.log("Found alliance selection data");
                         elims = true;
                         alliances = Utils.fromJSON(f, alliances.getClass());
-                        seeds = Utils.fromJSON(Main.eventKey + "/seeds.json", seeds.getClass());
+                        seeds = Utils.fromJSON(GameScreen.EVENT_KEY + "/seeds.json", seeds.getClass());
                         /*for (Integer[] i : seeds.values()) {
                             Utils.log(i.toString());
                         }*/
-                        remainingAlliances = Utils.fromJSON(Main.eventKey + "/remainingAlliances.json", remainingAlliances.getClass());
+                        remainingAlliances = Utils.fromJSON(GameScreen.EVENT_KEY + "/remainingAlliances.json", remainingAlliances.getClass());
                         String[] levelsToDelete = {"qm"};
                         if (remainingAlliances.length == 2) levelsToDelete = new String[]{"qm", "qf", "sf"};
                         if (remainingAlliances.length == 4) levelsToDelete = new String[]{"qm", "qf"};
@@ -127,8 +128,8 @@ public class Schedule {
                         Main.getInstance().gameField.updateMatchInfo();
                     } else { //We need to start/restart alliance selection
                         Utils.log("Did not find alliance selection data, starting alliance selections.");
-                        Main.allianceSelection = new AllianceSelection();
-                        Main.getInstance().addDrawable(Main.allianceSelection);
+                        GameScreen.allianceSelection = new AllianceSelection();
+                        Main.addDrawable(GameScreen.allianceSelection);
                     }
                 }
             } else {
@@ -217,10 +218,10 @@ public class Schedule {
             seed++;
         }
         Gson g = new GsonBuilder().setPrettyPrinting().create();
-        Utils.writeFile(Main.eventKey + "/seeds.json", g.toJson(seeds));
+        Utils.writeFile(GameScreen.EVENT_KEY + "/seeds.json", g.toJson(seeds));
 
         remainingAlliances = alliances;
-        Utils.writeFile(Main.eventKey + "/remainingAlliances.json", g.toJson(remainingAlliances));
+        Utils.writeFile(GameScreen.EVENT_KEY + "/remainingAlliances.json", g.toJson(remainingAlliances));
         generateNextElimMatches();
     }
 
@@ -274,7 +275,7 @@ public class Schedule {
                 remainingAlliances = newAll;
 
                 Gson g = new GsonBuilder().setPrettyPrinting().create();
-                Utils.writeFile(Main.eventKey + "/remainingAlliances.json", g.toJson(remainingAlliances));
+                Utils.writeFile(GameScreen.EVENT_KEY + "/remainingAlliances.json", g.toJson(remainingAlliances));
 
                 generateNextElimMatches();
                 Main.getInstance().gameField.updateMatchInfo();
@@ -406,7 +407,7 @@ public class Schedule {
 
         m.complete = true;
 
-        if (Main.makeSchedule) {
+        if (GameScreen.MAKE_SCHEDULE) {
             m.save();
             r.calculate();
         } else {

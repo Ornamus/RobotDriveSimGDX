@@ -8,6 +8,7 @@ import ryan.game.games.Game;
 import ryan.game.games.ScoreDisplay;
 import ryan.game.games.power.robots.PowerRobotBase;
 import ryan.game.render.Fonts;
+import ryan.game.screens.GameScreen;
 
 public class PowerDisplay extends ScoreDisplay {
 
@@ -108,7 +109,7 @@ public class PowerDisplay extends ScoreDisplay {
         int climbs = 0;
         int baselines = 0;
 
-        for (Robot r : Main.robots) {
+        for (Robot r : GameScreen.robots) {
             if (r.blue == blue) {
                 PowerMetadata meta = (PowerMetadata) r.metadata;
                 if (meta.crossedBaseline) baselines++;

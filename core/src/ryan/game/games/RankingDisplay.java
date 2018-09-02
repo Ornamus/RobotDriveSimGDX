@@ -11,6 +11,8 @@ import ryan.game.competition.RankData;
 import ryan.game.games.steamworks.SteamTeamData;
 import ryan.game.render.Fonts;
 import ryan.game.render.ImageDrawer;
+import ryan.game.screens.GameScreen;
+
 import java.util.List;
 
 public class RankingDisplay extends ImageDrawer {
@@ -30,7 +32,7 @@ public class RankingDisplay extends ImageDrawer {
         sprite.setPosition(0-sprite.getWidth() /2, 0-sprite.getHeight()/2);
         setDrawScaled(false);
 
-        rankings = Main.schedule.getRankings().getRankings();
+        rankings = GameScreen.schedule.getRankings().getRankings();
 
         allianceBar = new Sprite(new Texture("core/assets/alliance_selection_bar.png"));
         resize(allianceBar, .225f);
@@ -69,7 +71,7 @@ public class RankingDisplay extends ImageDrawer {
         allianceBar = new Sprite(new Texture("core/assets/alliance_selection_bar.png"));
         resize(allianceBar, .225f * Main.fontScale);
 
-        Fonts.drawCentered(Fonts.fmsBlack, Main.eventName + " Rankings", getCenterX(), getCenterY(), 0, 305-15, batch);
+        Fonts.drawCentered(Fonts.fmsBlack, GameScreen.EVENT_NAME + " Rankings", getCenterX(), getCenterY(), 0, 305-15, batch);
         int index = 0;
         for (int gridX = 0; gridX<2; gridX++) {
             for (int gridY = 0; gridY < 8; gridY++) {

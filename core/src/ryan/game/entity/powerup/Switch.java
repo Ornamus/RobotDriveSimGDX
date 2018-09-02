@@ -5,13 +5,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import ryan.game.Main;
-import ryan.game.Utils;
 import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.games.Game;
 import ryan.game.games.power.robots.PowerRobotBase;
 import ryan.game.render.Fonts;
+import ryan.game.screens.GameScreen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public class Switch extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (!Main.matchPlay) {
+        if (!GameScreen.matchPlay) {
             alliance = Game.ALLIANCE.NEUTRAL;
         }
     }
@@ -52,7 +52,7 @@ public class Switch extends Entity {
         }
 
         Vector2 pos = getPhysicsPosition();
-        Fonts.drawCentered(Fonts.monoWhiteSmall, pixels.size() + "", pos.x* Main.meterToPixelWidth, (pos.y*Main.meterToPixelHeight)+40, 0, 53, b);
+        Fonts.drawCentered(Fonts.monoWhiteSmall, pixels.size() + "", pos.x* Main.mtpW, (pos.y*Main.mtpH)+40, 0, 53, b);
 
         Fonts.monoWhiteSmall.setColor(255,255,255,1);
     }

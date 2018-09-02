@@ -2,6 +2,7 @@ package ryan.game.competition;
 
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.screens.GameScreen;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +48,7 @@ public class MatchSet {
 
     public static List<MatchSet> getSets(List<Match> matches) {
         List<MatchSet> sets = new ArrayList<>();
-        for (int i=0; i<Main.schedule.remainingAlliances.length/2; i++) {
+        for (int i = 0; i< GameScreen.schedule.remainingAlliances.length/2; i++) {
             sets.add(new MatchSet());
         }
         List<Match> taken = new ArrayList<>();

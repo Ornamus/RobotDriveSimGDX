@@ -1,6 +1,7 @@
 package ryan.game.games;
 
 import ryan.game.Main;
+import ryan.game.screens.GameScreen;
 
 public enum Game {
 
@@ -10,17 +11,17 @@ public enum Game {
 
 
     public static boolean isPlaying() {
-        return Main.matchPlay;
+        return GameScreen.matchPlay;
     }
 
     public static boolean isAutonomous() {
-        return Main.matchPlay && getMatchTime() > 135;
+        return GameScreen.matchPlay && getMatchTime() > 135;
     }
 
     public static int getMatchTime() {
         int seconds;
-        if (Main.matchPlay) {
-            long timeIn = Main.getTime() - Main.matchStart;
+        if (GameScreen.matchPlay) {
+            long timeIn = Main.getTime() - GameScreen.matchStart;
             long timeLeft = (150 * 1000) - timeIn;
             seconds = Math.round(timeLeft / 1000f);
         } else {

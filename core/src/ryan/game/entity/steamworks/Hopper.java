@@ -49,7 +49,7 @@ public class Hopper extends Entity {
                     synchronized (Main.WORLD_USE) {
                         e.getPrimary().applyForceToCenter((Utils.randomInt(500, 900) / 100f) * (Utils.randomInt(0, 1) == 0 ? -1 : 1), (Utils.randomInt(500, 900) / 100f) * (Utils.randomInt(0, 1) == 0 ? -1 : 1), true);
                     }
-                    Main.getInstance().spawnEntity(.2f, e);
+                    Main.spawnEntity(.2f, e);
                     if (fuelInHopper > 0) {
                         fuelInHopper--;
                     } else {

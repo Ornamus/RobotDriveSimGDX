@@ -5,6 +5,8 @@ import ryan.game.competition.Match;
 import ryan.game.competition.RobotStats;
 import ryan.game.games.steamworks.SteamResultDisplay;
 import ryan.game.render.Drawable;
+import ryan.game.screens.GameScreen;
+
 import java.util.List;
 
 public abstract class Field extends Drawable {
@@ -26,8 +28,8 @@ public abstract class Field extends Drawable {
     }
 
     public void updateMatchInfo() {
-        if (Main.schedule != null) {
-            Match m = Main.schedule.getCurrentMatch();
+        if (GameScreen.schedule != null) {
+            Match m = GameScreen.schedule.getCurrentMatch();
             if (m != null) {
                 ScoreDisplay d = getDisplay();
                 d.setBlueTeams(m.blue.teams[0], m.blue.teams[1], m.blue.teams[2]);
@@ -38,9 +40,9 @@ public abstract class Field extends Drawable {
     }
 
     public void showResults(ResultDisplay d) {
-        Main.getInstance().results = d;
-        Main.getInstance().addDrawable(Main.getInstance().results);
-        Main.getInstance().isShowingResults = true;
+        GameScreen.results = d;
+        Main.addDrawable(d);
+        GameScreen.isShowingResults = true;
     }
 
     public abstract RobotStats getDefaultRobotStats();

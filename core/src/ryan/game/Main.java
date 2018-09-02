@@ -33,6 +33,10 @@ import ryan.game.games.steamworks.Steamworks;
 import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.render.Drawable;
 import ryan.game.render.Fonts;
+import ryan.game.screens.GameScreen;
+import ryan.game.screens.Screen;
+import ryan.game.screens.TitleScreen;
+
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,174 +47,72 @@ public class Main extends ApplicationAdapter {
 
     public static boolean DEBUG_RENDER = false;
 
-    public static boolean MANIPULATORS = false;
-
     public static final Color BLUE = Utils.toColor(50, 50, 245);//Utils.toColor(63, 72, 204);
     public static final Color RED = Utils.toColor(237, 28, 36);
 
-    public Drawable results = null;
-    public Drawable rankings = null;
 	SpriteBatch batch;
-    ShapeRenderer shape;
+    SpriteBatch unscaledBatch;
     public World world;
     Box2DDebugRenderer debugRenderer;
     OrthographicCamera camera;
-    public static List<Robot> robots = new ArrayList<>();
+    OrthographicCamera unscaledCamera;
     public static List<Drawable> drawablesAdd = new ArrayList<>();
     public static List<Drawable> drawablesRemove = new ArrayList<>();
     public static List<Drawable> drawables = new ArrayList<>();
     public static List<CollisionListener.Collision> collisions = new ArrayList<>();
 
-    public static boolean playMusic = true;
-    public static boolean makeSchedule = false;
-    public static boolean customTeams = false;
-    public static int scheduleRounds = 8;
-    public static int randomTeams = 24;
-    public static String eventName = "FIRST Championship";
-    public static String eventKey = "debug";
-    public static int extraRobots = 0;
-
-    public static boolean isShowingResults = false;
-    public static Drawable allianceSelection = null;
-
-    FileHandle[] musicChoices;
-    Music music = null;
-
     private static float time = 0;
-
-    public static boolean matchPlay = false;
-    public static long matchStart = 0;
-    public static long matchEnd = 0;
-
-    public Sound matchStartSound, teleopStartSound, ropeDropSound, matchEndSound, foghornSound, popSound;
-    Pathfinding pathfinding;
-    List<Point2D.Float> points;
-
-    public List<Team> allTeams = new ArrayList<>();
-    public static Schedule schedule;
 
     private static Main self = null;
 
-    public static float screenWidth = 1280, screenHeight = 720, screenAR = screenWidth/screenHeight;
-    public static final int world_width = 56, world_height = 30; //56, 29
+    public static float screenWidth = 1920, screenHeight = 1080;
+    public static final int world_width = 56, world_height = 34;
     private static final int camera_y = -4;
 
-    public static float meterToPixelWidth = screenWidth/world_width;
-    public static float meterToPixelHeight = screenHeight/world_height;
+    public static float mtpW = screenWidth/world_width;
+    public static float mtpH = screenHeight/world_height;
 
     public Field gameField;
 
     public static int currentRobot = -1;
 
     private Viewport viewport;
+    private Viewport unscaledViewport;
+
+    public Screen screen;
 
     @Override
 	public void create () {
         self = this;
-        Fonts.init();
+        Fonts.init(1.5f);
         Gamepads.init();
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
         world.setContactListener(new CollisionListener());
         debugRenderer = new Box2DDebugRenderer();
-        camera = new OrthographicCamera(screenWidth, screenHeight);
-        camera.position.set(0, camera_y, 0);
+
+        camera = new OrthographicCamera(world_width, world_height);
         camera.update();
-        viewport = new FitViewport(screenWidth, screenHeight, camera);
+        viewport = new FitViewport(world_width, world_height, camera);
 
-        if (makeSchedule) {
-            drawables.add(new RobotMaker());
-        } else {
-            initGame();
-        }
-    }
-
-    public void initGame() {
-
-        gameField = new Steamworks();
-
-        int index = 0;
-
-        if (extraRobots > 0) currentRobot = 0;
-
-        if (MANIPULATORS) {
-            boolean newRobot = true;
-            Robot robot = null;
-            Utils.log(Gamepads.getGamepads().size() + " controls");
-            for (int i = 0; i < Gamepads.getGamepads().size(); i++) {
-                if (newRobot) {
-                    robot = Robot.create(gameField.getDefaultRobotStats(), 2 + (index * 3), -11);
-                    robots.add(robot);
-                    newRobot = false;
-                } else {
-                    newRobot = true;
-                }
-                if (i < Gamepads.getGamepads().size()) {
-                    robot.claimGamepad(Gamepads.getGamepad(i));
-                    Utils.log("Controller");
-                }
-                index++;
-            }
-        } else {
-            for (int i = 0; i < Gamepads.getGamepads().size() + extraRobots; i++) {
-                Robot r = Robot.create(gameField.getDefaultRobotStats(), 2 + (index * 3), -11);
-                robots.add(r);
-                if (i < Gamepads.getGamepads().size()) {
-                    r.claimGamepad(Gamepads.getGamepad(i));
-
-                }
-                index++;
-            }
-        }
-
-        //gameField = new PowerUp();
-        gameField.affectRobots();
-
-        drawablesAdd.addAll(gameField.generateField());
-
-        /*
-        Match fake = new Match(5, new int[]{1114,2056,1902}, new int[]{987,1557,180});
-        fake.qualifier = true;
-        fake.blue.breakdown = new AllianceScoreData(true);
-        fake.red.breakdown = new AllianceScoreData(false);
-        drawables.add(new SteamResultDisplay(fake));
-        */
-
-        robots.forEach(this::spawnEntity);
+        unscaledCamera = new OrthographicCamera(screenWidth, screenHeight);
+        unscaledCamera.update();
+        unscaledViewport = new FitViewport(screenWidth, screenHeight, unscaledCamera);
 
         batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
 
-        matchStartSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/charge_3.wav"));
-        teleopStartSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/teleop.wav"));
-        ropeDropSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/whoop.wav"));
-        matchEndSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/end.wav"));
-        foghornSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/foghorn.wav"));
-        popSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/pop.wav"));
+        unscaledBatch = new SpriteBatch();
+        batch.setProjectionMatrix(unscaledCamera.combined);
 
-        musicChoices = Gdx.files.internal("core/assets/music").list();
+        setScreen(new TitleScreen());
+        //setScreen(new GameScreen());
+    }
 
-        shape = new ShapeRenderer();
-        shape.setAutoShapeType(true);
-        shape.setProjectionMatrix(camera.combined);
-
-        schedule = new Schedule(new PowerRankings());
-        schedule.generate(scheduleRounds);
-
-        gameField.updateMatchInfo();
-
-        /*
-        Match fake = new Match(4, new int[]{1,2,3}, new int[]{4,5,6});
-        fake.qualifier = false;
-        fake.blue.breakdown = new AllianceScoreData(true);
-        fake.red.breakdown = new AllianceScoreData(false);
-        drawables.add(new SteamResultDisplay(fake));
-        */
-
-        //schedule.getRankings().addFakeRankings();
-        //drawables.add(new AllianceSelection());
-
-        gameField.updateMatchInfo();
+    public void setScreen(Screen s) {
+        drawables.clear();
+        screen = s;
+        screen.init();
     }
 
     public static float widthScale = 1, heightScale = 1, fontScale = 1;
@@ -221,16 +123,14 @@ public class Main extends ApplicationAdapter {
         camera.update();
         viewport.update(width, height);
 
+        unscaledCamera.update();
+        unscaledViewport.update(width, height);
+
         batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
 
-        //widthScale = screenWidth/1100f;
-        //heightScale = screenHeight/630f;
-
-        //TODO: probably calculate this better
-        //TODO: default window size fontscale is not one
-        //fontScale = (Math.max(widthScale, heightScale));
-        Fonts.init(fontScale);
+        unscaledBatch = new SpriteBatch();
+        unscaledBatch.setProjectionMatrix(unscaledCamera.combined);
     }
 
     public void addFriction(Body b) {
@@ -262,16 +162,16 @@ public class Main extends ApplicationAdapter {
         }
     }
 
-    public void spawnEntity(Entity e) {
+    public static void spawnEntity(Entity e) {
         addDrawable(e);
     }
 
-    public void spawnEntity(float friction, Entity e) {
+    public static void spawnEntity(float friction, Entity e) {
         e.friction = friction;
         addDrawable(e);
     }
 
-    public void removeEntity(Entity e) {
+    public static void removeEntity(Entity e) {
         removeDrawable(e);
         synchronized (WORLD_USE) {
             for (Body b : e.getBodies()) {
@@ -282,17 +182,13 @@ public class Main extends ApplicationAdapter {
         }
     }
 
-    public void addDrawable(Drawable d) {
+    public static void addDrawable(Drawable d) {
         drawablesAdd.add(d);
     }
 
-    public void removeDrawable(Drawable d) {
+    public static void removeDrawable(Drawable d) {
         drawablesRemove.add(d);
     }
-
-    boolean didWhoop = false;
-
-    boolean resetField = false;
 
     int ticksWaitedCuzDum = 0;
 	@Override
@@ -304,7 +200,6 @@ public class Main extends ApplicationAdapter {
 
         batch.begin();
 
-        //TODO: scale up everything that's not "unscaled" to be actually viewable
         for (Drawable e : drawables) {
             if (e.isDrawScaled() && !drawablesRemove.contains(e)) e.draw(batch);
         }
@@ -316,16 +211,17 @@ public class Main extends ApplicationAdapter {
             }
         }
         if (gameField != null) gameField.draw(batch);
-        //batch.end();
+        batch.end();
 
-        //nonScaled.begin();
+        unscaledBatch.begin();
         for (Drawable e : drawables) {
-            if (!e.isDrawScaled() && !drawablesRemove.contains(e)) e.draw(batch);
+            if (!e.isDrawScaled() && !drawablesRemove.contains(e)) e.draw(unscaledBatch);
             else if (e instanceof Entity) {
-                ((Entity)e).drawUnscaled(batch);
+                ((Entity)e).drawUnscaled(unscaledBatch);
             }
         }
-        batch.end();
+        screen.draw(unscaledBatch);
+        unscaledBatch.end();
 
         /*if (points == null && ticksWaitedCuzDum > 4) {
             pathfinding = new Pathfinding();
@@ -393,23 +289,7 @@ public class Main extends ApplicationAdapter {
         }
     }
 
-    Long upHeld = null;
-
     private void tick() {
-        if (Game.isPlaying() && Game.getMatchTime() <= 0) {
-            matchEndSound.play(.6f);
-            if (playMusic && music != null) {
-                if (music.isPlaying()) music.stop();
-                music.dispose();
-                music = null;
-            }
-            matchPlay = false;
-            didWhoop = false;
-            resetField = true;
-            matchEnd = getTime();
-            gameField.onMatchEnd();
-        }
-
         for (Drawable e : new ArrayList<>(drawablesRemove)) {
             drawables.remove(e);
             drawablesRemove.remove(e);
@@ -440,100 +320,11 @@ public class Main extends ApplicationAdapter {
             c.b.onCollide(c.a, c.bB, c.bA, c.c);
         }
         collisions.clear();
+        screen.tick();
         for (Drawable e : drawables) {
             e.tick();
         }
-        if (gameField != null) gameField.tick();
-
-        boolean controllerStartMatch = false;
-        boolean anyHeld = false;
-        for (Gamepad g : Gamepads.getGamepads()) {
-            if (g.getDPad() == PovDirection.north) {
-                anyHeld = true;
-                if (upHeld == null) upHeld = getTime();
-                else if (getTime() - upHeld >= 2000) {
-                    controllerStartMatch = true;
-                }
-                break;
-            }
-        }
-        if (!anyHeld) upHeld = null;
-        if ((controllerStartMatch || Gdx.input.isKeyPressed(Input.Keys.P)) && !matchPlay && !isShowingResults && allianceSelection == null && rankings == null) {
-            matchEnd = 0;
-            gameField.onMatchStart();
-            resetField = true;
-            matchPlay = true;
-            matchStart = getTime();
-            matchStartSound.play(.45f);
-            if (playMusic) {
-                music = Gdx.audio.newMusic(musicChoices[Utils.randomInt(0, musicChoices.length - 1)]);
-                music.setVolume(.1f);
-                music.play();
-            }
-            controllerStartMatch = false;
-            upHeld = null;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.I) || controllerStartMatch) {
-            if (matchPlay) {
-                foghornSound.play(.25f);
-                matchPlay = false;
-                didWhoop = false;
-                if (playMusic && music.isPlaying()) music.stop();
-            } else if (isShowingResults) {
-                drawables.remove(results);
-                results = null;
-                isShowingResults = false;
-                if (schedule.getCurrentMatch() == null) {
-                    if (!schedule.elims) {
-                        allianceSelection = new AllianceSelection();
-                        addDrawable(allianceSelection);
-                    } else {
-                        schedule.elimsUpdate();
-                    }
-                }
-            } else if (allianceSelection != null) {
-                AllianceSelection a = (AllianceSelection) allianceSelection;
-                if (a.done) {
-                    removeDrawable(a);
-                    Main.schedule.startElims(a.alliances);
-                    gameField.updateMatchInfo();
-                    allianceSelection = null;
-                }
-            }
-            upHeld = null;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.R) || resetField) {
-            gameField.resetField(drawables);
-            resetField = false;
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
-            if (rankings == null) {
-                if (makeSchedule) {
-                    rankings = new RankingDisplay();
-                    drawables.add(rankings);
-                }
-            } else {
-                drawables.remove(rankings);
-                rankings = null;
-            }
-        }
-        if (Gamepads.getGamepads().size() != robots.size() && Gamepads.getGamepads().size() == 1) {
-            Gamepad one = Gamepads.getGamepad(0);
-            if (one.getButton(Gamepad.JOY_RIGHT)) {
-                if (!wasHeld) {
-                    currentRobot++;
-                    if (currentRobot == robots.size()) {
-                        currentRobot = 0;
-                    }
-                }
-                wasHeld = true;
-            } else {
-                wasHeld = false;
-            }
-        }
     }
-
-    boolean wasHeld = false;
 
     public List<Entity> getEntities() {
         List<Entity> ents = new ArrayList<>();
@@ -545,7 +336,6 @@ public class Main extends ApplicationAdapter {
 
     public static long getTime() {
         return Math.round(time*1000);
-        //return System.currentTimeMillis();
     }
 	
 	@Override

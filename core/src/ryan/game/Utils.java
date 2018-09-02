@@ -181,13 +181,13 @@ public class Utils {
 
         outline.setBounds(x, y, width, height);
 
-        background.setBounds(x + (Main.meterToPixelWidth*.1f), y + (Main.meterToPixelHeight*.1f),
-                width-(Main.meterToPixelWidth*.2f), height-(Main.meterToPixelHeight*.2f));
+        background.setBounds(x + (Main.mtpW *.1f), y + (Main.mtpH *.1f),
+                width-(Main.mtpW *.2f), height-(Main.mtpH *.2f));
 
-        float frontLength = progress * (width-(Main.meterToPixelWidth*.2f));
+        float frontLength = progress * (width-(Main.mtpW *.2f));
 
-        front.setBounds(x + (Main.meterToPixelWidth*.1f), y + (Main.meterToPixelHeight*.1f),
-                frontLength, height-(Main.meterToPixelHeight*.2f));
+        front.setBounds(x + (Main.mtpW *.1f), y + (Main.mtpH *.1f),
+                frontLength, height-(Main.mtpH *.2f));
 
         outline.draw(b);
         background.draw(b);

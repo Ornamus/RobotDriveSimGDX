@@ -9,6 +9,7 @@ import ryan.game.Utils;
 import ryan.game.entity.Robot;
 import ryan.game.games.power.PowerMetadata;
 import ryan.game.games.power.robots.PowerRobotBase;
+import ryan.game.screens.GameScreen;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,14 +34,13 @@ public class GamepadListener implements ControllerListener {
             Gamepad g = Gamepads.initGamepad(controller);
             Utils.log(g.getName() + " gamepad connected!");
 
-            //TODO: make this game generic
-            Robot r = Robot.create(new PowerRobotBase(), 2, -11);
-            r.metadata = new PowerMetadata();
+            Robot r = Robot.create(Main.getInstance().gameField.getDefaultRobotStats(), 2, -11);
+            //r.metadata = new PowerMetadata();
 
             r.claimGamepad(g);
-            Main.robots.add(r);
-            Main.getInstance().spawnEntity(r);
-            Main.getInstance().popSound.play(0.75f);
+            GameScreen.robots.add(r);
+            Main.spawnEntity(r);
+            GameScreen.popSound.play(0.75f);
         }
     }
 

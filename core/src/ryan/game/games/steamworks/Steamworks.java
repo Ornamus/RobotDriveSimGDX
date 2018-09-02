@@ -19,6 +19,7 @@ import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
 import ryan.game.render.Drawable;
 import ryan.game.render.ImageDrawer;
+import ryan.game.screens.GameScreen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -156,7 +157,7 @@ public class Steamworks extends Field {
 
     @Override
     public void affectRobots() {
-        for (Robot r : Main.robots) {
+        for (Robot r : GameScreen.robots) {
             r.metadata = new SteamworksMetadata();
         }
     }
@@ -169,7 +170,7 @@ public class Steamworks extends Field {
         addedBonusGears = false;
         didRopeDropWhoop = false;
 
-        for (Robot r : Main.robots) {
+        for (Robot r : GameScreen.robots) {
             r.auto = r.stats.getAutonomous(r);
             SteamworksMetadata m = (SteamworksMetadata) r.metadata;
             SteamRobotStats stats = (SteamRobotStats) r.stats;
@@ -191,7 +192,7 @@ public class Steamworks extends Field {
         if (red.kPA >= 40) red.rankingPoints++;
         if (red.rotors == 4) red.rankingPoints++;
 
-        Match current = Main.schedule.getCurrentMatch();
+        Match current = GameScreen.schedule.getCurrentMatch();
 
 
         int winner = -1;
@@ -215,7 +216,7 @@ public class Steamworks extends Field {
             }
         }
 
-        Main.schedule.completeCurrentMatch(blue.score, red.score, blue, red, winner);
+        GameScreen.schedule.completeCurrentMatch(blue.score, red.score, blue, red, winner);
 
         showResults(new SteamResultDisplay(current));
 
@@ -295,7 +296,7 @@ public class Steamworks extends Field {
             }
 
             if (Game.getMatchTime() == 30 && !didRopeDropWhoop) {
-                Main.getInstance().ropeDropSound.play(.35f);
+                GameScreen.ropeDropSound.play(.35f);
                 didRopeDropWhoop = true;
             }
         }
@@ -307,7 +308,7 @@ public class Steamworks extends Field {
     public void draw(SpriteBatch b) {
         int red = 0;
         for (Sprite s : redRotors) {
-            if (Main.matchPlay) {
+            if (GameScreen.matchPlay) {
                 if (red < redSpinning) s.setRotation(s.getRotation() + 4f);
             } else s.setRotation(0);
             s.draw(b);
@@ -316,7 +317,7 @@ public class Steamworks extends Field {
 
         int blue = 0;
         for (Sprite s : blueRotors) {
-            if (Main.matchPlay) {
+            if (GameScreen.matchPlay) {
                 if (blue < blueSpinning) s.setRotation(s.getRotation() - 4f);
             } else s.setRotation(180);
             s.draw(b);

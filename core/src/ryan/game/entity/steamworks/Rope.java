@@ -9,6 +9,7 @@ import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.games.Game;
 import ryan.game.render.Fonts;
+import ryan.game.screens.GameScreen;
 
 public class Rope extends Entity {
 
@@ -35,7 +36,7 @@ public class Rope extends Entity {
         super.drawUnscaled(b);
 
         int num = id;
-        Match m = Main.schedule.getCurrentMatch();
+        Match m = GameScreen.schedule.getCurrentMatch();
         if (m != null) {
             if (blue) num = m.blue.teams[id];
             else num = m.red.teams[id];
@@ -43,7 +44,7 @@ public class Rope extends Entity {
 
         Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, robotTouching || (Game.isPlaying() && Game.getMatchTime() > 30) ? .2f : 1);
 
-        Fonts.drawCentered(Fonts.fmsWhiteVerySmall, num + "", getX()*Main.meterToPixelWidth, getY()*Main.meterToPixelHeight, 0, 80, b);
+        Fonts.drawCentered(Fonts.fmsWhiteVerySmall, num + "", getX()*Main.mtpW, (getY()*Main.mtpH)+130, b);
 
         Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, 1);
     }

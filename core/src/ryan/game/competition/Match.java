@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.screens.GameScreen;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -92,7 +93,7 @@ public class Match implements Serializable {
 
     public String getName() {
         if (qualifier) {
-            return "Qualification " + number + " of " + Main.schedule.getQualifiers().size();
+            return "Qualification " + number + " of " + GameScreen.schedule.getQualifiers().size();
         } else {
             String type = "Elimination";
             int total = -1;
@@ -135,7 +136,7 @@ public class Match implements Serializable {
 
     public void save() {
         Gson g = new GsonBuilder().setPrettyPrinting().create();
-        Utils.writeFile(Main.eventKey + "/matches/" + level + (tiebreaker ?  "_tb" : "") + "_" + number, g.toJson(this));
+        Utils.writeFile(GameScreen.EVENT_KEY + "/matches/" + level + (tiebreaker ?  "_tb" : "") + "_" + number, g.toJson(this));
     }
 
     public class MatchAlliance implements Serializable {
@@ -151,7 +152,7 @@ public class Match implements Serializable {
         public List<Team> getTeams() {
             List<Team> t = new ArrayList<>();
             for (int i : teams) {
-                t.add(Main.schedule.getTeam(i));
+                t.add(GameScreen.schedule.getTeam(i));
             }
             return t;
         }

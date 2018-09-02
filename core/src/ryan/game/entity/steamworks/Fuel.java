@@ -48,7 +48,7 @@ public class Fuel extends Entity {
             SteamRobotStats stats = (SteamRobotStats) r.stats;
             if (meta.fuel < stats.maxFuel) {
                 meta.fuel++;
-                Main.getInstance().removeEntity(this);
+                Main.removeEntity(this);
             }
         }
     }

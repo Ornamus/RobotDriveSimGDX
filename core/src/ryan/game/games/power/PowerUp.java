@@ -20,6 +20,7 @@ import ryan.game.games.ScoreDisplay;
 import ryan.game.games.power.robots.PowerRobotBase;
 import ryan.game.render.Drawable;
 import ryan.game.render.ImageDrawer;
+import ryan.game.screens.GameScreen;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -166,14 +167,14 @@ public class PowerUp extends Field {
 
     @Override
     public void affectRobots() {
-        for (Robot r : Main.robots) {
+        for (Robot r : GameScreen.robots) {
             r.metadata = new PowerMetadata();
         }
     }
 
     @Override
     public void onMatchStart() {
-        for (Robot r : Main.robots) {
+        for (Robot r : GameScreen.robots) {
             r.auto = r.stats.getAutonomous(r);
             PowerMetadata m = (PowerMetadata) r.metadata;
             m.pixels=1;
@@ -211,8 +212,8 @@ public class PowerUp extends Field {
 
     @Override
     public void onMatchEnd() {
-        Match current = Main.schedule.getCurrentMatch();
-        Main.schedule.completeCurrentMatch(0,0,null,null,0);
+        Match current = GameScreen.schedule.getCurrentMatch();
+        GameScreen.schedule.completeCurrentMatch(0,0,null,null,0);
 
         //showResults(new SteamResultDisplay(current));
 
@@ -258,7 +259,7 @@ public class PowerUp extends Field {
     public void tick() {
         super.tick();
         if (Game.getMatchTime() == 30 && !did30SecWhoop) {
-            Main.getInstance().ropeDropSound.play(.35f);
+            GameScreen.ropeDropSound.play(.35f);
             did30SecWhoop = true;
         }
     }

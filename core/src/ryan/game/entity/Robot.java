@@ -19,7 +19,6 @@ import ryan.game.bcnlib_pieces.Command;
 import ryan.game.bcnlib_pieces.PIDSource;
 import ryan.game.competition.Match;
 import ryan.game.competition.RobotStats;
-import ryan.game.competition.Schedule;
 import ryan.game.competition.Team;
 import ryan.game.controls.Gamepad;
 import ryan.game.controls.Gamepads;
@@ -28,9 +27,9 @@ import ryan.game.entity.parts.Part;
 import ryan.game.entity.steamworks.Boiler;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
-import ryan.game.games.power.robots.*;
 import ryan.game.games.steamworks.robots.*;
 import ryan.game.render.Fonts;
+import ryan.game.screens.GameScreen;
 import ryan.game.sensors.Gyro;
 
 import java.awt.geom.Point2D;
@@ -161,7 +160,7 @@ public class Robot extends Entity {
         Color[] newColors;
         Color alliance = blue ? Main.BLUE : Main.RED;
         Team t = null;
-        if (Main.schedule != null) t = Main.schedule.getTeam(getNumber());
+        if (GameScreen.schedule != null) t = GameScreen.schedule.getTeam(getNumber());
         if (t != null) {
             newColors = new Color[]{alliance, t.primary, t.secondary};
         } else {
@@ -230,12 +229,12 @@ public class Robot extends Entity {
      * @return If the Robot has been removed from existence.
      */
     public boolean onGamepadDisconnect() {
-        if (Game.isPlaying() || Main.makeSchedule) {
+        if (Game.isPlaying() || GameScreen.MAKE_SCHEDULE) {
             controllerDisconnect = true;
             return false;
         } else {
             destroy();
-            Main.getInstance().popSound.play(0.75f);
+            GameScreen.popSound.play(0.75f);
             return true;
         }
     }
@@ -410,7 +409,7 @@ public class Robot extends Entity {
                 if (statsIndex >= statsOptions.length) {
                     statsIndex = 0;
                 }
-                if (!Main.makeSchedule) updateStats();
+                if (!GameScreen.MAKE_SCHEDULE) updateStats();
             }
             statsToggleWasTrue = val;
 
@@ -420,7 +419,7 @@ public class Robot extends Entity {
                 if (numberIndex > 2) {
                     numberIndex = 0;
                 }
-                if (Main.makeSchedule) updateStats();
+                if (GameScreen.MAKE_SCHEDULE) updateStats();
             }
             numberChangeWasTrue = val;
 
@@ -429,7 +428,7 @@ public class Robot extends Entity {
                 blue = !blue;
                 metadata = metadata.getNewInstance();
                 updateSprite();
-                if (Main.makeSchedule) updateStats();
+                if (GameScreen.MAKE_SCHEDULE) updateStats();
             }
             changeAllianceWasTrue = val;
 
@@ -444,12 +443,12 @@ public class Robot extends Entity {
     }
 
     public void updateStats() {
-        boolean schedule = Main.makeSchedule;
+        boolean schedule = GameScreen.MAKE_SCHEDULE;
         RobotStats oldStats = stats;
         stats = statsOptions[statsIndex];
 
         Team t;
-        if (schedule && (t = Main.schedule.getTeam(getNumber())) !=  null) {
+        if (schedule && (t = GameScreen.schedule.getTeam(getNumber())) !=  null) {
             stats = t.robotStats;
             //System.out.println("Using " + t.number + "'s stats.");
         }
@@ -470,16 +469,16 @@ public class Robot extends Entity {
         replacement.numberIndex = numberIndex;
         replacement.metadata = metadata;
         replacement.updateSprite();
-        Main.robots.add(replacement);
-        Main.getInstance().spawnEntity(replacement);
+        GameScreen.robots.add(replacement);
+        Main.spawnEntity(replacement);
     }
 
     public void destroy() {
         state = null;
         if (generator != null) generator.actuallyStop();
         generator = null;
-        Main.getInstance().removeEntity(this);
-        Main.robots.remove(this);
+        Main.removeEntity(this);
+        GameScreen.robots.remove(this);
         for (Gamepad g : Gamepads.getGamepads(this)) {
             g.r = null;
         }
@@ -519,24 +518,22 @@ public class Robot extends Entity {
     }
 
     public void drawUnscaled(SpriteBatch b) {
-         Match m = Main.schedule.getCurrentMatch();
-         if (m != null) {
-             Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, getAngle() > 110 && getAngle() < 250 ? .3f : 1);
+        Match m = GameScreen.schedule.getCurrentMatch();
+        if (m != null) {
+            Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, getAngle() > 110 && getAngle() < 250 ? .3f : 1);
 
-             Vector2 pos = getPhysicsPosition();
-             //TODO: fix bug where this ONE piece of text doesn't scale 100% perfectly on the y axis
-             Fonts.drawCentered(Fonts.fmsWhiteVerySmall, getNumber() + "", pos.x*Main.meterToPixelWidth, pos.y*Main.meterToPixelHeight, 0, 53, b);
- 
+            Vector2 pos = getPhysicsPosition();
+            Fonts.drawCentered(Fonts.fmsWhiteVerySmall, getNumber()+"", pos.x * Main.mtpW, (pos.y * Main.mtpH) + 84, b);
+
             Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, 1);
         }
-     }
+    }
 
     public int getNumber() {
-        //return 1114;//temp
-        Match m = Main.schedule.getCurrentMatch();
+        Match m = GameScreen.schedule.getCurrentMatch();
         if (m != null) {
-            if (blue) return Main.schedule.getCurrentMatch().blue.teams[numberIndex];
-            else return Main.schedule.getCurrentMatch().red.teams[numberIndex];
+            if (blue) return m.blue.teams[numberIndex];
+            else return m.red.teams[numberIndex];
         }
         return 0;
     }
@@ -707,7 +704,7 @@ public class Robot extends Entity {
     public Gamepad getManipulator() {
         List<Gamepad> controllers = getControllers();
         if (!controllers.isEmpty()) {
-            if (Main.MANIPULATORS) {
+            if (GameScreen.MANIPULATORS) {
                 return controllers.get(1);
             }
             return controllers.get(0);
@@ -717,7 +714,7 @@ public class Robot extends Entity {
 
     public List<Gamepad> getControllers() {
         List<Gamepad> gamepads = Gamepads.getGamepads(this);
-        if (Main.MANIPULATORS && gamepads.size() == 1) {
+        if (GameScreen.MANIPULATORS && gamepads.size() == 1) {
             gamepads.add(gamepads.get(0));
         }
         return gamepads;

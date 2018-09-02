@@ -9,6 +9,7 @@ import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.entity.steamworks.Gear;
+import ryan.game.screens.GameScreen;
 
 import java.util.HashMap;
 
@@ -34,10 +35,10 @@ public class HumanStation extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (!Main.matchPlay) pixels=7;
-        for (Robot r : Main.robots) {
+        if (!GameScreen.matchPlay) pixels=7;
+        for (Robot r : GameScreen.robots) {
             if (blue == r.blue) {
-                Gamepad g = r.getControllers().get(Main.MANIPULATORS ? 1 : 0);
+                Gamepad g = r.getControllers().get(GameScreen.MANIPULATORS ? 1 : 0);
                 if (g != null) {
                     boolean val;
                     val = left ? g.getDPad() == PovDirection.north : g.getDPad() == PovDirection.south;
@@ -49,7 +50,7 @@ public class HumanStation extends Entity {
                         float yChange = -distance * (float) Math.cos(Math.toRadians(getAngle()));
 
                         Pixel p = new Pixel(getX() + xChange, getY() + yChange);
-                        if (Main.matchPlay) {
+                        if (GameScreen.matchPlay) {
                             pixels--;
                         }
                         Main.getInstance().spawnEntity(p);

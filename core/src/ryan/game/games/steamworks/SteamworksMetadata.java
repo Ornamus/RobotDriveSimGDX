@@ -17,6 +17,8 @@ import ryan.game.entity.steamworks.Rope;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
+import ryan.game.screens.GameScreen;
+
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -140,7 +142,7 @@ public class SteamworksMetadata extends RobotMetadata {
             Rope rope = (Rope) e;
             rope.robotTouching = true;
             if (rope.blue == r.blue && stats.climber && (Game.getMatchTime() <= 30 || !Game.isPlaying())) {
-                Match m = Main.schedule.getCurrentMatch();
+                Match m = GameScreen.schedule.getCurrentMatch();
                 boolean numMatch = false;
                 if (m != null) {
                     if (rope.blue) numMatch = r.getNumber() == m.blue.teams[rope.id];
@@ -244,7 +246,7 @@ public class SteamworksMetadata extends RobotMetadata {
                 hasGear = false;
             } else {
                 hasGear = false;
-                if (Main.matchPlay) {
+                if (GameScreen.matchPlay) {
                     if (r.blue) Steamworks.blue.gearQueue++;
                     else Steamworks.red.gearQueue++;
                 }

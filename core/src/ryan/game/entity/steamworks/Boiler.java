@@ -6,6 +6,7 @@ import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.games.Game;
 import ryan.game.games.steamworks.Steamworks;
+import ryan.game.screens.GameScreen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +34,9 @@ public class Boiler extends Entity {
 
         for (Entity e : new ArrayList<>(fuelInRange)) {
             if (e.getAirMomentum() < 0 && e.getAirDistance() < 3.5f && e.getAirDistance() > 2.5f) {
-                Main.getInstance().removeEntity(e);
+                Main.removeEntity(e);
                 fuelInRange.remove(e);
-                if (Main.matchPlay) {
+                if (GameScreen.matchPlay) {
                     queue.add(Main.getTime());
                 }
             }

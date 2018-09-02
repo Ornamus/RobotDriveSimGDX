@@ -11,9 +11,7 @@ import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.games.power.PowerDisplay;
 import ryan.game.render.Fonts;
-
-import java.util.ArrayList;
-import java.util.List;
+import ryan.game.screens.GameScreen;
 
 public class PixelReceiver extends Entity {
 
@@ -36,13 +34,13 @@ public class PixelReceiver extends Entity {
     @Override
     public void tick(){
         super.tick();
-        if (!Main.matchPlay) {
+        if (!GameScreen.matchPlay) {
             boostDone = false;
             forceDone = false;
             pixels = 0;
             totalPixels = 0;
         }
-        for (Robot r : Main.robots) {
+        for (Robot r : GameScreen.robots) {
             if (blue == r.blue) {
                 Gamepad g = r.getController();
                 if (g != null && pixels > 0) {
@@ -112,6 +110,6 @@ public class PixelReceiver extends Entity {
     public void drawUnscaled(SpriteBatch b) {
         super.drawUnscaled(b);
         Vector2 pos = getPhysicsPosition();
-        Fonts.drawCentered(Fonts.fmsWhiteVerySmall, totalPixels + "", pos.x*Main.meterToPixelWidth, pos.y*Main.meterToPixelHeight, 0, 53, b);
+        Fonts.drawCentered(Fonts.fmsWhiteVerySmall, totalPixels + "", pos.x*Main.mtpW, pos.y*Main.mtpH, 0, 53, b);
     }
 }

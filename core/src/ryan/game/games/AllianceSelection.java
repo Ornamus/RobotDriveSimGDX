@@ -15,6 +15,8 @@ import ryan.game.controls.Gamepad;
 import ryan.game.controls.Gamepads;
 import ryan.game.render.Fonts;
 import ryan.game.render.ImageDrawer;
+import ryan.game.screens.GameScreen;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +49,7 @@ public class AllianceSelection extends ImageDrawer {
         sprite.setPosition(0-sprite.getWidth() /2, 0-sprite.getHeight()/2);
         setDrawScaled(false);
 
-        rankings = Main.schedule.getRankings().getRankings();
+        rankings = GameScreen.schedule.getRankings().getRankings();
 
         /*
         allianceBar = new Sprite(new Texture("core/assets/alliance_selection_bar.png"));
@@ -59,13 +61,13 @@ public class AllianceSelection extends ImageDrawer {
         teamButtonSelected = new Sprite(new Texture("core/assets/alliance_selection_teambutton_selected.png"));
         resize(teamButtonSelected, .25f);*/
 
-        if (Main.schedule.getTeams().size() >= 24) allianceAmount = 8;
-        else if (Main.schedule.getTeams().size() >= 12) allianceAmount = 4;
-        else if (Main.schedule.getTeams().size() >= 6) allianceAmount = 2;
+        if (GameScreen.schedule.getTeams().size() >= 24) allianceAmount = 8;
+        else if (GameScreen.schedule.getTeams().size() >= 12) allianceAmount = 4;
+        else if (GameScreen.schedule.getTeams().size() >= 6) allianceAmount = 2;
 
         alliances = new int[allianceAmount][allianceSize];
 
-        Rankings r = Main.schedule.getRankings();
+        Rankings r = GameScreen.schedule.getRankings();
         List rankings = r.getRankings();
         for (int i=0; i<allianceAmount; i++) {
             RankData d = (RankData) rankings.get(i);
@@ -138,7 +140,7 @@ public class AllianceSelection extends ImageDrawer {
                     if (selectingForAlliance < 0) {
                         Utils.log("ALLIANCE SELECTION COMPLETE");
                         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                        Utils.writeFile(Main.eventKey + "/alliance_selection.json", gson.toJson(alliances));
+                        Utils.writeFile(GameScreen.EVENT_KEY + "/alliance_selection.json", gson.toJson(alliances));
                         done = true;
                     }
                 }
@@ -194,7 +196,7 @@ public class AllianceSelection extends ImageDrawer {
         resize(teamButtonSelected, .25f*Main.fontScale);
 
 
-        Fonts.drawCentered(Fonts.fmsBlack, Main.eventName + " Alliance" + (done ? "s" : " Selection"), getCenterX(), getCenterY(), 0, 305-15, batch);
+        Fonts.drawCentered(Fonts.fmsBlack, GameScreen.EVENT_NAME + " Alliance" + (done ? "s" : " Selection"), getCenterX(), getCenterY(), 0, 305-15, batch);
         //Fonts.drawCentered(Main.eventName + " Alliance" + (done ? "s" : " Selection"), getCenterX(), getCenterY() + 305-15, Fonts.fmsBlack, batch);
         if (showingAlliances) {
             if (!done) Fonts.drawCentered(Fonts.fmsBlackSmall, "Alliance " + (selectingForAlliance+1) + " Is Picking", getCenterX(), getCenterY(), 0, 280-15, batch);

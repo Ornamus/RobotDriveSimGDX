@@ -9,6 +9,7 @@ import ryan.game.competition.Rankings;
 import ryan.game.games.ResultDisplay;
 import ryan.game.render.Fonts;
 import ryan.game.render.ImageDrawer;
+import ryan.game.screens.GameScreen;
 
 public class SteamResultDisplay extends ResultDisplay {
 
@@ -60,7 +61,7 @@ public class SteamResultDisplay extends ResultDisplay {
         boolean blue = x > getCenterX();
         float teamYAdjust = 167.5f;
         if (match.qualifier) {
-            Rankings r = Main.getInstance().schedule.getRankings();
+            Rankings r = GameScreen.schedule.getRankings();
             for (int i = 0; i < a.teams.length; i++) {
                 int team = a.teams[i];
                 float increment = (i * 40);
@@ -88,7 +89,7 @@ public class SteamResultDisplay extends ResultDisplay {
             Fonts.draw(Fonts.fmsWhiteSmall, teams, x, y, 70, 156, b);
             //Fonts.fmsWhiteSmall.draw(b, teams, x+70, y + 156);
 
-            Fonts.draw(Fonts.fmsBlackSmall, "" + (match.blue == a ? Main.schedule.getSeed(match.blue.teams) : Main.schedule.getSeed(match.red.teams)), x, y, 22.5f, 156, b);
+            Fonts.draw(Fonts.fmsBlackSmall, "" + (match.blue == a ? GameScreen.schedule.getSeed(match.blue.teams) : GameScreen.schedule.getSeed(match.red.teams)), x, y, 22.5f, 156, b);
             //Fonts.fmsBlackSmall.draw(b, "" + (match.blue == a ? Main.schedule.getSeed(match.blue.teams) : Main.schedule.getSeed(match.red.teams)), x+22.5f, y + 156);
         }
 

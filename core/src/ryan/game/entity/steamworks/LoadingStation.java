@@ -5,6 +5,7 @@ import ryan.game.controls.Gamepad;
 import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
+import ryan.game.screens.GameScreen;
 
 import java.util.HashMap;
 
@@ -27,7 +28,7 @@ public class LoadingStation extends Entity {
     @Override
     public void tick() {
         super.tick();
-        for (Robot r : Main.robots) {
+        for (Robot r : GameScreen.robots) {
             if (blue == r.blue) {
                 Gamepad g = r.getController();
                 if (g != null) {

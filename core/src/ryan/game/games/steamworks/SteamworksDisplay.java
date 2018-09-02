@@ -13,6 +13,7 @@ import ryan.game.games.Game;
 import ryan.game.games.ScoreDisplay;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
 import ryan.game.render.Fonts;
+import ryan.game.screens.GameScreen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +47,8 @@ public class SteamworksDisplay extends ScoreDisplay {
 
         super.draw(batch);
 
-        Fonts.drawCentered(Fonts.fmsBlack, Steamworks.blue.kPA + "", 0, getY(), 257.5f, 35f, batch); //blue kpa
-        Fonts.drawCentered(Fonts.fmsBlack, Steamworks.red.kPA + "", 0, getY(), -257.5f, 35f, batch); //red kpa
+        Fonts.drawCentered(Fonts.fmsBlack, Steamworks.blue.kPA + "", 450f, getY()+55f, batch); //blue kpa
+        Fonts.drawCentered(Fonts.fmsBlack, Steamworks.red.kPA + "", -450f, getY()+55f, batch); //red kpa
 
         Fonts.drawCentered(Fonts.fmsBlack, Steamworks.blue.rotors + "", 0, getY(), 360.5f, 36, batch); //blue rotors
         Fonts.drawCentered(Fonts.fmsBlack, Steamworks.red.rotors + "", 0, getY(), -360.5f, 36, batch); //red rotors
@@ -58,7 +59,7 @@ public class SteamworksDisplay extends ScoreDisplay {
         //Fonts.drawCentered(Steamworks.blue.climbs + "", 455, getY() + 36f, Fonts.fmsBlack, batch); //blue climbs
         //Fonts.drawCentered(Steamworks.red.climbs + "", -455, getY() + 36f, Fonts.fmsBlack, batch); //red climbs
 
-        if (Main.matchPlay) {
+        if (GameScreen.matchPlay) {
             drawGearDisplay(232.5f, 45, Steamworks.blue.gears, Steamworks.blue.gears > 12 ? Color.YELLOW : Color.WHITE, batch);
             drawGearDisplay(-287.5f, 45, Steamworks.red.gears, Steamworks.red.gears > 12 ? Color.YELLOW : Color.WHITE, batch);
 
@@ -147,8 +148,8 @@ public class SteamworksDisplay extends ScoreDisplay {
     }
 
     public int calculateScore(AllianceScoreData a) {
-        if (Main.matchPlay) {
-            Match current = Main.schedule.getCurrentMatch();
+        if (GameScreen.matchPlay) {
+            Match current = GameScreen.schedule.getCurrentMatch();
             a.score = 0;
             if (a.gearsInAuto > 0) {
                 a.rotorPoints += 20;
@@ -183,7 +184,7 @@ public class SteamworksDisplay extends ScoreDisplay {
             a.score += a.kPA;
             if (!current.qualifier && a.kPA >= 40) a.score += 20;
 
-            for (Robot r : Main.robots) {
+            for (Robot r : GameScreen.robots) {
                 if (a.blue == r.blue) {
                     SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
                     SteamRobotStats stats = (SteamRobotStats) r.stats;
