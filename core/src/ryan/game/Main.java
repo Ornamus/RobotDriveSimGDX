@@ -15,7 +15,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.FrictionJointDef;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import ryan.game.ai.Pathfinding;
+import ryan.game.competition.RobotMaker;
 import ryan.game.competition.Schedule;
 import ryan.game.competition.Team;
 import ryan.game.controls.Gamepad;
@@ -48,12 +51,10 @@ public class Main extends ApplicationAdapter {
     public Drawable results = null;
     public Drawable rankings = null;
 	SpriteBatch batch;
-    SpriteBatch nonScaled;
     ShapeRenderer shape;
     public World world;
     Box2DDebugRenderer debugRenderer;
     OrthographicCamera camera;
-    OrthographicCamera nonScaledCamera;
     public static List<Robot> robots = new ArrayList<>();
     public static List<Drawable> drawablesAdd = new ArrayList<>();
     public static List<Drawable> drawablesRemove = new ArrayList<>();
@@ -90,7 +91,7 @@ public class Main extends ApplicationAdapter {
 
     private static Main self = null;
 
-    public static float screenWidth = 1100f, screenHeight = 630f, screenAR = screenWidth/screenHeight;
+    public static float screenWidth = 1280, screenHeight = 720, screenAR = screenWidth/screenHeight;
     public static final int world_width = 56, world_height = 30; //56, 29
     private static final int camera_y = -4;
 
@@ -101,7 +102,9 @@ public class Main extends ApplicationAdapter {
 
     public static int currentRobot = -1;
 
-	@Override
+    private Viewport viewport;
+
+    @Override
 	public void create () {
         self = this;
         Fonts.init();
@@ -110,11 +113,19 @@ public class Main extends ApplicationAdapter {
         world = new World(new Vector2(0, 0), true);
         world.setContactListener(new CollisionListener());
         debugRenderer = new Box2DDebugRenderer();
-        camera = new OrthographicCamera(world_width, world_height);
+        camera = new OrthographicCamera(screenWidth, screenHeight);
         camera.position.set(0, camera_y, 0);
         camera.update();
-        nonScaledCamera = new OrthographicCamera(1100, 630);
-        nonScaledCamera.update();
+        viewport = new FitViewport(screenWidth, screenHeight, camera);
+
+        if (makeSchedule) {
+            drawables.add(new RobotMaker());
+        } else {
+            initGame();
+        }
+    }
+
+    public void initGame() {
 
         gameField = new Steamworks();
 
@@ -167,11 +178,8 @@ public class Main extends ApplicationAdapter {
 
         robots.forEach(this::spawnEntity);
 
-		batch = new SpriteBatch();
+        batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
-
-        nonScaled = new SpriteBatch();
-        nonScaled.setProjectionMatrix(nonScaledCamera.combined);
 
         matchStartSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/charge_3.wav"));
         teleopStartSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sound/teleop.wav"));
@@ -209,34 +217,19 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void resize(int width, int height) {
-        float trueAR = width*1f/height*1f;
-
-        camera = new OrthographicCamera(world_width, (world_height * 2) /trueAR);
-
         camera.position.set(0, camera_y, 0);
         camera.update();
+        viewport.update(width, height);
 
         batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
 
-        screenWidth = width;
-        screenHeight = (height*2)/trueAR;
-        screenAR = screenWidth/screenHeight;
-
-        meterToPixelWidth = screenWidth/world_width;
-        meterToPixelHeight = screenHeight/((world_height * 2) /trueAR);
-
-        nonScaledCamera = new OrthographicCamera(screenWidth, screenHeight);
-        nonScaledCamera.update();
-        nonScaled = new SpriteBatch();
-        nonScaled.setProjectionMatrix(nonScaledCamera.combined);
-
-        widthScale = screenWidth/1100f;
-        heightScale = screenHeight/630f;
+        //widthScale = screenWidth/1100f;
+        //heightScale = screenHeight/630f;
 
         //TODO: probably calculate this better
         //TODO: default window size fontscale is not one
-        fontScale = (Math.max(widthScale, heightScale));
+        //fontScale = (Math.max(widthScale, heightScale));
         Fonts.init(fontScale);
     }
 
@@ -310,6 +303,8 @@ public class Main extends ApplicationAdapter {
         doPhysicsStep(Gdx.graphics.getDeltaTime());
 
         batch.begin();
+
+        //TODO: scale up everything that's not "unscaled" to be actually viewable
         for (Drawable e : drawables) {
             if (e.isDrawScaled() && !drawablesRemove.contains(e)) e.draw(batch);
         }
@@ -320,17 +315,17 @@ public class Main extends ApplicationAdapter {
                 }
             }
         }
-        gameField.draw(batch);
-        batch.end();
+        if (gameField != null) gameField.draw(batch);
+        //batch.end();
 
-        nonScaled.begin();
+        //nonScaled.begin();
         for (Drawable e : drawables) {
-            if (!e.isDrawScaled() && !drawablesRemove.contains(e)) e.draw(nonScaled);
+            if (!e.isDrawScaled() && !drawablesRemove.contains(e)) e.draw(batch);
             else if (e instanceof Entity) {
-                ((Entity)e).drawUnscaled(nonScaled);
+                ((Entity)e).drawUnscaled(batch);
             }
         }
-        nonScaled.end();
+        batch.end();
 
         /*if (points == null && ticksWaitedCuzDum > 4) {
             pathfinding = new Pathfinding();
@@ -448,7 +443,7 @@ public class Main extends ApplicationAdapter {
         for (Drawable e : drawables) {
             e.tick();
         }
-        gameField.tick();
+        if (gameField != null) gameField.tick();
 
         boolean controllerStartMatch = false;
         boolean anyHeld = false;

@@ -49,7 +49,7 @@ public class Schedule {
             }
 
             Gson g = new GsonBuilder().setPrettyPrinting().create();
-            Utils.writeFile(Main.eventKey + "/teams.json", g.toJson(teams));
+            //Utils.writeFile(Main.eventKey + "/teams.json", g.toJson(teams));
         }
     }
 
