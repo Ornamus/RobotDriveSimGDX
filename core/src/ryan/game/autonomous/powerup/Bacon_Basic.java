@@ -8,6 +8,7 @@ import ryan.game.bcnlib_pieces.PIDController;
 import ryan.game.entity.Robot;
 import ryan.game.games.Game;
 import ryan.game.games.power.PowerMetadata;
+import ryan.game.screens.GameScreen;
 
 public class Bacon_Basic extends Command {
 
@@ -25,7 +26,7 @@ public class Bacon_Basic extends Command {
     public void onInit() {
         robot.getGyro().reset();
         PowerMetadata meta = (PowerMetadata) robot.metadata;
-        String s = Main.getInstance().gameField.getGameString(robot.blue ? Game.ALLIANCE.BLUE : Game.ALLIANCE.RED);
+        String s = GameScreen.self.field.getGameString(robot.blue ? Game.ALLIANCE.BLUE : Game.ALLIANCE.RED);
         if (s.charAt(0) == 'L') {
             Utils.log("GO LEFT");
         } else {

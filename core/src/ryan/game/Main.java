@@ -72,8 +72,6 @@ public class Main extends ApplicationAdapter {
     public static float mtpW = screenWidth/world_width;
     public static float mtpH = screenHeight/world_height;
 
-    public Field gameField;
-
     public static int currentRobot = -1;
 
     private Viewport viewport;
@@ -210,7 +208,6 @@ public class Main extends ApplicationAdapter {
                 }
             }
         }
-        if (gameField != null) gameField.draw(batch);
         batch.end();
 
         unscaledBatch.begin();

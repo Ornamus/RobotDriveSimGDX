@@ -88,7 +88,7 @@ public class Schedule {
                 }
                 r.calculate();
                 if (found) {
-                    Main.getInstance().gameField.updateMatchInfo();
+                    GameScreen.self.field.updateMatchInfo();
                     Utils.log("Left off at qualifier index " + index + ", restarting there.");
                 } else if (!found) { //All qualifiers completed
                     f = new File(GameScreen.EVENT_KEY + "/alliance_selection.json");
@@ -125,7 +125,7 @@ public class Schedule {
                             index++;
                         }
                         Utils.log(index + " of " + matches.size());
-                        Main.getInstance().gameField.updateMatchInfo();
+                        GameScreen.self.field.updateMatchInfo();
                     } else { //We need to start/restart alliance selection
                         Utils.log("Did not find alliance selection data, starting alliance selections.");
                         GameScreen.allianceSelection = new AllianceSelection();
@@ -190,7 +190,7 @@ public class Schedule {
                             }
                         }
                         Utils.log(matches.size() + " matches");
-                        Main.getInstance().gameField.updateMatchInfo();
+                        GameScreen.self.field.updateMatchInfo();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -278,7 +278,7 @@ public class Schedule {
                 Utils.writeFile(GameScreen.EVENT_KEY + "/remainingAlliances.json", g.toJson(remainingAlliances));
 
                 generateNextElimMatches();
-                Main.getInstance().gameField.updateMatchInfo();
+                GameScreen.self.field.updateMatchInfo();
             } else {
                 //TODO: properly end the game (and actually display who won)
                 Utils.log((wonSet.get(remainingAlliances[0]) ? arrayToString(remainingAlliances[0]) : arrayToString(remainingAlliances[1])) + " wins!");
@@ -292,7 +292,7 @@ public class Schedule {
                 m.save();
                 matches.add(m);
             }
-            Main.getInstance().gameField.updateMatchInfo();
+            GameScreen.self.field.updateMatchInfo();
         }
     }
 

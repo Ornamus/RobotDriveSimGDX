@@ -33,14 +33,14 @@ public class GamepadListener implements ControllerListener {
         } else {
             Gamepad g = Gamepads.initGamepad(controller);
             Utils.log(g.getName() + " gamepad connected!");
+            if (Main.getInstance().screen instanceof GameScreen) { //#TODO: is there a cleaner way to do this?
+                Robot r = Robot.create(GameScreen.self.field.getDefaultRobotStats(), 2, -11);
 
-            Robot r = Robot.create(Main.getInstance().gameField.getDefaultRobotStats(), 2, -11);
-            //r.metadata = new PowerMetadata();
-
-            r.claimGamepad(g);
-            GameScreen.robots.add(r);
-            Main.spawnEntity(r);
-            GameScreen.popSound.play(0.75f);
+                r.claimGamepad(g);
+                GameScreen.robots.add(r);
+                Main.spawnEntity(r);
+                GameScreen.popSound.play(0.75f);
+            }
         }
     }
 

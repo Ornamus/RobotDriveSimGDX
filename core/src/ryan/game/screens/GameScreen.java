@@ -31,6 +31,8 @@ import java.util.List;
 
 public class GameScreen extends Screen  {
 
+    public static GameScreen self = null;
+
     public static boolean MANIPULATORS = false;
     public static int EXTRA_ROBOTS = 0;
     public static int SCHEDULE_ROUNDS = 8;
@@ -74,7 +76,7 @@ public class GameScreen extends Screen  {
 
     public List<Team> allTeams = new ArrayList<>();
 
-    public GameScreen(){}
+    public GameScreen(){ }
 
     public void init() {
         field = new Steamworks();
@@ -159,6 +161,8 @@ public class GameScreen extends Screen  {
         //drawables.add(new AllianceSelection());
 
         field.updateMatchInfo();
+
+        self = this;
     }
 
 
