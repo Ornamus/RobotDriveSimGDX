@@ -130,7 +130,7 @@ public class TitleScreen extends Screen {
 
         val = sliders.get(4).getProgress();
         stats.climber = val != 0;
-        stats.climbSpeed = 2000 - (1600 * val);
+        stats.climbSpeed = 8 - (6.5f * val);
 
         stats.texture = custom_robots[custom_robot_index];
         stats.recolorIndex = -1;
