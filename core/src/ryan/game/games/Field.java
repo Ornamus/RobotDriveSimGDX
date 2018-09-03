@@ -13,6 +13,8 @@ public abstract class Field extends Drawable {
 
     public abstract List<Drawable> generateField();
 
+    public abstract RobotMetadata generateMetadata();
+
     public abstract void affectRobots();
 
     public abstract void onMatchStart();

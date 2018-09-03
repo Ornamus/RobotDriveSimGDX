@@ -244,8 +244,7 @@ public class GameScreen extends Screen  {
             upHeld = null;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.R) || resetField) {
-            //TODO: fix
-            //field.resetField(drawables);
+            field.resetField(Main.drawables);
             resetField = false;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {

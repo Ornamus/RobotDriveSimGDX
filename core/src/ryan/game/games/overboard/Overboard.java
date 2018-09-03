@@ -14,6 +14,7 @@ import ryan.game.entity.Robot;
 import ryan.game.entity.overboard.*;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
+import ryan.game.games.RobotMetadata;
 import ryan.game.games.ScoreDisplay;
 import ryan.game.games.overboard.robots.OverRobotStats;
 import ryan.game.games.steamworks.SteamResultDisplay;
@@ -89,6 +90,11 @@ public class Overboard extends Field {
         drawables.add(display);
 
         return drawables;
+    }
+
+    @Override
+    public RobotMetadata generateMetadata() {
+        return new PirateMetadata();
     }
 
     public List<Chest> generateChests() {

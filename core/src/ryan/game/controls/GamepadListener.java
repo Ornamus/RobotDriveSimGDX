@@ -35,7 +35,7 @@ public class GamepadListener implements ControllerListener {
             Utils.log(g.getName() + " gamepad connected!");
             if (Main.getInstance().screen instanceof GameScreen) { //#TODO: is there a cleaner way to do this?
                 Robot r = Robot.create(GameScreen.self.field.getDefaultRobotStats(), 2, -11);
-
+                r.metadata = GameScreen.self.field.generateMetadata();
                 r.claimGamepad(g);
                 GameScreen.robots.add(r);
                 Main.spawnEntity(r);

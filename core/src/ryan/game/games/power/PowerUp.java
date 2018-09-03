@@ -16,6 +16,7 @@ import ryan.game.entity.powerup.*;
 import ryan.game.entity.steamworks.LoadingStation;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
+import ryan.game.games.RobotMetadata;
 import ryan.game.games.ScoreDisplay;
 import ryan.game.games.power.robots.PowerRobotBase;
 import ryan.game.render.Drawable;
@@ -131,6 +132,11 @@ public class PowerUp extends Field {
         drawables.add(display);
 
         return drawables;
+    }
+
+    @Override
+    public RobotMetadata generateMetadata() {
+        return new PowerMetadata();
     }
 
     public List<Entity> generatePixels() {

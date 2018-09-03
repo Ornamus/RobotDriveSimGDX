@@ -14,6 +14,7 @@ import ryan.game.entity.*;
 import ryan.game.entity.steamworks.*;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
+import ryan.game.games.RobotMetadata;
 import ryan.game.games.ScoreDisplay;
 import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
@@ -156,9 +157,14 @@ public class Steamworks extends Field {
     }
 
     @Override
+    public RobotMetadata generateMetadata() {
+        return new SteamworksMetadata();
+    }
+
+    @Override
     public void affectRobots() {
         for (Robot r : GameScreen.robots) {
-            r.metadata = new SteamworksMetadata();
+            r.metadata = generateMetadata();
         }
     }
 
