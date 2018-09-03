@@ -10,6 +10,7 @@ import ryan.game.games.overboard.Overboard;
 import ryan.game.games.steamworks.AllianceScoreData;
 import ryan.game.games.steamworks.robots.Steam254;
 import ryan.game.games.steamworks.robots.SteamDefault;
+import ryan.game.games.steamworks.robots.SteamRobotStats;
 import ryan.game.screens.GameScreen;
 
 import java.io.*;
@@ -33,10 +34,8 @@ public class Schedule {
         r.s = this;
         File f = new File(GameScreen.EVENT_KEY  + "/teams.json");
         if (f.exists()) {
-            //TODO: somehow make the teams loaded by the correct subclass, i.e. OverboardTeam
-            Team[] teamArray = new Team[0];
-            teamArray = Utils.fromJSON(f, teamArray.getClass());
-            Collections.addAll(teams, teamArray);
+            teams = Utils.teamListFromJSON(f);
+            System.out.println("class stats: " + teams.get(0).robotStats.getClass());
             Utils.log("Loaded " + teams.size() + " teams");
         } else {
 
@@ -50,7 +49,7 @@ public class Schedule {
             }
 
             Gson g = new GsonBuilder().setPrettyPrinting().create();
-            //Utils.writeFile(Main.eventKey + "/teams.json", g.toJson(teams));
+            Utils.writeFile(GameScreen.EVENT_KEY + "/teams.json", g.toJson(teams));
         }
     }
 

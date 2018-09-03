@@ -27,7 +27,6 @@ public class OverRobotStats extends RobotStats {
     public float  detectWeightMechanismTime = 750;
 
     public OverRobotStats() {
-        super(Game.OVERBOARD);
         robotWidth = 0.8128f;
         intakeWidth = robotWidth*.75f;
         needsStateGenerator = true; //TODO: remove this once this class is properly treated as a stats default

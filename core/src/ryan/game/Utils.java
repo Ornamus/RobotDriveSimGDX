@@ -5,13 +5,13 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.google.gson.Gson;
+import com.google.gson.*;
+import ryan.game.competition.Team;
+import ryan.game.games.steamworks.robots.SteamRobotStats;
 
 import java.awt.geom.Point2D;
 import java.io.*;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class Utils {
 
@@ -217,6 +217,29 @@ public class Utils {
             e.printStackTrace();         
             return null;
         }
+    }
+
+    public static List<Team> teamListFromJSON(File f) {
+        List<Team> teams = new ArrayList<>();
+        Gson g = new Gson();
+
+        try {
+            JsonParser parser = new JsonParser();
+            JsonArray a = parser.parse(new FileReader(f)).getAsJsonArray();
+            for (int i=0; i<a.size(); i++) {
+                JsonObject team = a.get(i).getAsJsonObject();
+                JsonElement stats = team.get("robotStats");
+                Team t = g.fromJson(team.toString(), Team.class);
+                SteamRobotStats s = g.fromJson(stats.toString(), SteamRobotStats.class); //TODO: somehow make the teams loaded by the correct subclass, i.e. OverboardTeam
+
+                t.robotStats = s;
+                teams.add(t);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return teams;
     }
 
     public static void writeFile(String fileName, String content) {

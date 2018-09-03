@@ -85,11 +85,10 @@ public class SteamworksDisplay extends ScoreDisplay {
                 batch.draw(Gear.TEXTURE, hpX - 20.5f, hpY - 6.8f - (spacing * i), 35, 35);
             }
             drawFuelProgress(475.8f, -459, true, batch);
-            drawFuelProgress(-291 * 1.7f, -272 * 1.7f, false, batch);
+            drawFuelProgress(-510, -462.4f, false, batch);
         }
     }
 
-    //TODO: does not scale perfectly due to being affected by the ratio of width to height
     public void drawFuelProgress(float startX, float startY, boolean blue, SpriteBatch b) {
         Sprite s = blue ? blueBlob : redBlob;
         float radius = 38.25f * 1.7f;
@@ -211,8 +210,12 @@ public class SteamworksDisplay extends ScoreDisplay {
 
     public void drawGearDisplay(float x, float y, int gears, Color c, SpriteBatch b) {
         b.draw(Gear.TEXTURE, x, y, 50, 50);
+
+        Color old = Fonts.monoWhiteLarge.getColor();
         Fonts.monoWhiteLarge.setColor(c);
 
         Fonts.drawCentered(Fonts.monoWhiteLarge, gears + "", x + 25, y + 90, b);
+
+        Fonts.monoWhiteLarge.setColor(old);
     }
 }

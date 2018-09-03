@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.ai.Pathfinding;
+import ryan.game.competition.RobotStats;
 import ryan.game.competition.Schedule;
 import ryan.game.competition.Team;
 import ryan.game.controls.Gamepad;
@@ -23,10 +25,13 @@ import ryan.game.games.Game;
 import ryan.game.games.RankingDisplay;
 import ryan.game.games.power.PowerRankings;
 import ryan.game.games.power.PowerUp;
+import ryan.game.games.steamworks.SteamRankings;
 import ryan.game.games.steamworks.Steamworks;
+import ryan.game.games.steamworks.robots.SteamRobotStats;
 import ryan.game.render.Drawable;
 
 import java.awt.geom.Point2D;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,6 +85,7 @@ public class GameScreen extends Screen  {
     public GameScreen(){ }
 
     public void init() {
+        self = this;
         field = new Steamworks();
 
         int index = 0;
@@ -145,10 +151,8 @@ public class GameScreen extends Screen  {
         shape.setAutoShapeType(true);
         shape.setProjectionMatrix(camera.combined);*/
 
-        schedule = new Schedule(new PowerRankings());
+        schedule = new Schedule(new SteamRankings());
         schedule.generate(SCHEDULE_ROUNDS);
-
-        field.updateMatchInfo();
 
         /*
         Match fake = new Match(4, new int[]{1,2,3}, new int[]{4,5,6});
@@ -161,9 +165,8 @@ public class GameScreen extends Screen  {
         //schedule.getRankings().addFakeRankings();
         //drawables.add(new AllianceSelection());
 
-        field.updateMatchInfo();
-
-        self = this;
+        //field.updateMatchInfo();
+        field.updateHumanSprites();
     }
 
 
@@ -221,7 +224,7 @@ public class GameScreen extends Screen  {
                 didWhoop = false;
                 if (PLAY_MUSIC && music.isPlaying()) music.stop();
             } else if (isShowingResults) {
-                Main.addDrawable(results);
+                Main.removeDrawable(results);
                 results = null;
                 isShowingResults = false;
                 if (schedule.getCurrentMatch() == null) {
@@ -257,6 +260,15 @@ public class GameScreen extends Screen  {
                 Main.removeDrawable(rankings);
                 rankings = null;
             }
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+            for (Robot r : new ArrayList<>(robots)) {
+                r.onGamepadDisconnect();
+            }
+            robots.clear();
+            music.stop();
+            matchPlay = false;
+            Main.getInstance().setScreen(new TitleScreen());
         }
         if (Gamepads.getGamepads().size() != robots.size() && Gamepads.getGamepads().size() == 1) {
             Gamepad one = Gamepads.getGamepad(0);

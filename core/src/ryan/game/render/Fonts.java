@@ -105,6 +105,10 @@ public class Fonts {
         draw(f, s, x-(getWidth(s,f)/2), y, b);
     }
 
+    public static void drawRight(BitmapFont f, String s, float x, float y, SpriteBatch b) {
+        draw(f, s, x-(getWidth(s,f)), y, b);
+    }
+
     @Deprecated
     public static void draw(BitmapFont f, String s, float x, float y, float offsetX, float offsetY, SpriteBatch b) {
         f.draw(b, s, x + offsetX, y + offsetY);

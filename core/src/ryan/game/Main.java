@@ -86,8 +86,6 @@ public class Main extends ApplicationAdapter implements InputProcessor {
         Fonts.init(fontScale);
         Gamepads.init();
         Box2D.init();
-        world = new World(new Vector2(0, 0), true);
-        world.setContactListener(new CollisionListener());
         debugRenderer = new Box2DDebugRenderer();
 
         camera = new OrthographicCamera(world_width, world_height);
@@ -110,6 +108,8 @@ public class Main extends ApplicationAdapter implements InputProcessor {
 
     public void setScreen(Screen s) {
         drawables.clear();
+        world = new World(new Vector2(0, 0), true);
+        world.setContactListener(new CollisionListener());
         screen = s;
         screen.init();
     }

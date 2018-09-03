@@ -3,6 +3,7 @@ package ryan.game.games;
 import ryan.game.Main;
 import ryan.game.competition.Match;
 import ryan.game.competition.RobotStats;
+import ryan.game.entity.Robot;
 import ryan.game.games.steamworks.SteamResultDisplay;
 import ryan.game.render.Drawable;
 import ryan.game.screens.GameScreen;
@@ -46,6 +47,8 @@ public abstract class Field extends Drawable {
         Main.addDrawable(d);
         GameScreen.isShowingResults = true;
     }
+
+    public void updateHumanSprites() {}
 
     public abstract RobotStats getDefaultRobotStats();
 }

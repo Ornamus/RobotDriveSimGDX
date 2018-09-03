@@ -27,7 +27,6 @@ public class PowerRobotBase extends RobotStats { //28 by 33
     public float climbTime = 2;
 
     public PowerRobotBase() {
-        super(Game.POWERUP);
         robotWidth = 0.7112f; //28 inches
         robotHeight = 0.8382f; //33 inches
 

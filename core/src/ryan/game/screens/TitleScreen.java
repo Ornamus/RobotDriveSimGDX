@@ -3,13 +3,17 @@ package ryan.game.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import ryan.game.Main;
 import ryan.game.Utils;
+import ryan.game.competition.RobotStats;
 import ryan.game.entity.Robot;
 import ryan.game.games.RobotStatBuilder;
 import ryan.game.games.RobotStatSlider;
@@ -18,12 +22,15 @@ import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
 import ryan.game.render.Fonts;
 
+import java.io.File;
 import java.util.List;
 
 public class TitleScreen extends Screen {
 
     Subpage subpage = Subpage.TITLE;
     float ui_visibility = 0;
+
+    public static int customBotsLoaded = -1;
 
     Music music = Gdx.audio.newMusic(Gdx.files.internal("core/assets/music/title_2.wav"));
     Sprite frc_logo = new Sprite(new Texture(Gdx.files.internal("core/assets/frc_logo2.png")));
@@ -32,7 +39,8 @@ public class TitleScreen extends Screen {
     Button tournamentButton, builderButton, settingsButton;
 
     int maxPoints;
-    String[] custom_robots = {"core/assets/robot_custom.png", "core/assets/robot_custom3.png", "core/assets/robot_custom2.png", "core/assets/robot_custom4.png", "core/assets/robot_custom5.png"};
+    String[] custom_robots = {"core/assets/robot_custom.png", "core/assets/robot_custom3.png", "core/assets/robot_custom2.png",
+            "core/assets/robot_custom4.png", "core/assets/robot_custom5.png", "core/assets/robot_custom6.png"};
     int custom_robot_index = 0;
     Sprite custom_robot_current;
     Sprite arrow = new Sprite(new Texture("core/assets/ui/arrow.png"));
@@ -84,6 +92,21 @@ public class TitleScreen extends Screen {
         randomColorButton = new Button(0, 170, 450, 70, "Random Colors", ()-> {
             randomColors();
         });
+
+        //Loading up custom robot files
+        if (customBotsLoaded == -1) {
+            customBotsLoaded = 0;
+            FileHandle[] custom_robots = Gdx.files.internal("custom_robots").list();
+            for (FileHandle h : custom_robots) {
+                if (h.exists()) {
+                    File f = h.file();
+                    RobotStats s;
+                    s = Utils.fromJSON(f, SteamRobotStats.class); //TODO: make this not game specific
+                    Robot.addStatOption(s);
+                    customBotsLoaded++;
+                }
+            }
+        }
     }
 
     public void randomColors() {
@@ -134,17 +157,20 @@ public class TitleScreen extends Screen {
 
     public void saveRobot() {
         //TODO: for now, assuming Steamworks. Need to make this work by default for all games
-        SteamRobotStats stats = new SteamDefault();
+        SteamRobotStats stats = new SteamRobotStats();
         stats.texture = custom_robots[custom_robot_index];
         stats.recolorIndex = -1;
         stats.custom_primary = primary;
         stats.custom_secondary = secondary;
         statBuilder.applyStats(stats);
 
-        //Gson g = new GsonBuilder().setPrettyPrinting().create();
-        //Utils.log(g.toJson(stats));
+        Gson g = new GsonBuilder().setPrettyPrinting().create();
+
+        FileHandle[] existingRobots = Gdx.files.internal("custom_robots").list();
+        Utils.writeFile("custom_robots/robot_" + (existingRobots.length+1) + ".json", g.toJson(stats));
 
         Robot.addStatOption(stats);
+        customBotsLoaded++;
     }
 
     public void nextCustomRobotSprite() {
@@ -205,7 +231,8 @@ public class TitleScreen extends Screen {
             settingsButton.setAlpha(ui_visibility);
             settingsButton.draw(b);
 
-            Fonts.draw(Fonts.monoWhiteLarge, "The FRC Simulator, v0.1a", Main.screenWidth/2 -640, -Main.screenHeight/2 +40, b);
+            Fonts.drawRight(Fonts.monoWhiteLarge, "The FRC Simulator, v0.1a", Main.screenWidth/2 - 5, -Main.screenHeight/2 +40, b);
+            Fonts.drawRight(Fonts.monoWhiteLarge, customBotsLoaded + " custom bots loaded", Main.screenWidth/2 - 5, -Main.screenHeight/2 +90, b);
         } else if (subpage == Subpage.ROBOT_BUILDER) {
             custom_robot_current.draw(b);
             arrow.draw(b);
@@ -235,10 +262,9 @@ public class TitleScreen extends Screen {
             }
             for (RobotStatSlider s : statBuilder.getSliders()) {
                 if (s.plus.getBoundingRectangle().contains(pos.x, pos.y)) {
-                    if (maxPoints > 0) {
+                    if (maxPoints > 0 && s.current < s.max) {
                         maxPoints--;
                         s.current++;
-                        if (s.current > s.max) s.current = s.max;
                         return true;
                     }
                 } else if (s.minus.getBoundingRectangle().contains(pos.x, pos.y)) {

@@ -3,11 +3,9 @@ package ryan.game.competition;
 import com.badlogic.gdx.graphics.Color;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.entity.Robot;
-import ryan.game.games.Game;
 
-public abstract class RobotStats {
+public class RobotStats {
 
-    public final Game game;
     public float robotWidth = 0.9144f;
     public float robotHeight = robotWidth;
     public float maxMPS = 16 / 3.28084f;
@@ -26,11 +24,10 @@ public abstract class RobotStats {
     public Color custom_primary = null;
     public Color custom_secondary = null;
 
-    public RobotStats(Game g) {
-        game = g;
-    }
 
-    public abstract Command getAutonomous(Robot r);
+    public Command getAutonomous(Robot r) {
+        return null;
+    }
 
     public void addParts(float x, float y, Robot r) {}
 }

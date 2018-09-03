@@ -2,13 +2,15 @@ package ryan.game.games.steamworks.robots;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import ryan.game.autonomous.steamworks.AutoBaseline;
+import ryan.game.bcnlib_pieces.Command;
 import ryan.game.competition.RobotStats;
 import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Robot;
 import ryan.game.entity.parts.Intake;
 import ryan.game.games.Game;
 
-public abstract class SteamRobotStats extends RobotStats {
+public class SteamRobotStats extends RobotStats {
 
     public boolean gearHPStation = true;
     public boolean gearIntake = true;
@@ -45,13 +47,17 @@ public abstract class SteamRobotStats extends RobotStats {
     public float gearDropOnCollide = 0f;
 
     public SteamRobotStats() {
-        super(Game.STEAMWORKS);
         intakeWidth = robotWidth * .9f;
     }
 
     @Override
+    public Command getAutonomous(Robot r) {
+        return new AutoBaseline(r);
+    }
+
+    @Override
     public void addParts(float x, float y, Robot r) {
-        if (hasIntake) {
+        if (hasIntake && (gearIntake || fuelIntake)) {
             float width = intakeWidth, height = robotHeight / 4;
             Body in = BodyFactory.getRectangleDynamic(x - (robotWidth / 2), y + robotHeight + height, width, height, width * height);
             r.addPart(new Intake(width * 2, height * 2, in));

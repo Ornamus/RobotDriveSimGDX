@@ -1,6 +1,7 @@
 package ryan.game.games.steamworks;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -10,6 +11,7 @@ import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.competition.Match;
 import ryan.game.competition.RobotStats;
+import ryan.game.competition.Schedule;
 import ryan.game.entity.*;
 import ryan.game.entity.steamworks.*;
 import ryan.game.games.Field;
@@ -42,6 +44,8 @@ public class Steamworks extends Field {
     boolean addedBonusGears = false;
     boolean didRopeDropWhoop = false;
 
+    Sprite[] blueHumans, redHumans;
+
     public Steamworks() {
         blue = new AllianceScoreData(true);
         red = new AllianceScoreData(false);
@@ -49,6 +53,39 @@ public class Steamworks extends Field {
         humanPlayers.add(new HumanPlayer(true));
         humanPlayers.add(new HumanPlayer(false));
         humanPlayers.add(new HumanPlayer(false));
+    }
+
+    public void updateHumanSprites() {
+        for (int i = 0; i < 2; i++) {
+            Sprite[] array = new Sprite[3];
+            int[] teams = i == 0 ? display.getRedTeams() : display.getBlueTeams();
+            for (int h = 0; h < 3; h++) {
+                Color primary = i == 0 ? Main.RED : Main.BLUE;
+                Color secondary = Color.GRAY;
+                int team = teams[h];
+                boolean robotExists = false;
+                for (Robot r : GameScreen.robots) {
+                    if (r.getNumber() == team) {
+                        robotExists = true;
+                        if (r.stats.recolorIndex == -1) {  //TODO: do this better
+                            primary = r.stats.custom_primary;
+                            secondary = r.stats.custom_secondary;
+                        }
+                    }
+                }
+                if (robotExists) {
+                    Sprite p = new Sprite(Utils.colorImage("core/assets/person.png", primary, Color.BROWN, Utils.toColor(255, 204, 165), secondary));
+                    p.setPosition(i == 0 ? -31.3f : 20, -13 - (7 * h));
+                    p.setScale(0.08f);
+                    if (i == 0) p.setSize(-p.getWidth(), p.getHeight());
+                    array[h] = p;
+                } else {
+                    array[h] = null;
+                }
+            }
+            if (i == 0) redHumans = array;
+            else blueHumans = array;
+        }
     }
 
     @Override
@@ -229,6 +266,7 @@ public class Steamworks extends Field {
         updateMatchInfo();
         blue = new AllianceScoreData(true);
         red = new AllianceScoreData(false);
+        updateHumanSprites();
     }
 
     @Override
@@ -328,6 +366,17 @@ public class Steamworks extends Field {
             } else s.setRotation(180);
             s.draw(b);
             blue++;
+        }
+
+        if (blueHumans != null) {
+            for (Sprite s : blueHumans) {
+                if (s != null) s.draw(b);
+            }
+        }
+        if (redHumans != null) {
+            for (Sprite s : redHumans) {
+                if (s != null) s.draw(b);
+            }
         }
     }
 }

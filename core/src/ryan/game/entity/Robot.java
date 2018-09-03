@@ -411,6 +411,7 @@ public class Robot extends Entity {
                     statsIndex = 0;
                 }
                 if (!GameScreen.MAKE_SCHEDULE) updateStats();
+                GameScreen.self.field.updateHumanSprites();
             }
             statsToggleWasTrue = val;
 
@@ -421,6 +422,7 @@ public class Robot extends Entity {
                     numberIndex = 0;
                 }
                 if (GameScreen.MAKE_SCHEDULE) updateStats();
+                GameScreen.self.field.updateHumanSprites();
             }
             numberChangeWasTrue = val;
 
@@ -430,6 +432,7 @@ public class Robot extends Entity {
                 metadata = metadata.getNewInstance();
                 updateSprite();
                 if (GameScreen.MAKE_SCHEDULE) updateStats();
+                GameScreen.self.field.updateHumanSprites();
             }
             changeAllianceWasTrue = val;
 
@@ -438,9 +441,20 @@ public class Robot extends Entity {
                 g.setReverseSticks(!g.isSticksReversed());
             }
             reverseToggleWasTrue = val;
+
+            updateStatsIfNotMatchingTeam();
         }
 
         if (metadata != null) metadata.tick(this);
+    }
+
+    public void updateStatsIfNotMatchingTeam() {
+        Team t;
+        if (GameScreen.MAKE_SCHEDULE && (t = GameScreen.schedule.getTeam(getNumber())) !=  null) {
+            if (stats != t.robotStats) {
+                updateStats();
+            }
+        }
     }
 
     public void updateStats() {
@@ -472,6 +486,7 @@ public class Robot extends Entity {
         replacement.updateSprite();
         GameScreen.robots.add(replacement);
         Main.spawnEntity(replacement);
+        GameScreen.self.field.updateHumanSprites();
     }
 
     public void destroy() {

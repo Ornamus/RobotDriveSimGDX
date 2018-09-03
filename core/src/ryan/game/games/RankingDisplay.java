@@ -28,7 +28,7 @@ public class RankingDisplay extends ImageDrawer {
 
     public RankingDisplay() {
         super(0, 0, tex);
-        sprite.setSize(1100, 630);
+        sprite.setSize(Main.screenWidth, Main.screenHeight);
         sprite.setPosition(0-sprite.getWidth() /2, 0-sprite.getHeight()/2);
         setDrawScaled(false);
 
@@ -71,21 +71,21 @@ public class RankingDisplay extends ImageDrawer {
         allianceBar = new Sprite(new Texture("core/assets/alliance_selection_bar.png"));
         resize(allianceBar, .225f * Main.fontScale);
 
-        Fonts.drawCentered(Fonts.fmsBlack, GameScreen.EVENT_NAME + " Rankings", getCenterX(), getCenterY(), 0, 305-15, batch);
+        Fonts.drawCentered(Fonts.fmsBlack, GameScreen.EVENT_NAME + " Rankings", getCenterX(), getCenterY() + (305-15)*1.7f, batch);
         int index = 0;
         for (int gridX = 0; gridX<2; gridX++) {
             for (int gridY = 0; gridY < 8; gridY++) {
                 if (rankings.size() > (currentPage*16)+index) {
                     RankData data = rankings.get((currentPage*16)+index);
 
-                    float x = -485 + (500 * gridX) * Main.widthScale;
-                    float y = 135 * Main.heightScale;
-                    y -= (gridY * 56 * Main.heightScale);
+                    float x = -485*1.7f + (550 * gridX)*1.7f;
+                    float y = 135 * 1.7f;
+                    y -= (gridY * 56 * 1.7f);
 
                     allianceBar.setPosition(x, y);
                     allianceBar.draw(batch);
 
-                    Fonts.drawCentered(Fonts.fmsBlack, data.rank + "", x, y, 44.5f, 32.5f, batch);
+                    Fonts.drawCentered(Fonts.fmsBlack, data.rank + "", x + 67, y + 47, batch);
 
                     SteamTeamData d = (SteamTeamData) data; //TODO: make this not game-specific
 
@@ -93,7 +93,7 @@ public class RankingDisplay extends ImageDrawer {
 
                     //teamString = teamString.substring(0, teamString.length() - 3);
 
-                    Fonts.draw(Fonts.fmsBlack, teamString, x, y, 90, 31.5f, batch);
+                    Fonts.draw(Fonts.fmsBlack, teamString, x + 90*1.7f, y + 50, batch);
                 }
                 index++;
             }

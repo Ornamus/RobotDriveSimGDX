@@ -66,7 +66,7 @@ public abstract class ScoreDisplay extends Drawable {
         timerBacking.setAlpha(.75f);
         timerBacking.setPosition(-timerBacking.getWidth() / 2, getY() + 128);
 
-        timerBar.setBounds(-222, getY() + 123.5f, ((150f-seconds)/150f) * 431.8f, 49f);
+        timerBar.setBounds(-222, getY() + 123.5f, ((150f-seconds)/150f) * 445f, 49f);
 
         if (GameScreen.matchPlay) {
             if (seconds > 135) {
