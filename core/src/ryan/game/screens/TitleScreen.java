@@ -8,15 +8,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.entity.Robot;
+import ryan.game.games.RobotStatBuilder;
+import ryan.game.games.RobotStatSlider;
+import ryan.game.games.steamworks.SteamStatBuilder;
 import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
 import ryan.game.render.Fonts;
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class TitleScreen extends Screen {
@@ -30,14 +31,13 @@ public class TitleScreen extends Screen {
 
     Button tournamentButton, builderButton, settingsButton;
 
-    int maxPoints = 20;
-    String[] custom_robots = {"core/assets/robot_custom.png", "core/assets/robot_custom3.png", "core/assets/robot_custom2.png", "core/assets/robot_custom4.png"};
+    int maxPoints;
+    String[] custom_robots = {"core/assets/robot_custom.png", "core/assets/robot_custom3.png", "core/assets/robot_custom2.png", "core/assets/robot_custom4.png", "core/assets/robot_custom5.png"};
     int custom_robot_index = 0;
     Sprite custom_robot_current;
     Sprite arrow = new Sprite(new Texture("core/assets/ui/arrow.png"));
-    List<StatSlider> sliders = new ArrayList<>();
-    public static Texture plus = new Texture("core/assets/ui/plus.png"), minus = new Texture("core/assets/ui/minus.png");
-    Button saveRobotButton, backButton;
+    RobotStatBuilder statBuilder;
+    Button saveRobotButton, backButton, randomColorButton;
 
     Color primary = Color.GRAY, secondary = Color.PURPLE;
 
@@ -70,15 +70,7 @@ public class TitleScreen extends Screen {
 
         //Subpage Robot Builder setup
         arrow.setScale(2);
-        arrow.setPosition(115, 150);
-
-        String[] text = {"Speed", "Gear Intake", "Shooter Speed", "Shooter Accuracy", "Climber"};
-        float[] max = {11f, 5f, 7f, 10f, 10f};
-        for (int i=0; i<5; i++) {
-            int x = 0;
-            int y = -50 - (60 * i);
-            sliders.add(new StatSlider(x, y, (int)max[i], text[i]));
-        }
+        arrow.setPosition(115, 250);
 
         saveRobotButton = new Button(0, -350, 250, 70, "Save", ()-> {
             saveRobot();
@@ -88,6 +80,16 @@ public class TitleScreen extends Screen {
         backButton = new Button(0, -440, 250, 70, "Back", ()-> {
             setSubpage(Subpage.TITLE);
         });
+
+        randomColorButton = new Button(0, 170, 450, 70, "Random Colors", ()-> {
+            randomColors();
+        });
+    }
+
+    public void randomColors() {
+        primary = Utils.toColor(Utils.randomInt(0, 255), Utils.randomInt(0, 255), Utils.randomInt(0, 255));
+        secondary = Utils.toColor(Utils.randomInt(0, 255), Utils.randomInt(0, 255), Utils.randomInt(0, 255));
+        refreshCustomRobot();
     }
 
     public void setSubpage(Subpage p) {
@@ -95,6 +97,27 @@ public class TitleScreen extends Screen {
         if (subpage == Subpage.TITLE) {
             //?
         } else if (subpage == Subpage.ROBOT_BUILDER) {
+            maxPoints = 30;
+            custom_robot_index = Utils.randomInt(0, custom_robots.length-1);
+            randomColors();
+
+            statBuilder = new SteamStatBuilder();
+            List<RobotStatSlider> steamSliders = statBuilder.getSliders();
+
+            int x = -400;
+            int y = -50;
+            int i = 0;
+            for (RobotStatSlider s : steamSliders) {
+                int internalIndex = i;
+                int internalX = x;
+                if (i >= 5) {
+                    internalX += 650;
+                    internalIndex -= 5;
+                }
+                s.setPosition(internalX, y - (60 * internalIndex));
+                i++;
+            }
+
             refreshCustomRobot();
         }
     }
@@ -110,35 +133,18 @@ public class TitleScreen extends Screen {
     }
 
     public void saveRobot() {
-        //TODO: for now, assuming Steamworks. Need to make this work by default for all games via a vague calculation system
+        //TODO: for now, assuming Steamworks. Need to make this work by default for all games
         SteamRobotStats stats = new SteamDefault();
-        //"Speed", "Gear Intake", "Shooter Speed", "Shooter Accuracy", "Climber"};
-        stats.maxMPS = (8 + (14 * sliders.get(0).getProgress())) / 3.28084f;
-
-        float val = sliders.get(1).getProgress();
-        stats.gearIntake = val != 0;
-        stats.gearIntakeRate = 1000 - (700 * val);
-        stats.gearIntakeStrength = 9f + (3 * val);
-
-        val = sliders.get(2).getProgress();
-        stats.shooter = val != 0;
-        stats.timePerShoot = 1000 - (800 * val);
-
-        val = sliders.get(3).getProgress();
-        stats.shootPowerVariance = 2.5f - (1.5f * val);
-        stats.shootAngleVariance = 5 - (4 * val);
-
-        val = sliders.get(4).getProgress();
-        stats.climber = val != 0;
-        stats.climbSpeed = 8 - (6.5f * val);
-
         stats.texture = custom_robots[custom_robot_index];
         stats.recolorIndex = -1;
+        stats.custom_primary = primary;
+        stats.custom_secondary = secondary;
+        statBuilder.applyStats(stats);
 
-        Gson g = new GsonBuilder().setPrettyPrinting().create();
-        Utils.log(g.toJson(stats));
+        //Gson g = new GsonBuilder().setPrettyPrinting().create();
+        //Utils.log(g.toJson(stats));
 
-        Robot.statsOptions[1] = stats;
+        Robot.addStatOption(stats);
     }
 
     public void nextCustomRobotSprite() {
@@ -150,7 +156,7 @@ public class TitleScreen extends Screen {
     public void refreshCustomRobot() {
         custom_robot_current = new Sprite(Utils.colorImage(custom_robots[custom_robot_index], primary, Color.BLUE, secondary));
         custom_robot_current.setSize(150, 150);
-        custom_robot_current.setPosition(0-75, 100);
+        custom_robot_current.setPosition(0-75, 200);
     }
 
     float scrollPoint = -Main.screenWidth/2;
@@ -180,8 +186,8 @@ public class TitleScreen extends Screen {
             backX1 = backX2 - blockLength;
         }
 
-        b.draw(background, backX1, -550, 387, 832, blockLength, (int)Main.screenHeight*2);
-        b.draw(background, backX2, -550, 387, 832, blockLength, (int)Main.screenHeight*2);
+        b.draw(background, backX1 + (backX2 > backX1 ? 1 : 0), -550, 387, 832, blockLength, (int)Main.screenHeight*2);
+        b.draw(background, backX2 + (backX1 > backX2 ? 1 : 0), -550, 387, 832, blockLength, (int)Main.screenHeight*2);
 
         ui_visibility += 0.75f * delta;
         if (ui_visibility > 1) ui_visibility = 1;
@@ -204,11 +210,12 @@ public class TitleScreen extends Screen {
             custom_robot_current.draw(b);
             arrow.draw(b);
             Fonts.drawCentered(Fonts.monoWhiteLarge, maxPoints + " Points Remaining", 0, 70, b);
-            for (StatSlider s : sliders) {
+            for (RobotStatSlider s : statBuilder.getSliders()) {
                 s.draw(b);
             }
             saveRobotButton.draw(b);
             backButton.draw(b);
+            randomColorButton.draw(b);
         }
     }
 
@@ -221,11 +228,12 @@ public class TitleScreen extends Screen {
         } else if (subpage == Subpage.ROBOT_BUILDER) {
             saveRobotButton.click(pos, button);
             backButton.click(pos, button);
+            randomColorButton.click(pos, button);
             if (arrow.getBoundingRectangle().contains(pos.x, pos.y)) {
                 nextCustomRobotSprite();
                 return true;
             }
-            for (StatSlider s : sliders) {
+            for (RobotStatSlider s : statBuilder.getSliders()) {
                 if (s.plus.getBoundingRectangle().contains(pos.x, pos.y)) {
                     if (maxPoints > 0) {
                         maxPoints--;
@@ -248,37 +256,5 @@ public class TitleScreen extends Screen {
         TITLE,
         ROBOT_BUILDER,
         SETTINGS
-    }
-
-    class StatSlider {
-
-        int x, y;
-        int max, current = 0;
-        String label;
-        Sprite plus, minus;
-
-        public StatSlider(int x, int y, int max, String label) {
-            this.x = x;
-            this.y = y;
-            this.max = max;
-            this.label = label;
-
-            plus = new Sprite(TitleScreen.plus);
-            plus.setBounds(x-200, y, 40, 40);
-
-            minus = new Sprite(TitleScreen.minus);
-            minus.setBounds(x-150, y, 40, 40);
-        }
-
-        public float getProgress() {
-            return (current*1f)/(max*1f);
-        }
-
-        public void draw(SpriteBatch b) {
-            Utils.drawUnscaledProgressBar(x, y, 200, 40, getProgress(), b);
-            Fonts.draw(Fonts.fmsWhiteSmall, label + " (" + current + "/" + max + ")", x+110, y + 28.5f, b);
-            plus.draw(b);
-            minus.draw(b);
-        }
     }
 }

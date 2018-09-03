@@ -57,8 +57,8 @@ public class Robot extends Entity {
     private int statsIndex = 0;
 
     //TODO: make this not game-specific
-    public static RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
-    new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething()/*, new SteamTitanium(), new Steam1678()*/};
+    public static RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer()/*, new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
+    new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething()*//*, new SteamTitanium(), new Steam1678()*/};
     //private RobotStats[] statsOptions = {new PowerRobotBase(), new Bacon()};
 
     public RobotStats stats = statsOptions[statsIndex];
@@ -171,7 +171,7 @@ public class Robot extends Entity {
         if (stats.recolorIndex == 0) setSprite(Utils.colorImage(tex, newColors));
         else if (stats.recolorIndex == 1) setSprite(Utils.colorImage(tex, null, alliance));
         else if (stats.recolorIndex == 2) setSprite(Utils.colorImage(tex, null, null, alliance));
-        else if (stats.recolorIndex == -1) setSprite(Utils.colorImage(tex, Color.GRAY, alliance, Color.PURPLE));
+        else if (stats.recolorIndex == -1) setSprite(Utils.colorImage(tex, stats.custom_primary, alliance, stats.custom_secondary));
         for (Part p : parts) {
             p.onRobotColorChange(alliance);
         }
@@ -731,5 +731,12 @@ public class Robot extends Entity {
 
     public PIDSource getRightEncoder() {
         return rightEncoder;
+    }
+
+    public static void addStatOption(RobotStats newStats) {
+        RobotStats[] newOptions = new RobotStats[statsOptions.length+1];
+        System.arraycopy(statsOptions, 0, newOptions, 0, statsOptions.length);
+        newOptions[newOptions.length-1] = newStats;
+        statsOptions = newOptions;
     }
 }

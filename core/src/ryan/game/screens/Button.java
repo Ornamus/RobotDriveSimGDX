@@ -23,8 +23,14 @@ public class Button extends Drawable {
         this.text = text;
         this.onClick = onClick;
 
+        setColor(color);
+    }
+
+    public void setColor(Color c) {
+        color = c;
+
         background = new Sprite(Utils.colorImage("core/assets/white_square.png", color));
-        background.setBounds(x-width/2, y-height*.75f, width, height);
+        background.setBounds(getX()-width/2, getY()-height*.75f, width, height);
     }
 
     public void setAlpha(float alpha) {

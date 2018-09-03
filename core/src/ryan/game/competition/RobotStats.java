@@ -1,5 +1,6 @@
 package ryan.game.competition;
 
+import com.badlogic.gdx.graphics.Color;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.entity.Robot;
 import ryan.game.games.Game;
@@ -22,6 +23,8 @@ public abstract class RobotStats {
     public float turnPivotOffset = 0.75f;
 
     public String texture = "core/assets/robot_recolor.png";
+    public Color custom_primary = null;
+    public Color custom_secondary = null;
 
     public RobotStats(Game g) {
         game = g;
