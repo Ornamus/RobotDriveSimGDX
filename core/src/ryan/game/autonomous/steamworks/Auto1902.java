@@ -8,6 +8,7 @@ import ryan.game.bcnlib_pieces.PIDController;
 import ryan.game.entity.Robot;
 import ryan.game.games.Game;
 import ryan.game.games.steamworks.SteamworksMetadata;
+import ryan.game.screens.GameScreen;
 
 public class Auto1902 extends Command {
 
@@ -29,8 +30,8 @@ public class Auto1902 extends Command {
             robot.setMotors(1, 1);
             Thread.sleep(600);
             robot.setMotors(0, 0);
-            long start = Main.getTime();
-            while (Main.getTime() - start < 3000) {
+            long start = GameScreen.getTime();
+            while (GameScreen.getTime() - start < 3000) {
                 meta.shootFuel(robot);
             }
             robot.setMotors(-1, -1);

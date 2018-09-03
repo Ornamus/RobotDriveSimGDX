@@ -64,9 +64,9 @@ public abstract class ScoreDisplay extends Drawable {
 
         timerBacking.setSize(timerBackingWidth * Main.fontScale, timerBackingHeight * Main.fontScale);
         timerBacking.setAlpha(.75f);
-        timerBacking.setPosition(0 - (timerBacking.getWidth() / 2), getY() + (72*Main.heightScale));
+        timerBacking.setPosition(-timerBacking.getWidth() / 2, getY() + 128);
 
-        timerBar.setBounds(-127 * Main.widthScale, getY() + (72*Main.heightScale), ((150f-seconds)/150f) * (254*Main.widthScale), 29*Main.heightScale);
+        timerBar.setBounds(-222, getY() + 123.5f, ((150f-seconds)/150f) * 431.8f, 49f);
 
         if (GameScreen.matchPlay) {
             if (seconds > 135) {
@@ -110,27 +110,26 @@ public abstract class ScoreDisplay extends Drawable {
         int blueScore = scores[0];
         int redScore = scores[1];
 
-        Fonts.drawCentered(Fonts.fmsScore, blueScore + "", 115, getY() + 90, batch); //blue score
-        Fonts.drawCentered(Fonts.fmsScore, redScore + "", -115, getY() + 90, batch); //red score
+        Fonts.drawCentered(Fonts.fmsScore, blueScore + "", 115, getY() + 95, batch); //blue score
+        Fonts.drawCentered(Fonts.fmsScore, redScore + "", -115, getY() + 95, batch); //red score
 
         Fonts.drawCentered(Fonts.fmsBlack, matchName, -307.5f, getY()+221, batch);
         Fonts.drawCentered(Fonts.fmsBlack, eventName, 307.5f, getY()+221, batch);
 
-        Fonts.drawCentered(Fonts.fmsBlack, GameScreen.matchPlay ? (seconds > 135 ? seconds - 135 : seconds) + "" : "Infinite", 0, getY(), 0, 93, batch);
-        //Fonts.drawCentered(Main.matchPlay ? (seconds > 135 ? seconds - 135 : seconds) + "" : "Infinite", 0, getY() + 93f, Fonts.fmsBlack, batch);
+        Fonts.drawCentered(Fonts.fmsBlack, GameScreen.matchPlay ? (seconds > 135 ? seconds - 135 : seconds) + "" : "Infinite",
+                0, getY() + 158 , batch);
 
         for (int i=0; i<redTeams.length; i++) {
             int team = redTeams[i];
             Fonts.drawCentered(Fonts.fmsBlack, team + "", -282.2f, getY()+((92 - (i*21)) * 1.7f), batch);
         }
-        if (GameScreen.schedule.elims) Fonts.drawCentered(Fonts.fmsBlackSmall, GameScreen.schedule.getSeed(redTeams) + "", 0, getY(), -166, 71-21-25, batch);
+        if (GameScreen.schedule.elims) Fonts.drawCentered(Fonts.fmsBlackSmall, GameScreen.schedule.getSeed(redTeams) + "", 0, getY(), -166, 25, batch);
 
         for (int i=0; i<blueTeams.length; i++) {
             int team = blueTeams[i];
             Fonts.drawCentered(Fonts.fmsBlack, team + "", 282.2f, getY()+((92 - (i*21)) * 1.7f), batch);
-            //Fonts.drawCentered(Fonts.fmsBlack, team + "", 0, getY(), 166, 92 - (i*21), batch);
         }
-        if (GameScreen.schedule.elims) Fonts.drawCentered(Fonts.fmsBlackSmall, GameScreen.schedule.getSeed(blueTeams) + "", 0, getY(), 166, 71-21-25, batch);
+        if (GameScreen.schedule.elims) Fonts.drawCentered(Fonts.fmsBlackSmall, GameScreen.schedule.getSeed(blueTeams) + "", 0, getY(), 166, 25, batch);
     }
 
     /**

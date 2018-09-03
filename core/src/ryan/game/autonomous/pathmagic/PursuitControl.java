@@ -5,6 +5,7 @@ import ryan.game.bcnlib_pieces.Motor;
 import ryan.game.bcnlib_pieces.PIDController;
 import ryan.game.drive.DriveOrder;
 import ryan.game.entity.Robot;
+import ryan.game.screens.GameScreen;
 import ryan.game.team254.utils.AdaptivePurePursuitController;
 import ryan.game.team254.utils.Path;
 import ryan.game.team254.utils.RigidTransform2d;
@@ -40,7 +41,7 @@ public class PursuitControl {
             if (!left.isEnabled()) left.enable();
             if (!right.isEnabled()) right.enable();
             RigidTransform2d robot_pose = r.state.getLatestFieldToVehicle().getValue();
-            RigidTransform2d.Delta command = pathFollower.update(robot_pose, Main.getTime()); //TODO: was Timer.getFPGA
+            RigidTransform2d.Delta command = pathFollower.update(robot_pose, GameScreen.getTime()); //TODO: was Timer.getFPGA
             Kinematics.DriveVelocity setpoint = Kinematics.inverseKinematics(command);
 
             // Scale the command to respect the max velocity limits

@@ -3,6 +3,7 @@ package ryan.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.controllers.PovDirection;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.FrictionJointDef;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -41,7 +43,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Main extends ApplicationAdapter {
+public class Main extends ApplicationAdapter implements InputProcessor {
 
     public static final Object WORLD_USE = new Object();
 
@@ -54,14 +56,12 @@ public class Main extends ApplicationAdapter {
     SpriteBatch unscaledBatch;
     public World world;
     Box2DDebugRenderer debugRenderer;
-    OrthographicCamera camera;
-    OrthographicCamera unscaledCamera;
+    public OrthographicCamera camera;
+    public OrthographicCamera unscaledCamera;
     public static List<Drawable> drawablesAdd = new ArrayList<>();
     public static List<Drawable> drawablesRemove = new ArrayList<>();
     public static List<Drawable> drawables = new ArrayList<>();
     public static List<CollisionListener.Collision> collisions = new ArrayList<>();
-
-    private static float time = 0;
 
     private static Main self = null;
 
@@ -82,7 +82,8 @@ public class Main extends ApplicationAdapter {
     @Override
 	public void create () {
         self = this;
-        Fonts.init(1.5f);
+        Gdx.input.setInputProcessor(this);
+        Fonts.init(fontScale);
         Gamepads.init();
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
@@ -113,7 +114,7 @@ public class Main extends ApplicationAdapter {
         screen.init();
     }
 
-    public static float widthScale = 1, heightScale = 1, fontScale = 1;
+    public static float widthScale = 1, heightScale = 1, fontScale = 1.5f;
 
     @Override
     public void resize(int width, int height) {
@@ -208,6 +209,7 @@ public class Main extends ApplicationAdapter {
                 }
             }
         }
+        screen.draw(batch);
         batch.end();
 
         unscaledBatch.begin();
@@ -217,7 +219,7 @@ public class Main extends ApplicationAdapter {
                 ((Entity)e).drawUnscaled(unscaledBatch);
             }
         }
-        screen.draw(unscaledBatch);
+        screen.drawUnscaled(unscaledBatch);
         unscaledBatch.end();
 
         /*if (points == null && ticksWaitedCuzDum > 4) {
@@ -281,7 +283,7 @@ public class Main extends ApplicationAdapter {
             synchronized (WORLD_USE) {
                 world.step(Constants.TIME_STEP, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
             }
-            time += Constants.TIME_STEP;
+            if (screen instanceof GameScreen) GameScreen.time += Constants.TIME_STEP;
             accumulator -= Constants.TIME_STEP;
         }
     }
@@ -330,10 +332,6 @@ public class Main extends ApplicationAdapter {
         }
         return ents;
     }
-
-    public static long getTime() {
-        return Math.round(time*1000);
-    }
 	
 	@Override
 	public void dispose () {
@@ -342,5 +340,50 @@ public class Main extends ApplicationAdapter {
 
 	public static Main getInstance() {
         return self;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    Vector3 getMousePosInGameWorld() {
+        return Main.getInstance().unscaledCamera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        Vector3 pos = getMousePosInGameWorld();
+        return screen.click(pos, button);
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }

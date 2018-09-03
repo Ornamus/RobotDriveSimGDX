@@ -57,7 +57,7 @@ public class Robot extends Entity {
     private int statsIndex = 0;
 
     //TODO: make this not game-specific
-    private RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
+    public static RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer(), new SteamGearGod(), new Steam254(), new Steam1902(), new Steam16(), new Steam118(), new SteamGearIntakeGod(),
     new SteamRookie(), new Steam1114(), new StrykeForce(), new SteamSomething()/*, new SteamTitanium(), new Steam1678()*/};
     //private RobotStats[] statsOptions = {new PowerRobotBase(), new Bacon()};
 
@@ -171,6 +171,7 @@ public class Robot extends Entity {
         if (stats.recolorIndex == 0) setSprite(Utils.colorImage(tex, newColors));
         else if (stats.recolorIndex == 1) setSprite(Utils.colorImage(tex, null, alliance));
         else if (stats.recolorIndex == 2) setSprite(Utils.colorImage(tex, null, null, alliance));
+        else if (stats.recolorIndex == -1) setSprite(Utils.colorImage(tex, Color.GRAY, alliance, Color.PURPLE));
         for (Part p : parts) {
             p.onRobotColorChange(alliance);
         }

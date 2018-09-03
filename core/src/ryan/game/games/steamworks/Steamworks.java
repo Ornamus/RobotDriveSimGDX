@@ -270,13 +270,13 @@ public class Steamworks extends Field {
             if (h.scoreProgress == null) {
                 if (h.blue && blue.gearQueue > 0) {
                     blue.gearQueue--;
-                    h.scoreProgress = Main.getTime();
+                    h.scoreProgress = GameScreen.getTime();
                 } else if (!h.blue && red.gearQueue > 0) {
                     red.gearQueue--;
-                    h.scoreProgress = Main.getTime();
+                    h.scoreProgress = GameScreen.getTime();
                 }
             } else {
-                if (Main.getTime() - h.scoreProgress >= hpGearScoreSpeed) {
+                if (GameScreen.getTime() - h.scoreProgress >= hpGearScoreSpeed) {
                     if (h.blue) blue.gears++;
                     else red.gears++;
                     if (Game.isAutonomous()) {

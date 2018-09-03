@@ -9,6 +9,7 @@ import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.games.steamworks.SteamworksMetadata;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
+import ryan.game.screens.GameScreen;
 
 public class Fuel extends Entity {
 
@@ -26,23 +27,23 @@ public class Fuel extends Entity {
         this.hopper = hopper;
         setSprite(TEXTURE);
         setName("Fuel");
-        creation = Main.getTime();
+        creation = GameScreen.getTime();
     }
 
     public void setShot() {
-        timeOfShoot = Main.getTime();
+        timeOfShoot = GameScreen.getTime();
     }
 
     @Override
     public void collideStart(Entity e, Body self, Body other, Contact contact) {
-        if (Main.getTime() - timeOfShoot <= 100) {
+        if (GameScreen.getTime() - timeOfShoot <= 100) {
             contact.setEnabled(false);
         }
     }
 
     @Override
     public void onCollide(Entity e, Body self, Body other, Contact contact) {
-        if (hopper && e instanceof Robot && Main.getTime() - creation <= 75) {
+        if (hopper && e instanceof Robot && GameScreen.getTime() - creation <= 75) {
             Robot r = (Robot) e;
             SteamworksMetadata meta = (SteamworksMetadata) r.metadata;
             SteamRobotStats stats = (SteamRobotStats) r.stats;

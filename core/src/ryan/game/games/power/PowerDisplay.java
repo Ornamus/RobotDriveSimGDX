@@ -115,7 +115,7 @@ public class PowerDisplay extends ScoreDisplay {
                 if (meta.crossedBaseline) baselines++;
                 if (Game.getMatchTime() <= 30) {
                     PowerRobotBase stats = (PowerRobotBase) r.stats;
-                    if (meta.climb != null && Main.getTime() - meta.climb >= (stats.climbTime * 1000)) {
+                    if (meta.climb != null && GameScreen.getTime() - meta.climb >= (stats.climbTime * 1000)) {
                         climbs++;
                     }
                 }

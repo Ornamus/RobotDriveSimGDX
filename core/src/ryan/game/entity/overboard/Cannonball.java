@@ -10,6 +10,7 @@ import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.games.steamworks.SteamworksMetadata;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
+import ryan.game.screens.GameScreen;
 
 public class Cannonball extends Entity {
 
@@ -25,11 +26,11 @@ public class Cannonball extends Entity {
         setSprite(TEXTURE);
         setName("Cannonball");
         friction = 0.15f;
-        creation = Main.getTime();
+        creation = GameScreen.getTime();
     }
 
     public void setShot() {
-        timeOfShoot = Main.getTime();
+        timeOfShoot = GameScreen.getTime();
     }
 
     @Override

@@ -22,6 +22,7 @@ import ryan.game.games.Field;
 import ryan.game.games.Game;
 import ryan.game.games.RankingDisplay;
 import ryan.game.games.power.PowerRankings;
+import ryan.game.games.power.PowerUp;
 import ryan.game.games.steamworks.Steamworks;
 import ryan.game.render.Drawable;
 
@@ -61,7 +62,7 @@ public class GameScreen extends Screen  {
 
     Music music = null;
 
-    private static float time = 0;
+    public static float time = 0;
 
     public static boolean matchPlay = false;
     public static long matchStart = 0;
@@ -275,7 +276,12 @@ public class GameScreen extends Screen  {
     }
 
     @Override
-    public void draw(SpriteBatch b) {}
+    public void draw(SpriteBatch b) {
+        field.draw(b);
+    }
+
+    @Override
+    public void drawUnscaled(SpriteBatch b) {}
 
     public static long getTime() {
         return Math.round(time*1000);

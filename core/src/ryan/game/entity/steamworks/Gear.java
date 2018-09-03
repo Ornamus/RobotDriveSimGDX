@@ -9,6 +9,7 @@ import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.games.steamworks.SteamworksMetadata;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
+import ryan.game.screens.GameScreen;
 
 public class Gear extends Entity {
 
@@ -29,12 +30,12 @@ public class Gear extends Entity {
         setName("Gear");
         setSprite(TEXTURE);
         loadingStation = loading;
-        creation = Main.getTime();
+        creation = GameScreen.getTime();
     }
 
     @Override
     public void onCollide(Entity e, Body self, Body other, Contact contact) {
-        if (loadingStation != null && e instanceof Robot && Main.getTime() - creation <= 150) {
+        if (loadingStation != null && e instanceof Robot && GameScreen.getTime() - creation <= 150) {
             float diff = Math.abs(e.getAngle() - loadingStation.getAngle());
             if (diff <= 9.5) {
                 Robot r = (Robot) e;

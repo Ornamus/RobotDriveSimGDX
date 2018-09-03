@@ -8,6 +8,7 @@ import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.games.power.PowerMetadata;
 import ryan.game.games.power.robots.PowerRobotBase;
+import ryan.game.screens.GameScreen;
 
 public class ClimbingBar extends Entity {
 
@@ -28,7 +29,7 @@ public class ClimbingBar extends Entity {
             PowerMetadata r = (PowerMetadata) ((Robot)e).metadata;
             PowerRobotBase stats = (PowerRobotBase) ((Robot)e).stats;
             if (((Robot)e).blue == blue && r.climb == null && stats.canClimb) {
-                r.climb = Main.getTime();
+                r.climb = GameScreen.getTime();
             }
         }
     }

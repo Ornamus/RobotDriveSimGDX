@@ -3,6 +3,7 @@ package ryan.game.autonomous.steamworks;
 import ryan.game.Main;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.entity.Robot;
+import ryan.game.screens.GameScreen;
 
 public class AutoBaseline extends Command {
 
@@ -15,12 +16,12 @@ public class AutoBaseline extends Command {
     @Override
     public void onInit() {
         robot.setMotors(.7f, .7f);
-        start = Main.getTime();
+        start = GameScreen.getTime();
     }
 
     @Override
     public void onLoop() {
-        if (Main.getTime() - start >= 1500) {
+        if (GameScreen.getTime() - start >= 1500) {
             robot.setMotors(0, 0);
         }
     }

@@ -6,6 +6,7 @@ import ryan.game.bcnlib_pieces.Motor;
 import ryan.game.bcnlib_pieces.PIDController;
 import ryan.game.entity.Robot;
 import ryan.game.games.steamworks.SteamworksMetadata;
+import ryan.game.screens.GameScreen;
 
 public class Auto16 extends Command {
 
@@ -23,8 +24,8 @@ public class Auto16 extends Command {
     public void onInit() {
         SteamworksMetadata meta = (SteamworksMetadata) robot.metadata;
         try {
-            long start = Main.getTime();
-            while (Main.getTime()- start < 3000) {
+            long start = GameScreen.getTime();
+            while (GameScreen.getTime()- start < 3000) {
                 meta.shootFuel(robot);
             }
             robot.setMotors(.5f, .5f);

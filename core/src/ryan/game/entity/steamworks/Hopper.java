@@ -8,6 +8,7 @@ import ryan.game.Utils;
 import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
+import ryan.game.screens.GameScreen;
 
 public class Hopper extends Entity {
 
@@ -43,7 +44,7 @@ public class Hopper extends Entity {
     public void tick() {
         super.tick();
         if (dumping) {
-            if (Main.getTime() - timeOfLastDump > dumpRate) {
+            if (GameScreen.getTime() - timeOfLastDump > dumpRate) {
                 for (int i=0; 2>i; i++) {
                     Entity e = new Fuel(x + (i == 0 ? 2 : -2), y + (dropDown ? -1 : 1), true);
                     synchronized (Main.WORLD_USE) {
@@ -56,7 +57,7 @@ public class Hopper extends Entity {
                         break;
                     }
                 }
-                timeOfLastDump = Main.getTime();
+                timeOfLastDump = GameScreen.getTime();
                 if (fuelInHopper <= 0) {
                     dumping = false;
                     dumped = true;
@@ -70,7 +71,7 @@ public class Hopper extends Entity {
     public void onCollide(Entity e, Body self, Body other, Contact contact) {
         if (e instanceof Robot && !dumped) {
             dumping = true;
-            timeOfLastDump = Main.getTime();
+            timeOfLastDump = GameScreen.getTime();
         }
     }
 }

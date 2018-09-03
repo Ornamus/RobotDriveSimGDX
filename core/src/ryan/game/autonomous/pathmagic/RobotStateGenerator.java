@@ -2,6 +2,7 @@ package ryan.game.autonomous.pathmagic;
 
 import ryan.game.Main;
 import ryan.game.entity.Robot;
+import ryan.game.screens.GameScreen;
 import ryan.game.team254.utils.RigidTransform2d;
 import ryan.game.team254.utils.Rotation2d;
 
@@ -44,7 +45,7 @@ public class RobotStateGenerator extends Thread  {
     @Override
     public void run() {
         while (!stop) {
-            double time = Main.getTime(); //TODO: Was Timer.getFPGA
+            double time = GameScreen.getTime(); //TODO: Was Timer.getFPGA
             double left_distance = getLeftDistanceInches();
             double right_distance = getRightDistanceInches();
             Rotation2d gyro_angle = Rotation2d.fromDegrees(-robot.getGyro().getForPID());
@@ -59,7 +60,7 @@ public class RobotStateGenerator extends Thread  {
             left_encoder_prev_distance_ = left_distance;
             right_encoder_prev_distance_ = right_distance;
 
-            lastLoop = Main.getTime();
+            lastLoop = GameScreen.getTime();
         }
     }
 
@@ -76,10 +77,10 @@ public class RobotStateGenerator extends Thread  {
     }
 
     public float getLeftVelocityInchesPerSec() {
-        return (float) (getLeftDistanceInches() - left_encoder_prev_distance_) * (1000f / (Main.getTime() - lastLoop));
+        return (float) (getLeftDistanceInches() - left_encoder_prev_distance_) * (1000f / (GameScreen.getTime() - lastLoop));
     }
 
     public float getRightVelocityInchesPerSec() {
-        return (float) (getRightDistanceInches() - right_encoder_prev_distance_) * (1000f / (Main.getTime() - lastLoop));
+        return (float) (getRightDistanceInches() - right_encoder_prev_distance_) * (1000f / (GameScreen.getTime() - lastLoop));
     }
 }

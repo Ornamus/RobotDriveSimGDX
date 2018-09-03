@@ -8,6 +8,7 @@ import ryan.game.drive.DriveOrder;
 import ryan.game.entity.Robot;
 import ryan.game.games.Game;
 import ryan.game.games.overboard.PirateMetadata;
+import ryan.game.screens.GameScreen;
 import ryan.game.team254.utils.Path;
 import ryan.game.team254.utils.RigidTransform2d;
 import ryan.game.team254.utils.Translation2d;
@@ -29,7 +30,7 @@ public class Auto254Over extends Command {
             robot.getRightEncoder().reset();
             if (robot.generator != null) robot.generator.actuallyStop();
             robot.generator = null;
-            robot.state.reset(Main.getTime(), new RigidTransform2d());
+            robot.state.reset(GameScreen.getTime(), new RigidTransform2d());
             robot.generator = new RobotStateGenerator(robot.state, robot);
             robot.generator.start();
 

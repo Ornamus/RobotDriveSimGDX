@@ -11,14 +11,12 @@ import ryan.game.controls.Gamepad;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.entity.parts.Part;
-import ryan.game.entity.powerup.ClimbingBar;
 import ryan.game.entity.powerup.NullTerritory;
 import ryan.game.entity.powerup.Pixel;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
 import ryan.game.games.power.robots.PowerRobotBase;
 import ryan.game.screens.GameScreen;
-
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,12 +66,12 @@ public class PowerMetadata extends RobotMetadata {
             if (stats.pixelIntake && (gamepad.getButton(Gamepad.BUMPER_RIGHT) || intaking)) {
                 for (Entity e : new ArrayList<>(intakeablePixels)) {
                     if (!intakeablePixels.isEmpty() && pixels < stats.maxPixels) {
-                        pixelIntakeTimes.putIfAbsent(e, Main.getTime());
+                        pixelIntakeTimes.putIfAbsent(e, GameScreen.getTime());
                         double a = Math.toRadians(Utils.getAngle(new Point2D.Float(e.getX(), e.getY()), new Point2D.Float(r.getX(), r.getY())));
                         synchronized (Main.WORLD_USE) {
                             e.getPrimary().applyForceToCenter(stats.pixelIntakeStrength * (float) Math.cos(a), stats.pixelIntakeStrength * (float) Math.sin(a), true);
                         }
-                        if (Main.getTime() - pixelIntakeTimes.get(e) >= stats.pixelIntakeTime) {
+                        if (GameScreen.getTime() - pixelIntakeTimes.get(e) >= stats.pixelIntakeTime) {
                             Main.getInstance().removeEntity(e);
                             intakeablePixels.remove(e);
                             pixelIntakeTimes.remove(e);
@@ -105,7 +103,7 @@ public class PowerMetadata extends RobotMetadata {
         if (e instanceof Robot) {
             Robot oR = (Robot) e;
             PowerMetadata oMeta = (PowerMetadata) oR.metadata;
-            if (GameScreen.matchPlay && r.blue != oR.blue && oMeta.protectedInNull && Main.getTime() - nullFoul >= 2000) {
+            if (GameScreen.matchPlay && r.blue != oR.blue && oMeta.protectedInNull && GameScreen.getTime() - nullFoul >= 2000) {
                 if (r.blue) {
                     Utils.log("The BLUE alliance has gotten a null zone technical foul");
                     PowerDisplay.red_foul += 25;
@@ -113,7 +111,7 @@ public class PowerMetadata extends RobotMetadata {
                     Utils.log("The RED alliance has gotten a null zone technical foul");
                     PowerDisplay.blue_foul += 25;
                 }
-                nullFoul = Main.getTime();
+                nullFoul = GameScreen.getTime();
             }
         }
         if (r.isPart("intake", self)) {
@@ -174,7 +172,7 @@ public class PowerMetadata extends RobotMetadata {
         if (pixels > 0) chest.draw(batch);
 
         if (climb != null && (Game.getMatchTime() <= 30 || !Game.isPlaying())) {
-            Utils.drawProgressBar(r.getX(), r.getY() + 1f, 2f, .5f, ((Main.getTime() - climb)/((stats.climbTime*1000))), batch);
+            Utils.drawProgressBar(r.getX(), r.getY() + 1f, 2f, .5f, ((GameScreen.getTime() - climb)/((stats.climbTime*1000))), batch);
         }
     }
 
