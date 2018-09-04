@@ -44,7 +44,7 @@ public class TitleScreen extends Screen {
     boolean buildingTournamentBot = true; //TODO: only allow this to become true if the current eventKey doesn't already have a matches folder
     int maxPoints;
     String[] custom_robots = {"core/assets/robot_custom.png", "core/assets/robot_custom3.png", "core/assets/robot_custom2.png",
-            "core/assets/robot_custom4.png", "core/assets/robot_custom5.png", "core/assets/robot_custom6.png"};
+            "core/assets/robot_custom4.png", "core/assets/robot_custom5.png", "core/assets/robot_custom6.png", "core/assets/robot_custom7.png"};
     int custom_robot_index = 0;
     Sprite custom_robot_current;
     Sprite arrow = new Sprite(new Texture("core/assets/ui/arrow.png"));

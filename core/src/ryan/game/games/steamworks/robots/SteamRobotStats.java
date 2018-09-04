@@ -37,7 +37,7 @@ public class SteamRobotStats extends RobotStats {
     public float shootPower = 24;
     public float shootPowerVariance = 3;
     public float shootAngleVariance = 2;
-    public float maxFuel = 45;
+    public int maxFuel = 45;
 
     public boolean climber = true;
     public float climbSpeed = 2f;
@@ -57,7 +57,7 @@ public class SteamRobotStats extends RobotStats {
 
     @Override
     public void addParts(float x, float y, Robot r) {
-        if (hasIntake && (gearIntake || fuelIntake)) {
+        if (hasIntake) {
             float width = intakeWidth, height = robotHeight / 4;
             Body in = BodyFactory.getRectangleDynamic(x - (robotWidth / 2), y + robotHeight + height, width, height, width * height);
             r.addPart(new Intake(width * 2, height * 2, in));

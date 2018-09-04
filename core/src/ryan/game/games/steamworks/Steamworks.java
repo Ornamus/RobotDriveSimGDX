@@ -73,10 +73,9 @@ public class Steamworks extends Field {
                         }
                     }
                 }
-                //TODO: fix bug with red human only working in slot 1. Blue works fine.
                 if (robotExists) {
                     Sprite p = new Sprite(Utils.colorImage("core/assets/person.png", primary, Color.BROWN, Utils.toColor(255, 204, 165), secondary));
-                    p.setPosition((i == 0 ? -31.3f : 20) + 0.6f, -13 - (7 * h));
+                    p.setPosition((i == 0 ? -31.3f : 20f) + 0.6f, -13 - (7 * h));
                     p.setScale(0.08f);
                     if (i == 0) p.setSize(-p.getWidth(), p.getHeight());
                     array[h] = p;
@@ -96,7 +95,6 @@ public class Steamworks extends Field {
         drawables.add(new ImageDrawer(-30, -30, 60, 60, "core/assets/carpet_square.png"));
 
         float oX = 0.6f;
-        //x + 0.6f for centered field
         drawables.add(new ImageDrawer(-27.5f + oX, -15, 54, 30, "core/assets/steamworks_norotors.png"));
 
         drawables.add(new Hopper(-9.5f + oX, 12.25f, true)); //left top hopper

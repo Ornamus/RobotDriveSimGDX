@@ -42,7 +42,7 @@ public class SteamStatBuilder extends RobotStatBuilder {
         newSliders.add(new RobotStatSlider("Fuel Capacity", 8, (slider, stats) ->  {
             SteamRobotStats steam = (SteamRobotStats) stats;
             float val = slider.getProgress();
-            steam.maxFuel = 0 + (50 * val);
+            steam.maxFuel = Math.round(0 + (50 * val));
         }));
 
         newSliders.add(new RobotStatSlider("Shooter Speed", 4, (slider, stats) ->  {

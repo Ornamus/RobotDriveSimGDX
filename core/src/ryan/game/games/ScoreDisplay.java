@@ -19,7 +19,7 @@ public abstract class ScoreDisplay extends Drawable {
     Sprite timerBar;
 
     int[] blueTeams = new int[]{1902, 254, 987};
-    int[] redTeams = new int[]{118, 1986, 180};
+    int[] redTeams = new int[]{118, 1678, 1987};
     String matchName = "Semifinal 2 of 4";
     String eventName = GameScreen.EVENT_NAME;
 

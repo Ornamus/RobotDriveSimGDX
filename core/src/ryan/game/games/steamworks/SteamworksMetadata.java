@@ -211,7 +211,7 @@ public class SteamworksMetadata extends RobotMetadata {
 
         SteamRobotStats stats = (SteamRobotStats) r.stats;
         if (fuel > 0) {
-            float size = 1 * (fuel / stats.maxFuel);
+            float size = 1f * (fuel / (stats.maxFuel * 1f));
             batch.draw(fuel == stats.maxFuel ? Fuel.TEXTURE_MAX : Fuel.TEXTURE, pos.x - (size / 2), pos.y - (size / 2), size, size);
         }
         if (hasGear) gear.draw(batch);

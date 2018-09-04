@@ -1,5 +1,6 @@
 package ryan.game.desktop;
 
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
@@ -12,12 +13,13 @@ public class DesktopLauncher {
 
     static String[] random = {"Water Game Confirmed", "Driver Practice Confirmed", "Driver Skill Simulator", "pOrK liFt", "100%* Real Physics",
 	"#FuelMatters", "Revenge of the Tank Drive", "The Peg Strikes Back", "Raiders of the Lost Gears", "Destination: Despacito", "Press A to Chute Door",
-	"Mission Moon :)", "TSIMFD"};
+	"Mission Moon :)", "TSIMFD", "Virtual Power Cubes still aren't edible"};
 
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setWindowedMode(1280, 720); //720p
 		config.setTitle("The FRC Simulator - " + random[Utils.randomInt(0, random.length-1)]);
+		config.setWindowIcon(Files.FileType.Internal, "core/assets/dozer_icon.png");
 		//config.width = 1100;
 		//config.height = 630;
 		//config.title = "RobotDriveSimGDX - " + random[Utils.randomInt(0, random.length-1)];
