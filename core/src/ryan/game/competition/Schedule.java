@@ -12,6 +12,7 @@ import ryan.game.games.steamworks.robots.Steam254;
 import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
 import ryan.game.screens.GameScreen;
+import ryan.game.screens.WinnerScreen;
 
 import java.io.*;
 import java.util.*;
@@ -278,8 +279,9 @@ public class Schedule {
                 generateNextElimMatches();
                 GameScreen.self.field.updateMatchInfo();
             } else {
-                //TODO: properly end the game (and actually display who won)
-                Utils.log((wonSet.get(remainingAlliances[0]) ? arrayToString(remainingAlliances[0]) : arrayToString(remainingAlliances[1])) + " wins!");
+                int[] winning = wonSet.get(remainingAlliances[0]) ? remainingAlliances[0] : remainingAlliances[1];
+                Utils.log(arrayToString(winning) + " wins!");
+                Main.getInstance().setScreen(new WinnerScreen(getTeam(winning[0]), getTeam(winning[1]), getTeam(winning[2])));
             }
         } else {
             for (MatchSet s : sets) {

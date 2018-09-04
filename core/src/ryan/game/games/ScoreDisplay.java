@@ -123,13 +123,19 @@ public abstract class ScoreDisplay extends Drawable {
             int team = redTeams[i];
             Fonts.drawCentered(Fonts.fmsBlack, team + "", -282.2f, getY()+((92 - (i*21)) * 1.7f), batch);
         }
-        if (GameScreen.schedule.elims) Fonts.drawCentered(Fonts.fmsBlackSmall, GameScreen.schedule.getSeed(redTeams) + "", 0, getY(), -166, 25, batch);
+        if (GameScreen.schedule.elims) {
+            Fonts.drawCentered(Fonts.fmsBlackSmall, GameScreen.schedule.getSeed(redTeams) + "", -290, getY() + 42, batch);
+            //Fonts.drawCentered(Fonts.fmsBlackSmall, GameScreen.schedule.getSeed(redTeams) + "", 0, getY(), -166, 25, batch);
+        }
 
         for (int i=0; i<blueTeams.length; i++) {
             int team = blueTeams[i];
             Fonts.drawCentered(Fonts.fmsBlack, team + "", 282.2f, getY()+((92 - (i*21)) * 1.7f), batch);
         }
-        if (GameScreen.schedule.elims) Fonts.drawCentered(Fonts.fmsBlackSmall, GameScreen.schedule.getSeed(blueTeams) + "", 0, getY(), 166, 25, batch);
+        if (GameScreen.schedule.elims) {
+            Fonts.drawCentered(Fonts.fmsBlackSmall, GameScreen.schedule.getSeed(blueTeams) + "", 290, getY() + 42, batch);
+            //Fonts.drawCentered(Fonts.fmsBlackSmall, GameScreen.schedule.getSeed(blueTeams) + "", 0, getY(), 166, 25, batch);
+        }
     }
 
     /**

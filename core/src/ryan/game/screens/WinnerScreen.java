@@ -1,62 +1,71 @@
 package ryan.game.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import ryan.game.Main;
 import ryan.game.Utils;
-import ryan.game.competition.RobotStats;
 import ryan.game.competition.Team;
-import ryan.game.entity.Robot;
 import ryan.game.entity.steamworks.Fuel;
 import ryan.game.entity.steamworks.Gear;
-import ryan.game.games.RobotStatBuilder;
-import ryan.game.games.RobotStatSlider;
-import ryan.game.games.steamworks.SteamStatBuilder;
-import ryan.game.games.steamworks.robots.SteamRobotStats;
-import ryan.game.render.Button;
 import ryan.game.render.Fonts;
 
-import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class WinnerScreen extends Screen {
 
     float ui_visibility = 0;
 
-    Music music = Gdx.audio.newMusic(Gdx.files.internal("core/assets/music/win.wav"));
+    Music music = Gdx.audio.newMusic(Gdx.files.internal("core/assets/music/win_alt.wav"));
     Texture background = new Texture(Gdx.files.internal("core/assets/background.png"));
 
     List<GravityT> things = new ArrayList<>();
-    Sprite robot1, robot2, robot3;
+    Team captain, firstPick, secondPick;
+    Sprite captainSprite, firstPickSprite, secondPickSprite;
 
     long start;
+
+
+    public WinnerScreen() {}
+
+    public WinnerScreen(Team captain, Team firstPick, Team secondPick) {
+        this.captain = captain;
+        this.firstPick = firstPick;
+        this.secondPick = secondPick;
+    }
 
     @Override
     public void init() {
         background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
-        robot1 = new Sprite(Utils.colorImage("core/assets/robot_custom2.png", Color.GRAY, Main.RED, Color.PURPLE));
-        robot1.setBounds(-500 - (125/2), 60 - (125/2), 125, 125);
+        if (captain == null || firstPick == null || secondPick == null) {
+            List<Team> teams = Utils.teamListFromJSON(new File(GameScreen.EVENT_KEY + "/teams.json"));
+            captain = teams.get(5);
+            firstPick = teams.get(2);
+            secondPick = teams.get(4);
+        }
 
-        robot2 = new Sprite(Utils.colorImage("core/assets/robot_custom3.png", Color.GRAY, Main.RED, Color.GREEN));
-        robot2.setBounds(0 - (125/2), 60 - (125/2), 125, 125);
+        captainSprite = new Sprite(Utils.colorImage(captain.robotStats.texture, captain.primary, Main.RED, captain.secondary));
+        captainSprite.setBounds(0 - (125/2), 60 - (125/2), 125, 125);
 
-        robot3 = new Sprite(Utils.colorImage("core/assets/robot_custom5.png", Color.WHITE, Main.RED, Main.BLUE));
-        robot3.setBounds(500 - (125/2), 60 - (125/2), 125, 125);
+        firstPickSprite = new Sprite(Utils.colorImage(firstPick.robotStats.texture, firstPick.primary, Main.RED, firstPick.secondary));
+        firstPickSprite.setBounds(-500 - (125/2), 60 - (125/2), 125, 125);
+
+        secondPickSprite = new Sprite(Utils.colorImage(secondPick.robotStats.texture, secondPick.primary, Main.RED, secondPick.secondary));
+        secondPickSprite.setBounds(500 - (125/2), 60 - (125/2), 125, 125);
+
+        GravityT.loadTexture(Gear.TEXTURE, 60, 60);
+        GravityT.loadTexture(Fuel.TEXTURE, 24, 24);
 
         //music.setLooping(true);
-        music.setVolume(.65f);
+        music.setVolume(.45f);
         music.play();
         start = System.currentTimeMillis();
     }
@@ -69,7 +78,7 @@ public class WinnerScreen extends Screen {
             float x = sX + (float)Math.cos(angle)*r;//a + r * sin(angle);
             float y = sY + (float)Math.sin(angle)*r;//b + r * cos(angle);
 
-            things.add(new GravityT(x - 30, y - 30, 60, 60, Gear.TEXTURE).xVel(350f*(float)Math.cos(angle)).yVel(350f*(float)Math.sin(angle)).spinRate(angle > 180 ? -150 : 150));
+            things.add(new GravityT(x - 30, y - 30, 60, 60, Gear.TEXTURE).xVel(350f*(float)Math.cos(angle)).yVel(350f*(float)Math.sin(angle)).spinRate(angle > 180 ? -150 : 150).angle(Utils.randomInt(0,359)));
 
             angle += (360 / gearsToSpawn);
         }
@@ -89,31 +98,34 @@ public class WinnerScreen extends Screen {
 
     @Override
     public void tick() {
-        if (music.getPosition() >= .410 && part == 0) {
+        if (music.getPosition() >= (.328) && part == 0) {
             gearSplode(-500,60);
             part = 1;
         }
-        if (music.getPosition() >= 1.958 && part == 1) {
-            gearSplode(0,60);
+        if (music.getPosition() >= (2.4) && part == 1) {
+            gearSplode(500,60);
             part = 2;
         }
-        if (music.getPosition() >= 3.521 && part == 2) {
-            gearSplode(500,60);
+        if (music.getPosition() >= (4.5) && part == 2) {
+            gearSplode(0,60);
             part = 3;
         }
-        if (music.getPosition() >= 6.017 && part == 3) {
+        if (music.getPosition() >= (6.755) && part == 3) {
             part = 4;
         }
-        if (music.getPosition() >= 6.417 && part == 4) {
+        if (music.getPosition() >= (6.755) && part == 4) {
             part = 5;
         }
-        if (music.getPosition() >= 8.156 && part == 5) {
+        if (music.getPosition() >= (8.909) && part == 5) {
             part = 6;
             ui_visibility = 0;
         }
+        if (music.getPosition() >= (17.46) && part == 6) {
+            part = 7;
+        }
 
 
-        if (part >= 4) {
+        if (part >= 4 && part < 7) {
             if (tickWait >= 8) {
                 things.add(new GravityT(Main.screenWidth/2 - 60, Main.screenHeight/2 + 30, 60, 60, Gear.TEXTURE).spinRate(150).yVel(50));
                 things.add(new GravityT(-Main.screenWidth/2 + 0, Main.screenHeight/2 + 30, 60, 60, Gear.TEXTURE).spinRate(-150).yVel(50));
@@ -171,21 +183,21 @@ public class WinnerScreen extends Screen {
 
 
         if (part >= 1) {
-            robot1.draw(b);
-            Fonts.drawCentered(Fonts.monoWhiteLarge, "2061", -500, -10, b);
+            firstPickSprite.draw(b);
+            Fonts.drawCentered(Fonts.monoWhiteLarge, firstPick.number + "", -500, -10, b);
             if (part >= 4) Fonts.drawCentered(Fonts.monoWhiteLarge, "First Pick", -500, -50, b);
         }
         if (part >= 2) {
-            robot2.draw(b);
-            Fonts.drawCentered(Fonts.monoWhiteLarge, "472", 0, -10, b);
-            if (part >= 4) Fonts.drawCentered(Fonts.monoWhiteLarge, "Alliance Captain", 0, -50, b);
-        }
-        if (part >= 3) {
-            robot3.draw(b);
-            Fonts.drawCentered(Fonts.monoWhiteLarge, "7892", 500, -10, b);
+            secondPickSprite.draw(b);
+            Fonts.drawCentered(Fonts.monoWhiteLarge, secondPick.number + "", 500, -10, b);
             if (part >= 4) Fonts.drawCentered(Fonts.monoWhiteLarge, "Second Pick", 500, -50, b);
         }
 
+        if (part >= 3) {
+            captainSprite.draw(b);
+            Fonts.drawCentered(Fonts.monoWhiteLarge, captain.number + "", 0, -10, b);
+            if (part >= 4) Fonts.drawCentered(Fonts.monoWhiteLarge, "Alliance Captain", 0, -50, b);
+        }
         if (part >= 6) {
             Color oldColor = Fonts.fmsScore.getColor();
             Fonts.fmsScore.setColor(oldColor.r, oldColor.g, oldColor.b, ui_visibility);
@@ -204,74 +216,91 @@ public class WinnerScreen extends Screen {
         return false;
     }
 
-    class GravityT {
-        Sprite p;
-        float x, y;
-        float xVel = 0, yVel = 0;
-        float angle = 0;
-        float spinRate = 0;
-        boolean gravity = true;
-        boolean loseXVel = true;
+}
 
-        GravityT(float x, float y, float width, float height, Texture t) {
-            this.x = x;
-            this.y = y;
-            p = new Sprite(t);
-            p.setBounds(x, y, width, height);
+class GravityT {
+
+    public static HashMap<Texture, Sprite> sprites = new HashMap<>();
+
+    Sprite p;
+    float x, y;
+    float xVel = 0, yVel = 0;
+    float angle = 0;
+    float spinRate = 0;
+    boolean gravity = true;
+    boolean loseXVel = true;
+
+    GravityT(float x, float y, float width, float height, Texture t) {
+        this.x = x;
+        this.y = y;
+        p = sprites.get(t);
+        if (p == null) {
+           loadTexture(t, width, height);
+           p = sprites.get(t);
         }
+    }
 
-        public GravityT xVel(float f) {
-            xVel = f;
-            return this;
+    public GravityT xVel(float f) {
+        xVel = f;
+        return this;
+    }
+
+    public GravityT yVel(float f) {
+        yVel = f;
+        return this;
+    }
+
+    public GravityT spinRate(float f) {
+        spinRate = f;
+        return this;
+    }
+
+    public GravityT angle(float f) {
+        angle = f;
+        return this;
+    }
+
+    public void tick() {
+        float delta = 0.03f;//Gdx.graphics.getDeltaTime();
+
+        x += xVel * delta;
+        y += yVel * delta;
+
+        if (gravity && yVel > -850) {
+            yVel -= 6.5;
+        } else {
+            //Utils.log("max");
         }
-
-        public GravityT yVel(float f) {
-            yVel = f;
-            return this;
-        }
-
-        public GravityT spinRate(float f) {
-            spinRate = f;
-            return this;
-        }
-
-        public void tick() {
-            float delta = 0.03f;//Gdx.graphics.getDeltaTime();
-
-            x += xVel * delta;
-            y += yVel * delta;
-
-            if (gravity && yVel > -850) {
-                yVel -= 6.5;
+        if (!hitZero && loseXVel && xVel != 0) {
+            if (xVel > 0) {
+                xVel -= 1;
+                if (xVel < 0) {
+                    xVel = 0;
+                    hitZero = true;
+                }
             } else {
-                //Utils.log("max");
-            }
-            if (!hitZero && loseXVel && xVel != 0) {
+                xVel += 1;
                 if (xVel > 0) {
-                    xVel -= 1;
-                    if (xVel < 0) {
-                        xVel = 0;
-                        hitZero = true;
-                    }
-                } else {
-                    xVel += 1;
-                    if (xVel > 0) {
-                        xVel = 0;
-                        hitZero = true;
-                    }
+                    xVel = 0;
+                    hitZero = true;
                 }
             }
-
-            angle += spinRate * delta;
         }
 
-        boolean hitZero = false;
-        public void draw(float delta, SpriteBatch b) {
+        angle += spinRate * delta;
+    }
 
-            p.setPosition(x, y);
-            p.setOrigin(30,30);
-            p.setRotation(angle);
-            p.draw(b);
-        }
+    boolean hitZero = false;
+    public void draw(float delta, SpriteBatch b) {
+        p.setPosition(x, y);
+        p.setRotation(angle);
+        p.draw(b);
+    }
+
+    public static void loadTexture(Texture t, float width, float height) {
+        Sprite s = new Sprite(t);
+        s.setSize(width, height);
+        s.setOrigin(width/2,height/2);
+        sprites.put(t, s);
     }
 }
