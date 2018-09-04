@@ -38,6 +38,7 @@ import ryan.game.render.Fonts;
 import ryan.game.screens.GameScreen;
 import ryan.game.screens.Screen;
 import ryan.game.screens.TitleScreen;
+import ryan.game.screens.WinnerScreen;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -102,7 +103,8 @@ public class Main extends ApplicationAdapter implements InputProcessor {
         unscaledBatch = new SpriteBatch();
         batch.setProjectionMatrix(unscaledCamera.combined);
 
-        setScreen(new TitleScreen());
+        setScreen(new WinnerScreen());
+        //setScreen(new TitleScreen());
         //setScreen(new GameScreen());
     }
 
