@@ -1,4 +1,4 @@
-package ryan.game.screens;
+package ryan.game.render;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -15,6 +15,7 @@ public class Button extends Drawable {
     Color color = Utils.toColor(0, 101, 179);
     Sprite background;
     Runnable onClick;
+    float alpha = 1;
 
     public Button(int x, int y, int width, int height, String text, Runnable onClick) {
         super(x, y);
@@ -34,14 +35,17 @@ public class Button extends Drawable {
     }
 
     public void setAlpha(float alpha) {
+        this.alpha = alpha;
         background.setAlpha(alpha);
     }
 
     @Override
     public void draw(SpriteBatch batch) {
         background.draw(batch);
-
+        Color old = Fonts.monoWhiteLarge.getColor();
+        Fonts.monoWhiteLarge.setColor(old.r, old.g, old.b, alpha);
         Fonts.drawCentered(Fonts.monoWhiteLarge, text, getX(), getY(), batch);
+        Fonts.monoWhiteLarge.setColor(old);
     }
 
     public void click(Vector3 pos, int button) {

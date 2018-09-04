@@ -14,15 +14,17 @@ import com.google.gson.GsonBuilder;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.competition.RobotStats;
+import ryan.game.competition.Team;
 import ryan.game.entity.Robot;
 import ryan.game.games.RobotStatBuilder;
 import ryan.game.games.RobotStatSlider;
 import ryan.game.games.steamworks.SteamStatBuilder;
-import ryan.game.games.steamworks.robots.SteamDefault;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
+import ryan.game.render.Button;
 import ryan.game.render.Fonts;
-
+import javax.swing.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TitleScreen extends Screen {
@@ -31,13 +33,15 @@ public class TitleScreen extends Screen {
     float ui_visibility = 0;
 
     public static int customBotsLoaded = -1;
+    public static int tournamentTeamsLoaded = -1;
 
     Music music = Gdx.audio.newMusic(Gdx.files.internal("core/assets/music/title_2.wav"));
     Sprite frc_logo = new Sprite(new Texture(Gdx.files.internal("core/assets/frc_logo2.png")));
     Texture background = new Texture(Gdx.files.internal("core/assets/background.png"));
 
-    Button tournamentButton, builderButton, settingsButton;
+    Button tournamentButton, sandboxButton, builderButton, settingsButton;
 
+    boolean buildingTournamentBot = true; //TODO: only allow this to become true if the current eventKey doesn't already have a matches folder
     int maxPoints;
     String[] custom_robots = {"core/assets/robot_custom.png", "core/assets/robot_custom3.png", "core/assets/robot_custom2.png",
             "core/assets/robot_custom4.png", "core/assets/robot_custom5.png", "core/assets/robot_custom6.png"};
@@ -49,49 +53,38 @@ public class TitleScreen extends Screen {
 
     Color primary = Color.GRAY, secondary = Color.PURPLE;
 
-
     @Override
     public void init() {
         frc_logo.setScale(.65f);
-        frc_logo.setPosition((-Main.screenWidth/2) - 90, (Main.screenHeight/2) - 200);
+        frc_logo.setPosition((-Main.screenWidth / 2) - 90, (Main.screenHeight / 2) - 200);
 
-        tournamentButton = new Button(0, 0, 450, 70, "Sandbox Mode", ()->{
+        tournamentButton = new Button(0, 50, 520, 70, "Tournament Mode", () -> {
             music.stop();
             //TODO: pretty transition
+            GameScreen.MAKE_SCHEDULE = true;
             Main.getInstance().setScreen(new GameScreen());
         });
 
-        builderButton = new Button(0, -100, 400, 70, "Robot Builder", ()->{
+        sandboxButton = new Button(0, -50, 450, 70, "Sandbox Mode", () -> {
+            music.stop();
+            //TODO: pretty transition
+            GameScreen.MAKE_SCHEDULE = false;
+            Main.getInstance().setScreen(new GameScreen());
+        });
+
+        builderButton = new Button(0, -150, 400, 70, "Robot Builder", () -> {
             setSubpage(Subpage.ROBOT_BUILDER);
         });
 
-        settingsButton = new Button(0, -200, 300, 70, "Settings", ()->{
+        settingsButton = new Button(0, -250, 300, 70, "Settings", () -> {
             Utils.log("TODO: implement settings");
         });
 
         background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
-
         music.setLooping(true);
         music.setVolume(0);
         music.play();
-
-        //Subpage Robot Builder setup
-        arrow.setScale(2);
-        arrow.setPosition(115, 250);
-
-        saveRobotButton = new Button(0, -350, 250, 70, "Save", ()-> {
-            saveRobot();
-            setSubpage(Subpage.TITLE);
-        });
-
-        backButton = new Button(0, -440, 250, 70, "Back", ()-> {
-            setSubpage(Subpage.TITLE);
-        });
-
-        randomColorButton = new Button(0, 170, 450, 70, "Random Colors", ()-> {
-            randomColors();
-        });
 
         //Loading up custom robot files
         if (customBotsLoaded == -1) {
@@ -107,6 +100,33 @@ public class TitleScreen extends Screen {
                 }
             }
         }
+
+        //This isn't used for actual tournament stuff (Schedule does that), this is just so the end user can see what's currently loaded
+        if (tournamentTeamsLoaded == -1) {
+            tournamentTeamsLoaded = 0;
+            File f = new File(GameScreen.EVENT_KEY + "/teams.json");
+            if (f.exists()) {
+                List<Team> teams = Utils.teamListFromJSON(f);
+                tournamentTeamsLoaded = teams.size();
+            }
+        }
+
+        //Subpage Robot Builder setup
+        arrow.setScale(2);
+        arrow.setPosition(115, 250);
+
+        saveRobotButton = new Button(0, -350, 250, 70, "Save", () -> {
+            saveRobot();
+            setSubpage(Subpage.TITLE);
+        });
+
+        backButton = new Button(0, -440, 250, 70, "Back", () -> {
+            setSubpage(Subpage.TITLE);
+        });
+
+        randomColorButton = new Button(0, 170, 450, 70, "Random Colors", () -> {
+            randomColors();
+        });
     }
 
     public void randomColors() {
@@ -114,6 +134,7 @@ public class TitleScreen extends Screen {
         secondary = Utils.toColor(Utils.randomInt(0, 255), Utils.randomInt(0, 255), Utils.randomInt(0, 255));
         refreshCustomRobot();
     }
+
 
     public void setSubpage(Subpage p) {
         subpage = p;
@@ -166,9 +187,24 @@ public class TitleScreen extends Screen {
 
         Gson g = new GsonBuilder().setPrettyPrinting().create();
 
+        if (buildingTournamentBot) {
+            String num = JOptionPane.showInputDialog("Please enter team number:");
+            int number = Integer.parseInt(num);
+            List<Team> tournamentTeams = Utils.teamListFromJSON(new File(GameScreen.EVENT_KEY + "/teams.json"));
+            if (tournamentTeams == null) tournamentTeams = new ArrayList<>();
+            tournamentTeams.add(new Team(number, primary, secondary, stats));
+            Utils.saveTeamList(tournamentTeams);
+
+            tournamentTeamsLoaded++;
+        } else {
+            //FileHandle[] existingRobots = Gdx.files.internal("custom_robots").list();
+            //Utils.writeFile("custom_robots/robot_" + (existingRobots.length+1) + ".json", g.toJson(stats));
+            //Robot.addStatOption(stats);
+            //customBotsLoaded++;
+        }
+        //TODO: one day, don't save tournament robots into the sandbox too. For now we save them to the sandbox for ease of practice
         FileHandle[] existingRobots = Gdx.files.internal("custom_robots").list();
         Utils.writeFile("custom_robots/robot_" + (existingRobots.length+1) + ".json", g.toJson(stats));
-
         Robot.addStatOption(stats);
         customBotsLoaded++;
     }
@@ -225,6 +261,9 @@ public class TitleScreen extends Screen {
             tournamentButton.setAlpha(ui_visibility);
             tournamentButton.draw(b);
 
+            sandboxButton.setAlpha(ui_visibility);
+            sandboxButton.draw(b);
+
             builderButton.setAlpha(ui_visibility);
             builderButton.draw(b);
 
@@ -232,7 +271,7 @@ public class TitleScreen extends Screen {
             settingsButton.draw(b);
 
             Fonts.drawRight(Fonts.monoWhiteLarge, "The FRC Simulator, v0.1a", Main.screenWidth/2 - 5, -Main.screenHeight/2 +40, b);
-            Fonts.drawRight(Fonts.monoWhiteLarge, customBotsLoaded + " custom bots loaded", Main.screenWidth/2 - 5, -Main.screenHeight/2 +90, b);
+            Fonts.drawRight(Fonts.monoWhiteLarge, tournamentTeamsLoaded + " tournament team" + (tournamentTeamsLoaded != 1 ? "s" : ""), Main.screenWidth/2 - 5, -Main.screenHeight/2 +90, b);
         } else if (subpage == Subpage.ROBOT_BUILDER) {
             custom_robot_current.draw(b);
             arrow.draw(b);
@@ -250,6 +289,7 @@ public class TitleScreen extends Screen {
     public boolean click(Vector3 pos, int button) {
         if (subpage == Subpage.TITLE) {
             tournamentButton.click(pos, button);
+            sandboxButton.click(pos, button);
             builderButton.click(pos, button);
             settingsButton.click(pos, button);
         } else if (subpage == Subpage.ROBOT_BUILDER) {

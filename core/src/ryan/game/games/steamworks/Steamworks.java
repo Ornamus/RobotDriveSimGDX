@@ -73,9 +73,10 @@ public class Steamworks extends Field {
                         }
                     }
                 }
+                //TODO: fix bug with red human only working in slot 1. Blue works fine.
                 if (robotExists) {
                     Sprite p = new Sprite(Utils.colorImage("core/assets/person.png", primary, Color.BROWN, Utils.toColor(255, 204, 165), secondary));
-                    p.setPosition(i == 0 ? -31.3f : 20, -13 - (7 * h));
+                    p.setPosition((i == 0 ? -31.3f : 20) + 0.6f, -13 - (7 * h));
                     p.setScale(0.08f);
                     if (i == 0) p.setSize(-p.getWidth(), p.getHeight());
                     array[h] = p;
@@ -92,33 +93,37 @@ public class Steamworks extends Field {
     public List<Drawable> generateField() {
         List<Drawable> drawables = new ArrayList<>();
 
-        drawables.add(new ImageDrawer(-27.5f, -15, 54, 30, "core/assets/steamworks_norotors.png"));
+        drawables.add(new ImageDrawer(-30, -30, 60, 60, "core/assets/carpet_square.png"));
 
-        drawables.add(new Hopper(-9.5f, 12.25f, true)); //left top hopper
-        drawables.add(new Hopper(8.35f, 12.25f, true)); //right top hopper
+        float oX = 0.6f;
+        //x + 0.6f for centered field
+        drawables.add(new ImageDrawer(-27.5f + oX, -15, 54, 30, "core/assets/steamworks_norotors.png"));
+
+        drawables.add(new Hopper(-9.5f + oX, 12.25f, true)); //left top hopper
+        drawables.add(new Hopper(8.35f + oX, 12.25f, true)); //right top hopper
 
 
-        drawables.add(new Hopper(-16f, -13.45f, false)); //left bottom hopper
-        drawables.add(new Hopper(-0.6f, -13.45f, false)); //middle bottom hopper
-        drawables.add(new Hopper(16f - 1.15f, -13.45f, false)); //right bottom hopper
+        drawables.add(new Hopper(-16f + oX, -13.45f, false)); //left bottom hopper
+        drawables.add(new Hopper(-0.6f + oX, -13.45f, false)); //middle bottom hopper
+        drawables.add(new Hopper(16f - 1.15f + oX, -13.45f, false)); //right bottom hopper
 
 
-        drawables.add(Entity.barrier(0, 12, 28f, .5f)); //top wall
-        drawables.add(Entity.barrier(0, -13.2f, 28f, .5f)); //bottom wall
-        drawables.add(Entity.barrier(-25.75f, 0, .5f, 10f)); //left wall
-        drawables.add(Entity.barrier(24.5f, 0, .5f, 10f)); //right wall
+        drawables.add(Entity.barrier(0 + oX, 12, 28f, .5f)); //top wall
+        drawables.add(Entity.barrier(0 + oX, -13.2f, 28f, .5f)); //bottom wall
+        drawables.add(Entity.barrier(-25.75f + oX, 0, .5f, 10f)); //left wall
+        drawables.add(Entity.barrier(24.5f + oX, 0, .5f, 10f)); //right wall
 
-        drawables.add(new LoadingStation(-24.8f, 11, 26, true, true)); //blue load left
-        drawables.add(new LoadingStation(-21.6f, 12.65f, 26, true, false)); //blue load right
+        drawables.add(new LoadingStation(-24.8f + oX, 11, 26, true, true)); //blue load left
+        drawables.add(new LoadingStation(-21.6f + oX, 12.65f, 26, true, false)); //blue load right
 
-        drawables.add(new LoadingStation(20.4f, 12.65f, -26, false, true)); //red load left
-        drawables.add(new LoadingStation(23.6f, 11, -26, false, false)); //red load right
+        drawables.add(new LoadingStation(20.4f + oX, 12.65f, -26, false, true)); //red load left
+        drawables.add(new LoadingStation(23.6f + oX, 11, -26, false, false)); //red load right
 
-        drawables.add(Entity.barrier(-23, 12, 3f, 2f).setAngle(26)); //Blue load barrier
-        drawables.add(Entity.barrier(22, 12, 3f, 2f).setAngle(-26)); //Red load barrier
+        drawables.add(Entity.barrier(-23 + oX, 12, 3f, 2f).setAngle(26)); //Blue load barrier
+        drawables.add(Entity.barrier(22 + oX, 12, 3f, 2f).setAngle(-26)); //Red load barrier
 
-        drawables.add(Entity.barrier(-24.8f, -12.9f, 2f, 2f).setAngle(46)); //Red boiler
-        drawables.add(Entity.barrier(23.8f, -12.9f, 2f, 2f).setAngle(-46)); //Blue boiler
+        drawables.add(Entity.barrier(-24.8f + oX, -12.9f, 2f, 2f).setAngle(46)); //Red boiler
+        drawables.add(Entity.barrier(23.8f + oX, -12.9f, 2f, 2f).setAngle(-46)); //Blue boiler
 
         PolygonShape s = new PolygonShape();
         PolygonShape s2 = new PolygonShape();
@@ -138,42 +143,42 @@ public class Steamworks extends Field {
         s.set(vertices);
         s2.set(vertices);
 
-        drawables.add(Entity.barrier(8.9f, -2.75f, s)); //blue airship
-        drawables.add(Entity.barrier(-17.65f, -2.75f, s2)); //red airship
+        drawables.add(Entity.barrier(8.9f + oX, -2.75f, s)); //blue airship
+        drawables.add(Entity.barrier(-17.65f + oX, -2.75f, s2)); //red airship
 
-        drawables.add(Entity.peg(-18.7f, -.57f, 0));
-        drawables.add(Entity.peg(-16.25f, 3.25f, 360-60));
-        drawables.add(Entity.peg(-16f, -4.25f, 60));
+        drawables.add(Entity.peg(-18.7f + oX, -.57f, 0));
+        drawables.add(Entity.peg(-16.25f + oX, 3.25f, 360-60));
+        drawables.add(Entity.peg(-16f + oX, -4.25f, 60));
 
         float xFix = 1.55f;
 
-        drawables.add(Entity.peg(18.9f - xFix, -.57f, 0));
-        drawables.add(Entity.peg(16.25f - xFix, 3.25f, 60));
-        drawables.add(Entity.peg(16.25f - xFix, -4.25f, 360-60));
+        drawables.add(Entity.peg(18.9f - xFix + oX, -.57f, 0));
+        drawables.add(Entity.peg(16.25f - xFix + oX, 3.25f, 60));
+        drawables.add(Entity.peg(16.25f - xFix + oX, -4.25f, 360-60));
 
         float ropeFix = 1.25f;
-        drawables.add(new Rope(11.6f - ropeFix, 3.25f, 300, true).setId(0)); //blue top
-        drawables.add(new Rope(18.35f - ropeFix, -.5f, 0, true).setId(1)); //blue middle
-        drawables.add(new Rope(11.6f - ropeFix, -4.45f, 60, true).setId(2)); //blue bottom
+        drawables.add(new Rope(11.6f - ropeFix + oX, 3.25f, 300, true).setId(0)); //blue top
+        drawables.add(new Rope(18.35f - ropeFix + oX, -.5f, 0, true).setId(1)); //blue middle
+        drawables.add(new Rope(11.6f - ropeFix + oX, -4.45f, 60, true).setId(2)); //blue bottom
 
-        drawables.add(new Rope(-11.6f, 3.25f, 60, false).setId(0)); //red top
-        drawables.add(new Rope(-18.35f, -.5f, 0, false).setId(1)); //red middle
-        drawables.add(new Rope(-11.6f, -4.45f, 300, false).setId(2)); //red bottom
+        drawables.add(new Rope(-11.6f + oX, 3.25f, 60, false).setId(0)); //red top
+        drawables.add(new Rope(-18.35f + oX, -.5f, 0, false).setId(1)); //red middle
+        drawables.add(new Rope(-11.6f + oX, -4.45f, 300, false).setId(2)); //red bottom
 
-        drawables.add(new Boiler(-24.6f, -12.25f, false)); //red boiler
-        drawables.add(new Boiler(23.4f, -12.25f, true));
+        drawables.add(new Boiler(-24.6f + oX, -12.25f, false)); //red boiler
+        drawables.add(new Boiler(23.4f + oX, -12.25f, true));
 
-        drawables.add(new Baseline(16.75f, 0, true)); //red baseline
-        drawables.add(new Baseline(-18f, 0, false)); //blue baseline
+        drawables.add(new Baseline(16.75f + oX, 0, true)); //red baseline
+        drawables.add(new Baseline(-18f + oX, 0, false)); //blue baseline
 
-        drawables.add(new LoadingZone(-21, 9.75f, 26, true)); //blue loading zone
-        drawables.add(new LoadingZone(19.5f, 9.75f, -26, false)); //red loading zone
+        drawables.add(new LoadingZone(-21 + oX, 9.75f, 26, true)); //blue loading zone
+        drawables.add(new LoadingZone(19.5f + oX, 9.75f, -26, false)); //red loading zone
 
         for (int i=0; i<2; i++) {
 
             Color color = i == 0 ? Main.RED : Main.BLUE;
             List<Sprite> rotors = i == 0 ? redRotors : blueRotors;
-            float startX = i == 0 ? -18 : 8.5f;
+            float startX = i == 0 ? -18 + oX : 8.5f + oX;
             float startY = i == 0 ? -3.5f : .4f;
 
             for (int r=0; r<3; r++) {

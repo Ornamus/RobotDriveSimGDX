@@ -266,7 +266,7 @@ public class GameScreen extends Screen  {
                 r.onGamepadDisconnect();
             }
             robots.clear();
-            music.stop();
+            if (music != null) music.stop();
             matchPlay = false;
             Main.getInstance().setScreen(new TitleScreen());
         }

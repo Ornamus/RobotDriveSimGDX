@@ -35,7 +35,7 @@ public class Schedule {
         File f = new File(GameScreen.EVENT_KEY  + "/teams.json");
         if (f.exists()) {
             teams = Utils.teamListFromJSON(f);
-            System.out.println("class stats: " + teams.get(0).robotStats.getClass());
+            //Utils.log("class stats: " + teams.get(0).robotStats.getClass());
             Utils.log("Loaded " + teams.size() + " teams");
         } else {
 
@@ -48,8 +48,7 @@ public class Schedule {
                 teams.add(new Team(num, Color.BLACK, Color.BROWN, new Steam254()));
             }
 
-            Gson g = new GsonBuilder().setPrettyPrinting().create();
-            Utils.writeFile(GameScreen.EVENT_KEY + "/teams.json", g.toJson(teams));
+            Utils.saveTeamList(teams);
         }
     }
 

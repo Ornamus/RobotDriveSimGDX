@@ -196,21 +196,18 @@ public class AllianceSelection extends ImageDrawer {
         resize(teamButtonSelected, .25f*Main.fontScale);
 
 
-        Fonts.drawCentered(Fonts.fmsBlack, GameScreen.EVENT_NAME + " Alliance" + (done ? "s" : " Selection"), getCenterX(), getCenterY(), 0, 305-15, batch);
-        //Fonts.drawCentered(Main.eventName + " Alliance" + (done ? "s" : " Selection"), getCenterX(), getCenterY() + 305-15, Fonts.fmsBlack, batch);
+        Fonts.drawCentered(Fonts.fmsBlack, GameScreen.EVENT_NAME + " Alliance" + (done ? "s" : " Selection"), getCenterX(), getCenterY() + 290*1.7f, batch);
         if (showingAlliances) {
-            if (!done) Fonts.drawCentered(Fonts.fmsBlackSmall, "Alliance " + (selectingForAlliance+1) + " Is Picking", getCenterX(), getCenterY(), 0, 280-15, batch);
-            //TODO: fix minor text alignment bug that happens when resized at certain sizes
+            if (!done) Fonts.drawCentered(Fonts.fmsBlackSmall, "Alliance " + (selectingForAlliance+1) + " Is Picking", getCenterX(), getCenterY() + 265*1.7f, batch);
             for (int i=0; i<allianceAmount; i++) {
-                float x = -270*Main.widthScale;
-                float y = 135*Main.heightScale;
-                y -= ((i*56)*Main.heightScale);
+                float x = -allianceBar.getWidth()/2;
+                float y = 135*1.7f;
+                y -= ((i*56)*1.7f);
 
                 allianceBar.setPosition(x,y);
                 allianceBar.draw(batch);
 
-                Fonts.draw(Fonts.fmsBlack, (i+1)+"", x, y, 48.5f, 33.5f, batch);
-                //Fonts.drawCentered((i+1)+"", x+48.5f, y+33.5f, Fonts.fmsBlack, batch);
+                Fonts.draw(Fonts.fmsBlack, (i+1)+"", x + 67.5f, y + 52, batch);
 
                 int[] teams = alliances[i];
                 String teamString = "";
@@ -219,11 +216,10 @@ public class AllianceSelection extends ImageDrawer {
                 }
                 teamString = teamString.substring(0, teamString.length()-3);
 
-                Fonts.draw(Fonts.fmsBlack, teamString, x, y, 90, 33.5f, batch);
-                //Fonts.fmsBlack.draw(batch, teamString, x+90f, y+33.5f);
+                Fonts.draw(Fonts.fmsBlack, teamString, x + 153, y + 52, batch);
             }
         } else {
-            Fonts.drawCentered(Fonts.fmsBlackSmall, "Available Teams", getCenterX(), getCenterY(), 0, 280-15, batch);
+            Fonts.drawCentered(Fonts.fmsBlackSmall, "Available Teams", getCenterX(), getCenterY() + 265*1.7f, batch);
             //TODO: probably want to calculate available teams once per screen appearance instead of EVERY RENDER FRAME
             List<RankData> available = new ArrayList<>(rankings);
             if (selectionRound == 1) { //Remove all teams on an alliance equal to or higher seeded than this one (i.e. 6 can only pick from 7 or 8)
@@ -255,11 +251,11 @@ public class AllianceSelection extends ImageDrawer {
             for (int gridX=0; gridX<8; gridX++) {
                 for (int gridY=0; gridY<8; gridY++) {
 
-                    float x = -500*Main.widthScale;
-                    float y = -250*Main.heightScale;
+                    float x = -500*1.7f;
+                    float y = -250*1.7f;
 
-                    float xOffset = (gridX*120);
-                    float yOffset = (gridY*56);
+                    float xOffset = (gridX* (120*1.7f));
+                    float yOffset = (gridY*(56*1.7f));
 
                     if (available.size() > index) {
                         RankData d = available.get(index);
@@ -271,11 +267,11 @@ public class AllianceSelection extends ImageDrawer {
                         s.setPosition(x + (xOffset*Main.widthScale), y + (yOffset*Main.heightScale));
                         s.draw(batch);
 
-                        Fonts.fmsWhiteSmall.setColor(Color.RED);
-                        Fonts.drawCentered(Fonts.fmsWhiteSmall, d.rank + "", x, y, 19+xOffset, 33.5f+yOffset, batch);
+                        Fonts.fmsWhiteSmall.setColor(Main.RED);
+                        Fonts.drawCentered(Fonts.fmsWhiteSmall, d.rank + ".", x + 32.3f + xOffset, y + 57-7 + yOffset, batch);
                         Fonts.fmsWhiteSmall.setColor(Color.WHITE);
 
-                        Fonts.draw(Fonts.fmsBlack, d.getTeam() + "", x, y, 50+xOffset, 33.5f+yOffset, batch);
+                        Fonts.draw(Fonts.fmsBlack, d.getTeam() + "", x + 85-10 + xOffset, y + 57-7 + yOffset, batch);
                     }
                     index++;
                 }

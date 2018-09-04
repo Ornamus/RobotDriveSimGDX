@@ -118,7 +118,7 @@ public class Main extends ApplicationAdapter implements InputProcessor {
 
     @Override
     public void resize(int width, int height) {
-        camera.position.set(0, camera_y, 0);
+        camera.position.set(0, camera_y, 0); //x = -0.6f for centered Steamworks field
         camera.update();
         viewport.update(width, height);
 

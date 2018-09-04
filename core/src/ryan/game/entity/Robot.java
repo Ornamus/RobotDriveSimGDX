@@ -535,7 +535,7 @@ public class Robot extends Entity {
 
     public void drawUnscaled(SpriteBatch b) {
         Match m = GameScreen.schedule.getCurrentMatch();
-        if (m != null) {
+        if (m != null && GameScreen.allianceSelection == null) {
             Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, getAngle() > 110 && getAngle() < 250 ? .3f : 1);
 
             Vector2 pos = getPhysicsPosition();

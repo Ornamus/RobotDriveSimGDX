@@ -55,8 +55,8 @@ public class SteamworksDisplay extends ScoreDisplay {
         Fonts.drawCentered(Fonts.fmsBlack, Steamworks.red.climbs + "", -795, getY() + 60, batch); //red climbs
 
         if (GameScreen.matchPlay) {
-            drawGearDisplay(407, 82, Steamworks.blue.gears, Steamworks.blue.gears >= 13 ? Color.YELLOW : Color.WHITE, batch);
-            drawGearDisplay(-502, 82, Steamworks.red.gears, Steamworks.red.gears >= 13 ? Color.YELLOW : Color.WHITE, batch);
+            drawGearDisplay(428, 82, Steamworks.blue.gears, Steamworks.blue.gears >= 13 ? Color.YELLOW : Color.WHITE, batch);
+            drawGearDisplay(-502 + 21, 82, Steamworks.red.gears, Steamworks.red.gears >= 13 ? Color.YELLOW : Color.WHITE, batch);
 
             List<Long> blueProgresses = new ArrayList<>();
             List<Long> redProgresses = new ArrayList<>();
@@ -66,7 +66,7 @@ public class SteamworksDisplay extends ScoreDisplay {
             });
             int loops = blueProgresses.size()+ Steamworks.blue.gearQueue;
             final float spacing = 37.5f;
-            float hpX = 366.5f;
+            float hpX = 366.5f + 21;
             float hpY = 76.5f + (spacing * (loops/2f));
             for (int i=0; i<loops; i++) {
                 long progress = GameScreen.getTime();
@@ -76,7 +76,7 @@ public class SteamworksDisplay extends ScoreDisplay {
             }
 
             loops = redProgresses.size()+ Steamworks.red.gearQueue;
-            hpX = -540;
+            hpX = -540 + 21;
             hpY = 76.5f + (spacing * (loops/2f));
             for (int i=0; i<loops; i++) {
                 long progress = GameScreen.getTime();

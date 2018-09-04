@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.google.gson.*;
 import ryan.game.competition.Team;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
+import ryan.game.screens.GameScreen;
 
 import java.awt.geom.Point2D;
 import java.io.*;
@@ -223,6 +224,7 @@ public class Utils {
         List<Team> teams = new ArrayList<>();
         Gson g = new Gson();
 
+        if (!f.exists()) return null;
         try {
             JsonParser parser = new JsonParser();
             JsonArray a = parser.parse(new FileReader(f)).getAsJsonArray();
@@ -240,6 +242,11 @@ public class Utils {
             return null;
         }
         return teams;
+    }
+
+    public static void saveTeamList(List<Team> teams) {
+        Gson g = new GsonBuilder().setPrettyPrinting().create();
+        Utils.writeFile(GameScreen.EVENT_KEY + "/teams.json", g.toJson(teams));
     }
 
     public static void writeFile(String fileName, String content) {
