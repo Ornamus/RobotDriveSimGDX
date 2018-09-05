@@ -19,10 +19,15 @@ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         jcenter()
+        maven {
+            url 'https://maven.google.com'
+        }
     }
     dependencies {
+        classpath 'org.wisepersist:gwt-gradle-plugin:1.0.6'
     }
 }
 
@@ -33,8 +38,8 @@ allprojects {
     version = '1.0'
     ext {
         appName = "RobotDriveSimGDX"
-        gdxVersion = '1.9.6'
-        roboVMVersion = '2.3.1'
+        gdxVersion = '1.9.8'
+        roboVMVersion = '2.3.3'
         box2DLightsVersion = '1.4'
         ashleyVersion = '1.7.0'
         aiVersion = '1.8.0'
@@ -67,76 +72,95 @@ project(":desktop") {
     }
 }
 
+//project(":html") {
+//    apply plugin: "gwt"
+//    apply plugin: "war"
+//
+//
+//    dependencies {
+//        compile project(":core")
+//        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
+//        compile "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
+//        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
+//        compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion:sources"
+//        compile "com.badlogicgames.gdx:gdx-box2d-gwt:$gdxVersion:sources"
+//        compile "com.badlogicgames.gdx:gdx-controllers-gwt:$gdxVersion"
+//        compile "com.badlogicgames.gdx:gdx-controllers-gwt:$gdxVersion:sources"
+//        //compile "com.badlogicgames.gdx:gdx-controllers-lwjgl3:$gdxVersion"
+ //       //compile "com.badlogicgames.gdx:gdx-controllers-lwjgl3-gwt:$gdxVersion"
+//
+//    }
+//}
+
 project(":core") {
     apply plugin: "java"
 
-
     dependencies {
-
-            compile "org.lwjgl:lwjgl:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-assimp:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-bgfx:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-egl:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-glfw:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-jawt:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-jemalloc:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-lmdb:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-lz4:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-nanovg:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-nfd:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-nuklear:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-odbc:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-openal:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-opencl:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-opengl:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-opengles:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-openvr:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-ovr:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-par:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-remotery:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-rpmalloc:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-sse:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-stb:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-tinyexr:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-tinyfd:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-tootle:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-vulkan:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-xxhash:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-yoga:$lwjglVersion"
-            compile "org.lwjgl:lwjgl-zstd:$lwjglVersion"
-            compile "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-assimp:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-bgfx:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-jemalloc:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-lmdb:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-lz4:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-nanovg:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-nfd:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-nuklear:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-opengles:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-openvr:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-ovr:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-par:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-remotery:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-rpmalloc:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-sse:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-tinyexr:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-tinyfd:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-tootle:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-xxhash:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-yoga:$lwjglVersion:$lwjglNatives"
-            compile "org.lwjgl:lwjgl-zstd:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-assimp:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-bgfx:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-egl:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-jawt:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-jemalloc:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-lmdb:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-lz4:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-nanovg:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-nfd:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-nuklear:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-odbc:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-openal:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-opencl:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-opengl:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-opengles:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-openvr:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-ovr:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-par:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-remotery:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-rpmalloc:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-sse:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-stb:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-tinyexr:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-tinyfd:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-tootle:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-vulkan:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-xxhash:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-yoga:$lwjglVersion"
+        compile "org.lwjgl:lwjgl-zstd:$lwjglVersion"
+        compile "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-assimp:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-bgfx:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-jemalloc:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-lmdb:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-lz4:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-nanovg:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-nfd:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-nuklear:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-opengles:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-openvr:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-ovr:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-par:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-remotery:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-rpmalloc:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-sse:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-tinyexr:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-tinyfd:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-tootle:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-xxhash:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-yoga:$lwjglVersion:$lwjglNatives"
+        compile "org.lwjgl:lwjgl-zstd:$lwjglVersion:$lwjglNatives"
 
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-        //compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers-lwjgl3:$gdxVersion"
+
         compile "net.java.jinput:jinput:2.0.5"
         compile "com.github.xaguzman:pathfinding:0.2.6"
         compile group: 'com.google.code.gson', name: 'gson', version: '2.7'

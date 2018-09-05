@@ -1,7 +1,6 @@
 package ryan.game.desktop;
 
 import com.badlogic.gdx.Files;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import ryan.game.Main;
@@ -20,9 +19,6 @@ public class DesktopLauncher {
 		config.setWindowedMode(1280, 720); //720p
 		config.setTitle("The FRC Simulator - " + random[Utils.randomInt(0, random.length-1)]);
 		config.setWindowIcon(Files.FileType.Internal, "core/assets/dozer_icon.png");
-		//config.width = 1100;
-		//config.height = 630;
-		//config.title = "RobotDriveSimGDX - " + random[Utils.randomInt(0, random.length-1)];
 		boolean mapping = false;
 		for (String s : arg) {
 			System.out.println("Arg: " + s);

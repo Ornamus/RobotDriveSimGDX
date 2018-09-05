@@ -47,9 +47,9 @@ public class WinnerScreen extends Screen {
 
         if (captain == null || firstPick == null || secondPick == null) {
             List<Team> teams = Utils.teamListFromJSON(new File(GameScreen.EVENT_KEY + "/teams.json"));
-            captain = teams.get(5);
-            firstPick = teams.get(2);
-            secondPick = teams.get(4);
+            captain = teams.get(0);
+            firstPick = teams.get(1);
+            secondPick = teams.get(2);
         }
 
         captainSprite = new Sprite(Utils.colorImage(captain.robotStats.texture, captain.primary, Main.RED, captain.secondary));
