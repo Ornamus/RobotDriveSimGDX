@@ -50,6 +50,7 @@ public class TitleScreen extends Screen {
     Sprite arrow = new Sprite(new Texture("core/assets/ui/arrow.png"));
     RobotStatBuilder statBuilder;
     Button saveRobotButton, backButton, randomColorButton;
+    String builderBonusText = "*Cannot intake gears.\n*Cannot shoot.\n*Cannot intake fuel.\n*Cannot climb.";
 
     Color primary = Color.GRAY, secondary = Color.PURPLE;
 
@@ -163,6 +164,7 @@ public class TitleScreen extends Screen {
             }
 
             refreshCustomRobot();
+            updateBonusText();
         }
     }
 
@@ -234,6 +236,22 @@ public class TitleScreen extends Screen {
         }
     }
 
+    public void updateBonusText() {
+        String string = "";
+        int added = 0;
+        for (RobotStatSlider s : statBuilder.getSliders()) {
+            String piece = s.getText();
+            if (piece !=  null) {
+                string += "- " + piece + "\n";
+                added++;
+            }
+        }
+        if (added == 0) string = "";
+        else if (added == 1) string = "Notice:\n" + string;
+        else string = "Notices:\n" + string;
+        builderBonusText = string;
+    }
+
     @Override
     public void drawUnscaled(SpriteBatch b) {
         float delta = Gdx.graphics.getDeltaTime();
@@ -275,10 +293,11 @@ public class TitleScreen extends Screen {
         } else if (subpage == Subpage.ROBOT_BUILDER) {
             custom_robot_current.draw(b);
             arrow.draw(b);
-            Fonts.drawCentered(Fonts.monoWhiteLarge, maxPoints + " Points Remaining", 0, 70, b);
+            Fonts.drawCentered(Fonts.monoWhiteLarge, maxPoints + " Point" + (maxPoints != 1 ? "s" : "") + " Remaining", 0, 70, b);
             for (RobotStatSlider s : statBuilder.getSliders()) {
                 s.draw(b);
             }
+            Fonts.drawCentered(Fonts.monoWhiteLarge, builderBonusText, 600, 500, b);
             saveRobotButton.draw(b);
             backButton.draw(b);
             randomColorButton.draw(b);
@@ -305,12 +324,14 @@ public class TitleScreen extends Screen {
                     if (maxPoints > 0 && s.current < s.max) {
                         maxPoints--;
                         s.current++;
+                        updateBonusText();
                         return true;
                     }
                 } else if (s.minus.getBoundingRectangle().contains(pos.x, pos.y)) {
                     s.current--;
                     if (s.current < 0) s.current = 0;
                     else maxPoints++;
+                    updateBonusText();
                     return true;
                 }
             }

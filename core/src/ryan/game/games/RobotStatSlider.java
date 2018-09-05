@@ -7,6 +7,7 @@ import ryan.game.Utils;
 import ryan.game.competition.RobotStats;
 import ryan.game.render.Fonts;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class RobotStatSlider {
 
@@ -17,6 +18,7 @@ public class RobotStatSlider {
     public String label;
     public Sprite plus, minus;
     private BiConsumer<RobotStatSlider, RobotStats> affectStats;
+    private SliderTextChecker textChecker;
 
     public RobotStatSlider(String label, int max, BiConsumer<RobotStatSlider, RobotStats> affectStats) {
         this(0,0, label, max, affectStats);
@@ -54,5 +56,17 @@ public class RobotStatSlider {
 
     public void affectStats(RobotStats s) {
         affectStats.accept(this, s);
+    }
+
+    public RobotStatSlider setTextChecker(SliderTextChecker textChecker) {
+        this.textChecker = textChecker;
+        return this;
+    }
+
+    public String getText() {
+        if (textChecker != null) {
+            return textChecker.check(this);
+        }
+        return null;
     }
 }

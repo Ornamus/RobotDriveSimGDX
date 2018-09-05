@@ -2,6 +2,7 @@ package ryan.game.games.steamworks;
 
 import ryan.game.games.RobotStatBuilder;
 import ryan.game.games.RobotStatSlider;
+import ryan.game.games.SliderTextChecker;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
 
 import java.util.ArrayList;
@@ -29,6 +30,14 @@ public class SteamStatBuilder extends RobotStatBuilder {
             steam.gearIntake = val != 0;
             steam.gearIntakeRate = 1000 - (700 * val);
             steam.gearIntakeStrength = 9f + (3 * val);
+        }).setTextChecker(new SliderTextChecker() {
+            @Override
+            public String check(RobotStatSlider s) {
+                if (s.getProgress() == 0) {
+                    return "Cannot intake gears.";
+                }
+                return null;
+            }
         }));
 
         newSliders.add(new RobotStatSlider("Fuel Intake", 5, (slider, stats) ->  {
@@ -37,12 +46,22 @@ public class SteamStatBuilder extends RobotStatBuilder {
             steam.fuelIntake = val != 0;
             steam.fuelIntakeRate = 1000 - (750 * val);
             steam.fuelIntakeStrength = 1f;//9f + (3 * val);
+        }).setTextChecker(s -> {
+            if (s.getProgress() == 0) {
+                return "Cannot intake fuel.";
+            }
+            return null;
         }));
 
         newSliders.add(new RobotStatSlider("Fuel Capacity", 8, (slider, stats) ->  {
             SteamRobotStats steam = (SteamRobotStats) stats;
             float val = slider.getProgress();
             steam.maxFuel = Math.round(0 + (50 * val));
+        }).setTextChecker(s -> {
+            if (s.getProgress() == 0) {
+                return "Cannot hold fuel.";
+            }
+            return null;
         }));
 
         newSliders.add(new RobotStatSlider("Shooter Speed", 4, (slider, stats) ->  {
@@ -64,6 +83,11 @@ public class SteamStatBuilder extends RobotStatBuilder {
             float val = slider.getProgress();
             steam.climber = val != 0;
             steam.climbSpeed = 8 - (6.5f * val);
+        }).setTextChecker(s -> {
+            if (s.getProgress() == 0) {
+                return "Cannot climb.";
+            }
+            return null;
         }));
 
         return newSliders;

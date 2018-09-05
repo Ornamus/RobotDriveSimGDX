@@ -64,9 +64,9 @@ public class WinnerScreen extends Screen {
         GravityT.loadTexture(Gear.TEXTURE, 60, 60);
         GravityT.loadTexture(Fuel.TEXTURE, 24, 24);
 
-        //music.setLooping(true);
         music.setVolume(.45f);
         music.play();
+        //music.setPosition(7);
         start = System.currentTimeMillis();
     }
 
@@ -75,21 +75,13 @@ public class WinnerScreen extends Screen {
         final float r = 1;
         float angle = 0;
         while (angle < 360) {
-            float x = sX + (float)Math.cos(angle)*r;//a + r * sin(angle);
-            float y = sY + (float)Math.sin(angle)*r;//b + r * cos(angle);
+            float x = sX + (float)Math.cos(angle)*r;
+            float y = sY + (float)Math.sin(angle)*r;
 
             things.add(new GravityT(x - 30, y - 30, 60, 60, Gear.TEXTURE).xVel(350f*(float)Math.cos(angle)).yVel(350f*(float)Math.sin(angle)).spinRate(angle > 180 ? -150 : 150).angle(Utils.randomInt(0,359)));
 
             angle += (360 / gearsToSpawn);
         }
-
-        /*for (int i=0; i<8; i++) {
-
-        }
-        things.add(new GravityT(x, y, 60, 60, Gear.TEXTURE).xVel(300).yVel(0).spinRate(90));
-        things.add(new GravityT(x, y, 60, 60, Gear.TEXTURE).xVel(200).yVel(200).spinRate(90));
-        things.add(new GravityT(x, y, 60, 60, Gear.TEXTURE).xVel(-200).yVel(200).spinRate(90));
-        things.add(new GravityT(x, y, 60, 60, Gear.TEXTURE).xVel(-300).yVel(0).spinRate(90));*/
     }
 
     int part = 0;
@@ -98,39 +90,43 @@ public class WinnerScreen extends Screen {
 
     @Override
     public void tick() {
-        if (music.getPosition() >= (.328) && part == 0) {
+        if (music.getPosition() >= .326 && part == 0) {
             gearSplode(-500,60);
             part = 1;
         }
-        if (music.getPosition() >= (2.4) && part == 1) {
+        if (music.getPosition() >= 2.4 && part == 1) {
             gearSplode(500,60);
             part = 2;
         }
-        if (music.getPosition() >= (4.5) && part == 2) {
+        if (music.getPosition() >= 4.5 && part == 2) {
             gearSplode(0,60);
             part = 3;
         }
-        if (music.getPosition() >= (6.755) && part == 3) {
+        if (music.getPosition() >= 6 && part == 3) {
             part = 4;
         }
-        if (music.getPosition() >= (6.755) && part == 4) {
+        if (music.getPosition() >= 8.3/*6.75*/ && part == 4) {
             part = 5;
         }
-        if (music.getPosition() >= (8.909) && part == 5) {
+        if (music.getPosition() >= 10.7/*8.9*/ && part == 5) {
             part = 6;
-            ui_visibility = 0;
         }
-        if (music.getPosition() >= (17.46) && part == 6) {
+        if (music.getPosition() >= 10.7/*8.9*/ && part == 6) {
             part = 7;
+            ui_visibility = 0;
+            if (Utils.randomInt(1,100) == 100) things.add(new GravityT( Main.screenWidth/2, 300, 80, 80, new Texture("core/assets/moon.png")).xVel(-300f).yVel(20).spinRate(30).disableDecay());
+        }
+        if (music.getPosition() >= 17.46 && part == 7) {
+            part = 8;
         }
 
 
-        if (part >= 4 && part < 7) {
+        if (part >= 5 && part < 8) {
             if (tickWait >= 8) {
                 things.add(new GravityT(Main.screenWidth/2 - 60, Main.screenHeight/2 + 30, 60, 60, Gear.TEXTURE).spinRate(150).yVel(50));
                 things.add(new GravityT(-Main.screenWidth/2 + 0, Main.screenHeight/2 + 30, 60, 60, Gear.TEXTURE).spinRate(-150).yVel(50));
 
-                if (part >= 5) {
+                if (part >= 6) {
                     things.add(new GravityT(Main.screenWidth / 2, -200, 24, 24, Fuel.TEXTURE).xVel(-520).yVel(540));
                     things.add(new GravityT(-24 - Main.screenWidth / 2, -200, 24, 24, Fuel.TEXTURE).xVel(520).yVel(540));
                 }
@@ -141,11 +137,10 @@ public class WinnerScreen extends Screen {
             }
         }
 
-        if (part >= 6) {
+        if (part >= 7) {
             ui_visibility += 0.75f * Gdx.graphics.getDeltaTime();
             if (ui_visibility > 1) ui_visibility = 1;
         }
-        //music.setVolume(ui_visibility * 0.25f);
         for (GravityT thing : new ArrayList<>(things)) {
             if (thing.y < -Main.screenWidth*0.75) {
                 things.remove(thing);
@@ -198,10 +193,10 @@ public class WinnerScreen extends Screen {
             Fonts.drawCentered(Fonts.monoWhiteLarge, captain.number + "", 0, -10, b);
             if (part >= 4) Fonts.drawCentered(Fonts.monoWhiteLarge, "Alliance Captain", 0, -50, b);
         }
-        if (part >= 6) {
+        if (part >= 7) {
             Color oldColor = Fonts.fmsScore.getColor();
             Fonts.fmsScore.setColor(oldColor.r, oldColor.g, oldColor.b, ui_visibility);
-            Fonts.drawCentered(Fonts.fmsScore, "STEAMWORKS WINNERS", 0, -300, b);
+            Fonts.drawCentered(Fonts.fmsScore, "WINNERS", 0, -300, b);
             Fonts.fmsScore.setColor(oldColor);
         }
 
@@ -260,16 +255,20 @@ class GravityT {
         return this;
     }
 
+    public GravityT disableDecay() {
+        gravity = false;
+        loseXVel = false;
+        return this;
+    }
+
     public void tick() {
-        float delta = 0.03f;//Gdx.graphics.getDeltaTime();
+        float delta = 0.03f;
 
         x += xVel * delta;
         y += yVel * delta;
 
         if (gravity && yVel > -850) {
             yVel -= 6.5;
-        } else {
-            //Utils.log("max");
         }
         if (!hitZero && loseXVel && xVel != 0) {
             if (xVel > 0) {

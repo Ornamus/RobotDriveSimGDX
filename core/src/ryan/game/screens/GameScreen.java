@@ -261,13 +261,12 @@ public class GameScreen extends Screen  {
                 rankings = null;
             }
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) && !matchPlay) {
             for (Robot r : new ArrayList<>(robots)) {
                 r.onGamepadDisconnect();
             }
             robots.clear();
             if (music != null) music.stop();
-            matchPlay = false;
             Main.getInstance().setScreen(new TitleScreen());
         }
         if (Gamepads.getGamepads().size() != robots.size() && Gamepads.getGamepads().size() == 1) {
