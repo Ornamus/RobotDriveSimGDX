@@ -127,6 +127,8 @@ public class Gamepad {
 
     public PovDirection getDPad() {
         if (c == null) return PovDirection.center;
+        return c.getPov(0);
+        /*
         if (getButton(DPAD_UP)) {
             if (getButton(DPAD_LEFT)) return PovDirection.northWest;
             else if (getButton(DPAD_RIGHT)) return PovDirection.northEast;
@@ -137,7 +139,7 @@ public class Gamepad {
             else return PovDirection.south;
         } else if (getButton(DPAD_LEFT)) return PovDirection.west;
         else if (getButton(DPAD_RIGHT)) return PovDirection.east;
-        else return PovDirection.center;
+        else return PovDirection.center;*/
     }
 
     public boolean isLeftTriggerPressed() {

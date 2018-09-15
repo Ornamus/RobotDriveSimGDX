@@ -60,7 +60,7 @@ public class PowerDisplay extends ScoreDisplay {
                 msg += "3. Levitate";
             }
 
-            Fonts.draw(Fonts.monoWhiteSmall, msg, 0, 0, 450, -100, batch);
+            Fonts.draw(Fonts.monoWhiteSmall, msg, 815, -100 * 1.7f, batch);
         }
         if (PowerUp.red_receiver != null && PowerUp.red_receiver.pixels > 0) {
             boolean boost = !PowerUp.red_receiver.boostDone;
@@ -78,7 +78,7 @@ public class PowerDisplay extends ScoreDisplay {
                 msg += "3. Levitate";
             }
 
-            Fonts.draw(Fonts.monoWhiteSmall, msg, 0, 0, -540, -100, batch);
+            Fonts.drawRight(Fonts.monoWhiteSmall, msg, -815, -100 * 1.7f, batch);
         }
         if (powerUp != LiteralPowerUp.NONE) {
             if (powerUpForBlue) {
@@ -90,7 +90,7 @@ public class PowerDisplay extends ScoreDisplay {
             if (powerUp == LiteralPowerUp.FORCE) {
                 display = "FORCE!";
             }
-            Fonts.draw(Fonts.monoWhiteLarge, display + " LV " + powerUpLevel, 0, 0, -90, 300, batch);
+            Fonts.drawCentered(Fonts.monoWhiteLarge, display + " LV " + powerUpLevel, 0, 520, batch);
 
             Fonts.monoWhiteLarge.setColor(255,255,255,1);
         }

@@ -52,7 +52,7 @@ public class Switch extends Entity {
         }
 
         Vector2 pos = getPhysicsPosition();
-        Fonts.drawCentered(Fonts.monoWhiteSmall, pixels.size() + "", pos.x* Main.mtpW, (pos.y*Main.mtpH)+40, 0, 53, b);
+        Fonts.drawCentered(Fonts.monoWhiteSmall, pixels.size() + "", pos.x* Main.mtpW, (pos.y*Main.mtpH)+40 + (53*1.7f), b);
 
         Fonts.monoWhiteSmall.setColor(255,255,255,1);
     }
@@ -61,11 +61,8 @@ public class Switch extends Entity {
     public void collideStart(Entity e, Body self, Body other, Contact contact) {
         if (e instanceof Pixel) {
             Pixel p = (Pixel) e;
-            if (!pixels.contains(e) && (!tall || (tall && System.currentTimeMillis()-((Pixel)e).ejected <= 250 && ((PowerRobotBase)p.owner.stats).tallPixelScore))) {
+            if (!pixels.contains(e) && (!tall || (tall && ((Pixel)e).inTall && System.currentTimeMillis()-((Pixel)e).ejected <= 250 && ((PowerRobotBase)p.owner.stats).tallPixelScore))) {
                 pixels.add(e);
-                if (tall) {
-                    ((Pixel)e).inTall = true;
-                }
             }
             contact.setEnabled(false);
         } else if (e instanceof Robot) {

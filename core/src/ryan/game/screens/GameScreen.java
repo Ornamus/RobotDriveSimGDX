@@ -86,7 +86,7 @@ public class GameScreen extends Screen  {
 
     public void init() {
         self = this;
-        field = new Steamworks();
+        field = new Steamworks();//new PowerUp();
 
         int index = 0;
 

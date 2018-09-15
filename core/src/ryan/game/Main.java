@@ -21,6 +21,8 @@ import ryan.game.render.Fonts;
 import ryan.game.screens.GameScreen;
 import ryan.game.screens.Screen;
 import ryan.game.screens.TitleScreen;
+import ryan.game.screens.WinnerScreen;
+
 import java.util.ArrayList;
 import java.util.List;
 

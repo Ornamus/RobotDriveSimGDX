@@ -13,6 +13,7 @@ import ryan.game.entity.Robot;
 import ryan.game.entity.parts.Part;
 import ryan.game.entity.powerup.NullTerritory;
 import ryan.game.entity.powerup.Pixel;
+import ryan.game.entity.powerup.Switch;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
 import ryan.game.games.power.robots.PowerRobotBase;
@@ -42,6 +43,8 @@ public class PowerMetadata extends RobotMetadata {
     public boolean crossedBaseline = false;
 
     public boolean protectedInNull = false;
+
+    public List<Body> touchingScale = new ArrayList<>();
 
     public Long climb = null;
 
@@ -114,6 +117,11 @@ public class PowerMetadata extends RobotMetadata {
                 nullFoul = GameScreen.getTime();
             }
         }
+        if (e instanceof Switch) {
+            if (((Switch)e).tall && !touchingScale.contains(self)) {
+                touchingScale.add(self);
+            }
+        }
         if (r.isPart("intake", self)) {
             Part intake = r.getPart(self);
             if (stats.arm && ((r.isPart("arm_front", self) && !armFront) || (r.isPart("arm_back", self) && armFront))) {
@@ -143,6 +151,12 @@ public class PowerMetadata extends RobotMetadata {
 
     @Override
     public void collideEnd(Robot r, Entity e, Body self, Body other, Contact contact) {
+        if (e instanceof Switch) {
+            Switch s = (Switch) e;
+            if (s.tall) {
+                touchingScale.remove(self);
+            }
+        }
         if (r.isPart("intake", self)) {
             if (intakeablePixels.contains(e)) {
                 intakeablePixels.remove(e);
@@ -191,11 +205,22 @@ public class PowerMetadata extends RobotMetadata {
             float xChange = -distance * (float) Math.sin(Math.toRadians(angle));
             float yChange = distance * (float) Math.cos(Math.toRadians(angle));
 
-            Pixel e = new Pixel(r.getX() + xChange, r.getY() + yChange, r.getAngle());//new Chest(r.getX() + xChange, r.getY() + yChange, r.getAngle(), f.heavy, f.alliance);
+            boolean intakeTouchingScale = false;
+            boolean anythingElseTouchingScale = false;
+            for (Body b : touchingScale) {
+                if (r.isPart("intake", b)) {
+                    intakeTouchingScale = true;
+                } else {
+                    anythingElseTouchingScale = true;
+                }
+            }
+
+            Pixel e = new Pixel(r.getX() + xChange, r.getY() + yChange, r.getAngle());
             e.owner = r;
             e.ejected = System.currentTimeMillis();
+            e.inTall = intakeTouchingScale && !anythingElseTouchingScale;
 
-            Main.getInstance().spawnEntity(e);
+            Main.spawnEntity(e);
             synchronized (Main.WORLD_USE) {
                 for (Body b : e.getBodies()) {
                     float ejectAngle = -angle;

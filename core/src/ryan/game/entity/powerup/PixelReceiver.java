@@ -110,6 +110,7 @@ public class PixelReceiver extends Entity {
     public void drawUnscaled(SpriteBatch b) {
         super.drawUnscaled(b);
         Vector2 pos = getPhysicsPosition();
-        Fonts.drawCentered(Fonts.fmsWhiteVerySmall, totalPixels + "", pos.x*Main.mtpW, pos.y*Main.mtpH, 0, 53, b);
+
+        Fonts.drawCentered(Fonts.fmsWhiteVerySmall, totalPixels + "", pos.x * Main.mtpH + (blue ? 60 : -60), pos.y * Main.mtpH + (53 * 1.7f), b);
     }
 }
