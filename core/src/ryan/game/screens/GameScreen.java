@@ -23,6 +23,7 @@ import ryan.game.games.AllianceSelection;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
 import ryan.game.games.RankingDisplay;
+import ryan.game.games.destination.Destination;
 import ryan.game.games.power.PowerRankings;
 import ryan.game.games.power.PowerUp;
 import ryan.game.games.steamworks.SteamRankings;
@@ -86,7 +87,7 @@ public class GameScreen extends Screen  {
 
     public void init() {
         self = this;
-        field = new Steamworks();//new PowerUp();
+        field = new Destination();
 
         int index = 0;
 

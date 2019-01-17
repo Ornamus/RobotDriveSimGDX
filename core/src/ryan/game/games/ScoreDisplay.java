@@ -27,7 +27,7 @@ public abstract class ScoreDisplay extends Drawable {
     float timerBackingHeight = 0;
 
     public ScoreDisplay() {
-        this("score_display_gamedefault.png");
+        this("core/assets/score_display_overboard.png");
     }
 
     public ScoreDisplay(String texture) {

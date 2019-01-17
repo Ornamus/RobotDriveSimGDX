@@ -285,6 +285,14 @@ public class Entity extends Drawable {
         return e;
     }
 
+    //TODO: move out of this class
+    public static Entity shortPeg(float x, float y, float angle) {
+        Entity e = new Entity(.4f, .12f, BodyFactory.getRectangleStatic(x, y, .8f, .12f, 0)).setName("peg");
+        e.setAngle(angle);
+        e.setSprite(new Texture("core/assets/peg.png"));
+        return e;
+    }
+
     public static Entity barrier(float x, float y, float width, float height) {
         return new Entity(new BodyFactory(x,y).setShapeRectangle(width, height).setTypeStatic().create());
     }
