@@ -12,7 +12,7 @@ switch ( OperatingSystem.current() ) {
         break
 }
 
-project.ext.lwjglVersion = "3.1.5"
+project.ext.lwjglVersion = "3.2.1"
 
 
 buildscript {
@@ -87,7 +87,7 @@ project(":desktop") {
 //        compile "com.badlogicgames.gdx:gdx-controllers-gwt:$gdxVersion"
 //        compile "com.badlogicgames.gdx:gdx-controllers-gwt:$gdxVersion:sources"
 //        //compile "com.badlogicgames.gdx:gdx-controllers-lwjgl3:$gdxVersion"
- //       //compile "com.badlogicgames.gdx:gdx-controllers-lwjgl3-gwt:$gdxVersion"
+//        //compile "com.badlogicgames.gdx:gdx-controllers-lwjgl3-gwt:$gdxVersion"
 //
 //    }
 //}
@@ -140,8 +140,8 @@ project(":core") {
         compile "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives"
         compile "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
         compile "org.lwjgl:lwjgl-opengles:$lwjglVersion:$lwjglNatives"
-        compile "org.lwjgl:lwjgl-openvr:$lwjglVersion:$lwjglNatives"
-        compile "org.lwjgl:lwjgl-ovr:$lwjglVersion:$lwjglNatives"
+        //compile "org.lwjgl:lwjgl-openvr:$lwjglVersion:$lwjglNatives"
+        //compile "org.lwjgl:lwjgl-ovr:$lwjglVersion:$lwjglNatives"
         compile "org.lwjgl:lwjgl-par:$lwjglVersion:$lwjglNatives"
         compile "org.lwjgl:lwjgl-remotery:$lwjglVersion:$lwjglNatives"
         compile "org.lwjgl:lwjgl-rpmalloc:$lwjglVersion:$lwjglNatives"
