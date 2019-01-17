@@ -37,7 +37,11 @@ public abstract class Field extends Drawable {
                 ScoreDisplay d = getDisplay();
                 d.setBlueTeams(m.blue.teams[0], m.blue.teams[1], m.blue.teams[2]);
                 d.setRedTeams(m.red.teams[0], m.red.teams[1], m.red.teams[2]);
-                d.setMatchName(m.getName());
+                if (GameScreen.MAKE_SCHEDULE) {
+                    d.setMatchName(m.getName());
+                } else {
+                    d.setMatchName(ScoreDisplay.DEFAULT_MATCH_NAME);
+                }
             }
         }
     }

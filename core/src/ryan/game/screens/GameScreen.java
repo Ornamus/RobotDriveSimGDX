@@ -47,7 +47,7 @@ public class GameScreen extends Screen  {
     public static boolean MAKE_SCHEDULE = false;
     public static boolean CUSTOM_TEAMS = false;
     public static int RANDOM_TEAMS = 24;
-    public static String EVENT_NAME = "FIRST Championship";
+    public static String EVENT_NAME = "Driveteam Tryouts";//"FIRST Championship";
     public static String EVENT_KEY = "debug";
 
     public Field field;
