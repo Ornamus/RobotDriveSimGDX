@@ -1,8 +1,7 @@
 package ryan.game.games.destination;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import ryan.game.autonomous.steamworks.AutoBaseline;
+import ryan.game.autonomous.BlankAuto;
 import ryan.game.bcnlib_pieces.Command;
 import ryan.game.competition.RobotStats;
 import ryan.game.entity.BodyFactory;
@@ -11,19 +10,16 @@ import ryan.game.entity.parts.Intake;
 
 public class DestinationRobotStats extends RobotStats {
 
-    public boolean gearHPStation = true;
+    public boolean panelHPStation = true;
     public boolean panelIntake = true;
     public float panelIntakeRate = 650;
     public float panelIntakeStrength = 10f;
 
     public boolean cargoIntake = true;
-    public float cargoIntakeRate = 250;
-    public float cargoIntakeStrength = 1f;
+    public float cargoIntakeRate = 650;
+    public float cargoIntakeStrength = 10f;
 
     public boolean differentiateBetweenIntakes = false;
-
-    public boolean shooter = true;
-    public float timePerShoot = 166f;
 
     public DestinationRobotStats() {
         maxMPS = 18 / 3.28084f;
@@ -34,7 +30,7 @@ public class DestinationRobotStats extends RobotStats {
 
     @Override
     public Command getAutonomous(Robot r) {
-        return new AutoBaseline(r);
+        return new BlankAuto(r);
     }
 
     @Override
@@ -45,5 +41,4 @@ public class DestinationRobotStats extends RobotStats {
             r.addPart(new Intake(width * 2, height * 2, in));
         }
     }
-
 }

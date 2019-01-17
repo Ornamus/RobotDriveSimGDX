@@ -24,6 +24,7 @@ public class Cargo extends Entity {
 
     public Cargo(float x, float y) {
         super(radius, radius, new BodyFactory(x,y).setTypeDynamic().setDensity(density).setShapeCircle(radius).create());
+        friction = 0.2f;
         setSprite(TEXTURE);
         setName("cargo");
         creation = GameScreen.getTime();

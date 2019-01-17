@@ -113,6 +113,10 @@ public class Entity extends Drawable {
         return false;
     }
 
+    public Sprite getSprite() {
+        return s;
+    }
+
     public void setSprite(Texture t) {
         s = new Sprite(t);
         s.setPosition(-999, -999);

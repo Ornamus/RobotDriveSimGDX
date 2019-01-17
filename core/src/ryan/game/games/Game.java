@@ -1,12 +1,12 @@
 package ryan.game.games;
 
-import ryan.game.Main;
 import ryan.game.screens.GameScreen;
 
 public enum Game {
 
     STEAMWORKS,
     POWERUP,
+    DESTINATION,
     OVERBOARD;
 
 

@@ -2,6 +2,7 @@ package ryan.game.entity.destination;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import ryan.game.Main;
@@ -11,18 +12,19 @@ import ryan.game.entity.Robot;
 import ryan.game.entity.steamworks.LoadingStation;
 import ryan.game.games.destination.DestinationMetadata;
 import ryan.game.games.destination.DestinationRobotStats;
-import ryan.game.games.steamworks.SteamworksMetadata;
-import ryan.game.games.steamworks.robots.SteamRobotStats;
 import ryan.game.screens.GameScreen;
 
 public class Panel extends Entity {
 
     public static final Texture TEXTURE = new Texture(Gdx.files.internal("core/assets/panel.png"));
+    private static final Texture FAILED = new Texture(Gdx.files.internal("core/assets/redx.png"));
+
     static final float radius = 30 * 0.0254f; //TODO: isn't this diameter?
     static final float density = .05f;
 
     LoadingStation loadingStation = null;
     long creation;
+    public boolean failed = false;
 
     public Panel(float x, float y, float angle) {
         this(x, y, angle, null);
@@ -45,12 +47,21 @@ public class Panel extends Entity {
                 Robot r = (Robot) e;
                 DestinationMetadata meta = (DestinationMetadata) r.metadata;
                 DestinationRobotStats stats = (DestinationRobotStats) r.stats;
-                if (r.isPart("intake", other) && !meta.hasPanel && stats.gearHPStation) {
+                if (r.isPart("intake", other) && !meta.hasPanel && stats.panelHPStation) {
                     meta.hasPanel = true;
                     Main.removeEntity(this);
                     //Main.getInstance().removeEntity(this);
                 }
             }
         }
+    }
+
+    @Override
+    public void draw(SpriteBatch b) {
+        if (failed) {
+            getSprite().setAlpha(0.65f);
+        }
+        super.draw(b);
+        if (failed) b.draw(FAILED, getX() - 0.6f, getY() - 0.6f, 1.2f, 1.2f);
     }
 }

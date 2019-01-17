@@ -13,6 +13,8 @@ import ryan.game.screens.GameScreen;
 
 public abstract class ScoreDisplay extends Drawable {
 
+    public static final String DEFAULT_MATCH_NAME = "Round 2";
+
     public int seconds = 150;
     Sprite display;
     Sprite timerBacking;
@@ -20,7 +22,7 @@ public abstract class ScoreDisplay extends Drawable {
 
     int[] blueTeams = new int[]{1902, 254, 987};
     int[] redTeams = new int[]{118, 1678, 1987};
-    String matchName = "Semifinal 2 of 4";
+    String matchName = DEFAULT_MATCH_NAME;//"Semifinal 2 of 4";
     String eventName = GameScreen.EVENT_NAME;
 
     float timerBackingWidth = 0;

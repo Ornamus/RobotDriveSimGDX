@@ -1,8 +1,11 @@
 package ryan.game.games.destination;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.competition.Match;
@@ -26,30 +29,23 @@ import java.util.List;
 
 public class Destination extends Field {
 
-    public static List<HumanPlayer> humanPlayers = new ArrayList<>();
-
-    public static final float hpGearScoreSpeed = 4000f;
-
-    List<Sprite> blueRotors = new ArrayList<>();
-    List<Sprite> redRotors = new ArrayList<>();
-
     public static ScoreDisplay display;
 
     public static AllianceScoreData blue;
     public static AllianceScoreData red;
 
-    boolean addedBonusGears = false;
+    List<SpotToScore> scoringSpots = new ArrayList<>();
+
     boolean didRopeDropWhoop = false;
 
-    Sprite[] blueHumans, redHumans;
+    Sprite sandstorm;
+    float sandstormY;
 
     public Destination() {
         blue = new AllianceScoreData(true);
         red = new AllianceScoreData(false);
-        humanPlayers.add(new HumanPlayer(true));
-        humanPlayers.add(new HumanPlayer(true));
-        humanPlayers.add(new HumanPlayer(false));
-        humanPlayers.add(new HumanPlayer(false));
+        sandstorm = new Sprite(new Texture("core/assets/sandstorm.jpg"));
+        sandstorm.setBounds(-29, 0, 58, 40);
     }
 
     @Override
@@ -75,22 +71,22 @@ public class Destination extends Field {
         // blue cargo ship sides
         for (int y = 0; y < 2; y++) {
             for (int x = 0; x < 3; x++) {
-                drawables.add(new SpotToScore(-5.19f + (x * 1.76f), (y == 0 ? 2.35f : -2.3f), true, y == 0 ? 270 : 90));
+                scoringSpots.add(new SpotToScore(-5.19f + (x * 1.76f), (y == 0 ? 2.35f : -2.3f), true, y == 0 ? 270 : 90));
             }
         }
 
         // blue cargo ship front
-        drawables.add(new SpotToScore(-8.6f, -0.85f, true,0));
-        drawables.add(new SpotToScore(-8.6f, 0.9f, true,0));
+        scoringSpots.add(new SpotToScore(-8.6f, -0.85f, true,0));
+        scoringSpots.add(new SpotToScore(-8.6f, 0.9f, true,0));
 
         // red cargo ship front
-        drawables.add(new SpotToScore(8.6f, -0.85f, false,180));
-        drawables.add(new SpotToScore(8.6f, 0.9f, false,180));
+        scoringSpots.add(new SpotToScore(8.6f, -0.85f, false,180));
+        scoringSpots.add(new SpotToScore(8.6f, 0.9f, false,180));
 
         // red cargo ship sides
         for (int y = 0; y < 2; y++) {
             for (int x = 0; x < 3; x++) {
-                drawables.add(new SpotToScore(1.7f + (x * 1.76f), (y == 0 ? 2.35f : -2.3f), false, y == 0 ? 270 : 90));
+                scoringSpots.add(new SpotToScore(1.7f + (x * 1.76f), (y == 0 ? 2.35f : -2.3f), false, y == 0 ? 270 : 90));
             }
         }
 
@@ -98,16 +94,81 @@ public class Destination extends Field {
         for (int s = 0; s < 2; s++) {
             float x = s == 0 ? 6.2f : -9.4f;
             float y = -11.55f;
-            drawables.add(new SpotToScore(x, y, s == 0, 180-30));
-            drawables.add(new SpotToScore(x+3.2f, y, s == 0, 30));
+            scoringSpots.add(new SpotToScore(x, y, s == 1, 180-30).configScoring(true, 0));
+            scoringSpots.add(new SpotToScore(x+3.2f, y, s == 1, 30).configScoring(true, 0));
+
+            scoringSpots.add(new SpotToScore(x + 1.615f, y + 1f, s == 1, 270).configScoring(false, 2));
         }
+
+        // top blue and red rockets
+        for (int s = 0; s < 2; s++) {
+            float x = s == 0 ? 6.2f : -9.4f;
+            float y = 11.55f;
+            scoringSpots.add(new SpotToScore(x, y, s == 1, 180+30).configScoring(true, 0));
+            scoringSpots.add(new SpotToScore(x+3.2f, y, s == 1, 180-30).configScoring(true, 0));
+
+            scoringSpots.add(new SpotToScore(x + 1.615f, y - 1f, s == 1, 90).configScoring(false, 2));
+        }
+
+        drawables.addAll(scoringSpots);
+
+
+        PolygonShape s = new PolygonShape();
+        PolygonShape s2 = new PolygonShape();
+
+
+        Vector2[] bottom_rocket = new Vector2[] {
+                new Vector2(0, 0),
+                new Vector2(0, 1),
+                new Vector2(.8f, 2.2f),
+                new Vector2(2.5f, 2.2f),
+                new Vector2(3.3f, 1),
+                new Vector2(3.3f, 0),
+                new Vector2(0, 0)
+        };
+        s.set(bottom_rocket);
+        s2.set(bottom_rocket);
+
+        drawables.add(Entity.barrier(-9.45f, -13.15f, s)); //blue rocket bottom
+        drawables.add(Entity.barrier(6.15f, -13.15f, s2)); //red rocket bottom
+
+        PolygonShape s3 = new PolygonShape();
+        PolygonShape s4 = new PolygonShape();
+
+        Vector2[] top_rocket = new Vector2[] {
+                new Vector2(0, 0),
+                new Vector2(0, -1),
+                new Vector2(.8f, -2.2f),
+                new Vector2(2.5f, -2.2f),
+                new Vector2(3.3f, -1),
+                new Vector2(3.3f, 0),
+                new Vector2(0, 0)
+        };
+
+        s3.set(top_rocket);
+        s4.set(top_rocket);
+
+        drawables.add(Entity.barrier(-9.45f, 13.15f, s3)); //blue rocket bottom
+        drawables.add(Entity.barrier(6.15f, 13.15f, s4)); //red rocket bottom
 
         drawables.addAll(generateGameElements());
 
         display = new ScoreDisplay() {
             @Override
             public int[] calculateScores() {
-                return new int[0];
+               int[] scores = new int[2];
+                scores[0] = 0;
+                scores[1] = 0;
+
+               for (int i = 0; i < 2; i++) {
+                   for (SpotToScore s : scoringSpots) {
+                       if (s.blue == (i == 0)) {
+                           if (s.hasPanel) scores[i] += 2;
+                           if (s.numCargo > 0) scores[i] += 3 * s.numCargo;
+                       }
+                   }
+               }
+               return scores;
             }
         };
         drawables.add(display);
@@ -154,8 +215,13 @@ public class Destination extends Field {
         blue = new AllianceScoreData(true);
         red = new AllianceScoreData(false);
 
-        addedBonusGears = false;
         didRopeDropWhoop = false;
+        sandstormY = 20;
+
+        for (SpotToScore s : scoringSpots) {
+            s.numCargo = 0;
+            s.hasPanel = false;
+        }
 
         for (Robot r : GameScreen.robots) {
             r.auto = r.stats.getAutonomous(r);
@@ -220,87 +286,34 @@ public class Destination extends Field {
         return new DestinationRobotStats();
     }
 
-    int blueSpinning, redSpinning;
-
-    class HumanPlayer {
-        Long scoreProgress = null;
-        boolean blue;
-
-        public HumanPlayer(boolean blue) {
-            this.blue = blue;
-        }
-    }
-
     @Override
     public void tick() {
         super.tick();
-        for (HumanPlayer h : humanPlayers) {
-            if (h.scoreProgress == null) {
-                if (h.blue && blue.gearQueue > 0) {
-                    blue.gearQueue--;
-                    h.scoreProgress = GameScreen.getTime();
-                } else if (!h.blue && red.gearQueue > 0) {
-                    red.gearQueue--;
-                    h.scoreProgress = GameScreen.getTime();
-                }
-            } else {
-                if (GameScreen.getTime() - h.scoreProgress >= hpGearScoreSpeed) {
-                    if (h.blue) blue.gears++;
-                    else red.gears++;
-                    if (Game.isAutonomous()) {
-                        if (h.blue) blue.gearsInAuto++;
-                        else red.gearsInAuto++;
-                    }
-                    h.scoreProgress = null;
-                }
-            }
-        }
 
         if (Game.isPlaying()) {
-            if (Game.getMatchTime() == 135 && !addedBonusGears) {
-                blue.gearQueue++;
-                red.gearQueue++;
-                addedBonusGears = true;
-            }
-
             if (Game.getMatchTime() == 30 && !didRopeDropWhoop) {
                 GameScreen.ropeDropSound.play(.35f);
                 didRopeDropWhoop = true;
             }
         }
-        blueSpinning = Math.round(Utils.deadzone(blue.rotors-1, .1f));
-        redSpinning = Math.round(Utils.deadzone(red.rotors-1, .1f));
+
+        if (Game.isPlaying()) {
+            if (Game.isAutonomous() && sandstormY > - 20) {
+                sandstormY -= 1;
+                if (sandstormY < -20) sandstormY = -20;
+            } else if (!Game.isAutonomous() && sandstormY <= 20) {
+                sandstormY += 1;
+            }
+        }
     }
 
     @Override
     public void draw(SpriteBatch b) {
-        int red = 0;
-        for (Sprite s : redRotors) {
-            if (GameScreen.matchPlay) {
-                if (red < redSpinning) s.setRotation(s.getRotation() + 4f);
-            } else s.setRotation(0);
-            s.draw(b);
-            red++;
-        }
-
-        int blue = 0;
-        for (Sprite s : blueRotors) {
-            if (GameScreen.matchPlay) {
-                if (blue < blueSpinning) s.setRotation(s.getRotation() - 4f);
-            } else s.setRotation(180);
-            s.draw(b);
-            blue++;
-        }
-
-        if (blueHumans != null) {
-            for (Sprite s : blueHumans) {
-                if (s != null) s.draw(b);
-            }
-        }
-        if (redHumans != null) {
-            for (Sprite s : redHumans) {
-                if (s != null) s.draw(b);
-            }
+        if (Game.isPlaying() && (sandstormY <= 40 || Game.isAutonomous())) {
+            sandstorm.setY(sandstormY);
+            sandstorm.draw(b);
+        }  else {
+            if (Game.isPlaying()) Utils.log("no sandstorm");
         }
     }
 }

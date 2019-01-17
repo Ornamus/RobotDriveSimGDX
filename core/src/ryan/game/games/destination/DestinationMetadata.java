@@ -63,11 +63,16 @@ public class DestinationMetadata extends RobotMetadata {
 
             if (val && !panelToggleWasTrue) {
                 startedIntakingWithPanel = hasPanel;
+                startedIntakingWithCargo = hasCargo;
             }
 
             if (val) {
                 if (hasPanel && startedIntakingWithPanel) {
                     ejectPanel(r);
+                }
+
+                if (hasCargo && startedIntakingWithCargo) {
+                    ejectCargo(r);
                 }
 
                 if (!hasPanel &&!hasCargo && intakeablePanel != null && !startedIntakingWithPanel && panelIntake) {
@@ -113,7 +118,7 @@ public class DestinationMetadata extends RobotMetadata {
                 if (canPanel) peg = e;
                 contact.setEnabled(false);
             } else if (e instanceof Panel) {
-                if (canPanel) intakeablePanel = e;
+                if (canPanel && !((Panel)e).failed) intakeablePanel = e;
                 contact.setEnabled(false);
             } else if (e instanceof Cargo) {
                 if (canCargo) intakeableCargo = e;
@@ -161,18 +166,16 @@ public class DestinationMetadata extends RobotMetadata {
             cargo.setRotation(r.getAngle());
             cargo.draw(batch);
         }
-
-        //if (hasCargo) cargo.draw(batch);
-        //if (hasPanel) panel.draw(batch);
     }
 
     public void ejectPanel(Robot r) {
         boolean canScore = false;
+        SpotToScore s = null;
         if (peg != null) {
             float diff = Math.abs(r.getAngle() - peg.getAngle());
-            if (Math.abs(diff - 270) <= 15 || Math.abs(diff - 90) <= 15) canScore = true;
-            SpotToScore s = (SpotToScore) peg;
-            if (!s.canPanel) canScore = false;
+            if (Math.abs(diff - 270) <= 25 || Math.abs(diff - 90) <= 25) canScore = true;
+            s = (SpotToScore) peg;
+            if (!s.canPanel || s.hasPanel) canScore = false;
         }
         if (hasPanel) {
             if (!canScore) {
@@ -181,9 +184,10 @@ public class DestinationMetadata extends RobotMetadata {
                 float xChange = -distance * (float) Math.sin(Math.toRadians(r.getAngle()));
                 float yChange = distance * (float) Math.cos(Math.toRadians(r.getAngle()));
 
-                Entity e = new Panel(r.getX() + xChange, r.getY() + yChange, r.getAngle());
+                Panel e = new Panel(r.getX() + xChange, r.getY() + yChange, r.getAngle());
+                e.failed = true;
 
-                Main.getInstance().spawnEntity(e);
+                Main.spawnEntity(e);
                 synchronized (Main.WORLD_USE) {
                     for (Body b : e.getBodies()) {
                         float xPow = 50 * (float) Math.sin(Math.toRadians(-r.getAngle()));
@@ -195,11 +199,43 @@ public class DestinationMetadata extends RobotMetadata {
             } else {
                 hasPanel = false;
                 if (GameScreen.matchPlay) {
-                    if (peg.getX() > 0) {
-                        Steamworks.blue.gearQueue++;
-                    } else {
-                        Steamworks.red.gearQueue++;
+                    s.hasPanel = true;
+                }
+            }
+        }
+    }
+
+    public void ejectCargo(Robot r) {
+        boolean canScore = false;
+        SpotToScore s = null;
+        if (peg != null) {
+            float diff = Math.abs(r.getAngle() - peg.getAngle());
+            if (Math.abs(diff - 270) <= 25 || Math.abs(diff - 90) <= 25) canScore = true;
+            s = (SpotToScore) peg;
+            if (s.numCargo >= s.maxCargo || (s.canPanel && !s.hasPanel)) canScore = false;
+        }
+        if (hasCargo) {
+            if (!canScore) {
+                // Drop the cargo, placing it into the world
+                float distance = 1.25f; //1.75f
+                float xChange = -distance * (float) Math.sin(Math.toRadians(r.getAngle()));
+                float yChange = distance * (float) Math.cos(Math.toRadians(r.getAngle()));
+
+                Cargo e = new Cargo(r.getX() + xChange, r.getY() + yChange);
+
+                Main.spawnEntity(e);
+                synchronized (Main.WORLD_USE) {
+                    for (Body b : e.getBodies()) {
+                        float xPow = 10 * (float) Math.sin(Math.toRadians(-r.getAngle()));
+                        float yPow = 10 * (float) Math.cos(Math.toRadians(-r.getAngle()));
+                        b.applyForceToCenter(xPow, yPow, true);
                     }
+                }
+                hasCargo = false;
+            } else {
+                hasCargo = false;
+                if (GameScreen.matchPlay) {
+                    s.numCargo++;
                 }
             }
         }
