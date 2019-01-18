@@ -19,6 +19,7 @@ import ryan.game.competition.Team;
 import ryan.game.controls.Gamepad;
 import ryan.game.controls.Gamepads;
 import ryan.game.entity.Robot;
+import ryan.game.entity.destination.SpotToScore;
 import ryan.game.games.AllianceSelection;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
@@ -30,6 +31,7 @@ import ryan.game.games.steamworks.SteamRankings;
 import ryan.game.games.steamworks.Steamworks;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
 import ryan.game.render.Drawable;
+import sun.security.krb5.internal.crypto.Des;
 
 import java.awt.geom.Point2D;
 import java.io.File;
@@ -250,6 +252,8 @@ public class GameScreen extends Screen  {
         if (Gdx.input.isKeyPressed(Input.Keys.R) || resetField) {
             field.resetField(Main.drawables);
             resetField = false;
+
+            //TODO: SUPER TEMPORARY
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
             if (rankings == null) {

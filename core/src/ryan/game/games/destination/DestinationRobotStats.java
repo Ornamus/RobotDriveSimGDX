@@ -7,6 +7,7 @@ import ryan.game.competition.RobotStats;
 import ryan.game.entity.BodyFactory;
 import ryan.game.entity.Robot;
 import ryan.game.entity.parts.Intake;
+import ryan.game.entity.parts.Part;
 
 public class DestinationRobotStats extends RobotStats {
 
@@ -22,10 +23,13 @@ public class DestinationRobotStats extends RobotStats {
     public boolean differentiateBetweenIntakes = false;
 
     public DestinationRobotStats() {
-        maxMPS = 18 / 3.28084f;
-        robotWidth = (29 * 1.2f) * 0.0254f;
-        robotHeight = (31 * 1.2f) * 0.0254f;
-        intakeWidth = robotWidth * .5f;
+        robotWidth = (29 * 1.5f) * 0.0254f;
+        robotHeight = (31 * 1.5f) * 0.0254f;
+        intakeWidth = robotWidth * .6f;
+
+        maxMPS = (25f) / 3.28084f;
+        maxAccel = (18.5448f) * (robotWidth / 0.9144f); //TODO: recalculate when width changes
+
     }
 
     @Override
@@ -36,9 +40,17 @@ public class DestinationRobotStats extends RobotStats {
     @Override
     public void addParts(float x, float y, Robot r) {
         if (hasIntake) {
-            float width = intakeWidth, height = robotHeight / 4;
+            float width = intakeWidth, height = robotHeight / 8;
             Body in = BodyFactory.getRectangleDynamic(x - (robotWidth / 2), y + robotHeight + height, width, height, width * height);
             r.addPart(new Intake(width * 2, height * 2, in));
+
+            width = robotWidth * 0.5f;
+            height = robotHeight / 8;
+            in = BodyFactory.getRectangleDynamic(x - (robotWidth / 2), y - robotHeight - height - .01f, width, height, 0.05f);
+            Part p = new Intake(width * 2, height * 2, in);
+            p.tags.clear();
+            p.tags.add("cargo_eject");
+            r.addPart(p);
         }
     }
 }

@@ -27,8 +27,8 @@ import ryan.game.entity.parts.Part;
 import ryan.game.entity.steamworks.Boiler;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
-import ryan.game.games.power.robots.Bacon;
-import ryan.game.games.power.robots.PowerRobotBase;
+import ryan.game.games.destination.DestinationRobotDefense;
+import ryan.game.games.destination.DestinationRobotStats;
 import ryan.game.games.steamworks.robots.*;
 import ryan.game.render.Fonts;
 import ryan.game.screens.GameScreen;
@@ -59,7 +59,8 @@ public class Robot extends Entity {
     private int statsIndex = 0;
 
     //TODO: make this not game-specific
-        public static RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer()};
+    public static RobotStats[] statsOptions = {new DestinationRobotStats(), new DestinationRobotDefense()};
+        //public static RobotStats[] statsOptions = {new SteamDefault(), new SteamDozer()};
     //public static RobotStats[] statsOptions = {new PowerRobotBase(), new Bacon()};
 
     public RobotStats stats = statsOptions[statsIndex];

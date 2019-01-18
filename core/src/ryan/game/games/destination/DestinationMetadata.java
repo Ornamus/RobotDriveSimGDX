@@ -5,18 +5,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
-import javafx.scene.effect.Light;
 import ryan.game.Main;
 import ryan.game.Utils;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.entity.destination.Cargo;
+import ryan.game.entity.destination.HumanPlayer;
 import ryan.game.entity.destination.Panel;
 import ryan.game.entity.destination.SpotToScore;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
-import ryan.game.games.steamworks.Steamworks;
 import ryan.game.screens.GameScreen;
 import java.awt.geom.Point2D;
 
@@ -27,6 +26,7 @@ public class DestinationMetadata extends RobotMetadata {
     public boolean crossedBaseline = false;
 
     public Entity peg = null;
+    public Entity pegOnBack = null;
 
     public boolean hasPanel = false;
     public Entity intakeablePanel = null;
@@ -39,6 +39,7 @@ public class DestinationMetadata extends RobotMetadata {
     public Long cargoIntakeStart = null;
     boolean startedIntakingWithCargo = false;
 
+    public HumanPlayer hpStation = null;
 
     private final int gearToggle = 5;
 
@@ -52,7 +53,7 @@ public class DestinationMetadata extends RobotMetadata {
 
     @Override
     public void tick(Robot r) {
-        Gamepad gamepad = r.getController();
+        Gamepad gamepad = r.getManipulator();
         DestinationRobotStats stats = (DestinationRobotStats) r.stats;
 
         boolean panelIntake = stats.panelIntake;
@@ -70,7 +71,6 @@ public class DestinationMetadata extends RobotMetadata {
                 if (hasPanel && startedIntakingWithPanel) {
                     ejectPanel(r);
                 }
-
                 if (hasCargo && startedIntakingWithCargo) {
                     ejectCargo(r);
                 }
@@ -87,9 +87,7 @@ public class DestinationMetadata extends RobotMetadata {
                         hasPanel = true;
                         panelIntakeStart = null;
                     }
-                }
-
-                if (!hasCargo && !hasPanel && intakeableCargo != null && !startedIntakingWithCargo && cargoIntake) {
+                } else if (!hasCargo && !hasPanel && intakeableCargo != null && !startedIntakingWithCargo && cargoIntake) {
                     if (cargoIntakeStart == null) cargoIntakeStart = GameScreen.getTime();
                     double a = Math.toRadians(Utils.getAngle(new Point2D.Float(intakeableCargo.getX(), intakeableCargo.getY()), new Point2D.Float(r.getX(), r.getY())));
                     synchronized (Main.WORLD_USE) {
@@ -101,6 +99,11 @@ public class DestinationMetadata extends RobotMetadata {
                         hasCargo = true;
                         cargoIntakeStart = null;
                     }
+                } else if (hpStation != null && !hasPanel && !startedIntakingWithPanel){
+                    float diff = Math.abs(r.getAngle() - hpStation.getAngle());
+                    if (Math.abs(diff - 270) <= 15 || Math.abs(diff - 90) <= 15) {
+                        hasPanel = true;
+                    }
                 }
 
             }
@@ -111,9 +114,9 @@ public class DestinationMetadata extends RobotMetadata {
     @Override
     public void collideStart(Robot r, Entity e, Body self, Body other, Contact contact) {
         DestinationRobotStats stats = (DestinationRobotStats) r.stats;
+        boolean canPanel = !stats.differentiateBetweenIntakes || r.isPart("panel", self);
+        boolean canCargo = !stats.differentiateBetweenIntakes || r.isPart("cargo", self);
         if (r.isPart("intake", self)) {
-            boolean canPanel = !stats.differentiateBetweenIntakes || r.isPart("panel", self);
-            boolean canCargo = !stats.differentiateBetweenIntakes || r.isPart("cargo", self);
             if (e.getName().equalsIgnoreCase("peg")) {
                 if (canPanel) peg = e;
                 contact.setEnabled(false);
@@ -123,6 +126,13 @@ public class DestinationMetadata extends RobotMetadata {
             } else if (e instanceof Cargo) {
                 if (canCargo) intakeableCargo = e;
                 contact.setEnabled(false);
+            } else if (e instanceof HumanPlayer) {
+                hpStation = (HumanPlayer) e;
+            }
+        }
+        if (r.isPart("cargo_eject", self)) {
+            if (e.getName().equalsIgnoreCase("peg")) {
+                pegOnBack = e;
             }
         }
     }
@@ -145,6 +155,13 @@ public class DestinationMetadata extends RobotMetadata {
             } else if (e == intakeableCargo && canCargo) {
                 intakeableCargo = null;
                 cargoIntakeStart = null;
+            } else if (e == hpStation) {
+                hpStation = null;
+            }
+        }
+        if (r.isPart("cargo_eject", self)) {
+            if (e == pegOnBack) {
+                pegOnBack = null;
             }
         }
     }
@@ -198,9 +215,9 @@ public class DestinationMetadata extends RobotMetadata {
                 hasPanel = false;
             } else {
                 hasPanel = false;
-                if (GameScreen.matchPlay) {
-                    s.hasPanel = true;
-                }
+                //if (GameScreen.matchPlay) {
+                s.hasPanel = true;
+                //}
             }
         }
     }
@@ -208,35 +225,55 @@ public class DestinationMetadata extends RobotMetadata {
     public void ejectCargo(Robot r) {
         boolean canScore = false;
         SpotToScore s = null;
-        if (peg != null) {
-            float diff = Math.abs(r.getAngle() - peg.getAngle());
+        Entity basisForDrop = r;
+        if (pegOnBack != null) {
+            float diff = Math.abs(r.getAngle() - pegOnBack.getAngle());
             if (Math.abs(diff - 270) <= 25 || Math.abs(diff - 90) <= 25) canScore = true;
-            s = (SpotToScore) peg;
+            s = (SpotToScore) pegOnBack;
             if (s.numCargo >= s.maxCargo || (s.canPanel && !s.hasPanel)) canScore = false;
+            if (s.panelRequirements != null) {
+                int currentMax = 0;
+                SpotToScore lastEmpty = null;
+                for (SpotToScore spot : s.panelRequirements) {
+                    if (spot.canPanel && spot.hasPanel) {
+                        currentMax++;
+                    } else {
+                        lastEmpty = spot;
+                    }
+                }
+                if (s.numCargo >= currentMax) {
+                    canScore = false;
+                    /*if (lastEmpty != null) {
+                        basisForDrop = lastEmpty;
+                        Utils.log("last empty");
+                    }*/
+                }
+            }
         }
         if (hasCargo) {
             if (!canScore) {
-                // Drop the cargo, placing it into the world
-                float distance = 1.25f; //1.75f
-                float xChange = -distance * (float) Math.sin(Math.toRadians(r.getAngle()));
-                float yChange = distance * (float) Math.cos(Math.toRadians(r.getAngle()));
 
-                Cargo e = new Cargo(r.getX() + xChange, r.getY() + yChange);
+                // Drop the cargo, placing it into the world
+                float distance = -1.5f; //1.75f
+                float xChange = -distance * (float) Math.sin(Math.toRadians(basisForDrop.getAngle()));
+                float yChange = distance * (float) Math.cos(Math.toRadians(basisForDrop.getAngle()));
+
+                Cargo e = new Cargo(basisForDrop.getX() + xChange, basisForDrop.getY() + yChange);
 
                 Main.spawnEntity(e);
                 synchronized (Main.WORLD_USE) {
                     for (Body b : e.getBodies()) {
-                        float xPow = 10 * (float) Math.sin(Math.toRadians(-r.getAngle()));
-                        float yPow = 10 * (float) Math.cos(Math.toRadians(-r.getAngle()));
+                        float xPow = -10 * (float) Math.sin(Math.toRadians(-basisForDrop.getAngle()));
+                        float yPow = -10 * (float) Math.cos(Math.toRadians(-basisForDrop.getAngle()));
                         b.applyForceToCenter(xPow, yPow, true);
                     }
                 }
                 hasCargo = false;
             } else {
                 hasCargo = false;
-                if (GameScreen.matchPlay) {
-                    s.numCargo++;
-                }
+                //if (GameScreen.matchPlay) {
+                s.numCargo++;
+                //}
             }
         }
     }

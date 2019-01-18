@@ -13,6 +13,7 @@ import ryan.game.competition.RobotStats;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
 import ryan.game.entity.destination.Cargo;
+import ryan.game.entity.destination.HumanPlayer;
 import ryan.game.entity.destination.Panel;
 import ryan.game.entity.destination.SpotToScore;
 import ryan.game.games.Field;
@@ -34,7 +35,7 @@ public class Destination extends Field {
     public static AllianceScoreData blue;
     public static AllianceScoreData red;
 
-    List<SpotToScore> scoringSpots = new ArrayList<>();
+    public List<SpotToScore> scoringSpots = new ArrayList<>();
 
     boolean didRopeDropWhoop = false;
 
@@ -94,23 +95,34 @@ public class Destination extends Field {
         for (int s = 0; s < 2; s++) {
             float x = s == 0 ? 6.2f : -9.4f;
             float y = -11.55f;
-            scoringSpots.add(new SpotToScore(x, y, s == 1, 180-30).configScoring(true, 0));
-            scoringSpots.add(new SpotToScore(x+3.2f, y, s == 1, 30).configScoring(true, 0));
 
-            scoringSpots.add(new SpotToScore(x + 1.615f, y + 1f, s == 1, 270).configScoring(false, 2));
+            SpotToScore left = new SpotToScore(x, y, s == 1, 180-30).configScoring(true, 0);
+            SpotToScore right = new SpotToScore(x+3.2f, y, s == 1, 30).configScoring(true, 0);
+            scoringSpots.add(left);
+            scoringSpots.add(right);
+
+            scoringSpots.add(new SpotToScore(x + 1.615f, y + 1f, s == 1, 270)
+                    .configScoring(false, 2).setPanelRequirements(left, right));
         }
 
         // top blue and red rockets
         for (int s = 0; s < 2; s++) {
             float x = s == 0 ? 6.2f : -9.4f;
             float y = 11.55f;
-            scoringSpots.add(new SpotToScore(x, y, s == 1, 180+30).configScoring(true, 0));
-            scoringSpots.add(new SpotToScore(x+3.2f, y, s == 1, 180-30).configScoring(true, 0));
 
-            scoringSpots.add(new SpotToScore(x + 1.615f, y - 1f, s == 1, 90).configScoring(false, 2));
+            SpotToScore left = new SpotToScore(x, y, s == 1, 180+30).configScoring(true, 0);
+            SpotToScore right = new SpotToScore(x+3.2f, y, s == 1, 180-30).configScoring(true, 0);
+            scoringSpots.add(left);
+            scoringSpots.add(right);
+
+            scoringSpots.add(new SpotToScore(x + 1.615f, y - 1f, s == 1, 90)
+                    .configScoring(false, 2).setPanelRequirements(left, right));
         }
 
         drawables.addAll(scoringSpots);
+
+        drawables.add(new HumanPlayer(-25.95f, 11.2f, true,180));
+        drawables.add(new HumanPlayer(-25.95f, -11.1f, true,180));
 
 
         PolygonShape s = new PolygonShape();
@@ -148,8 +160,8 @@ public class Destination extends Field {
         s3.set(top_rocket);
         s4.set(top_rocket);
 
-        drawables.add(Entity.barrier(-9.45f, 13.15f, s3)); //blue rocket bottom
-        drawables.add(Entity.barrier(6.15f, 13.15f, s4)); //red rocket bottom
+        drawables.add(Entity.barrier(-9.45f, 13.15f, s3)); //blue rocket top
+        drawables.add(Entity.barrier(6.15f, 13.15f, s4)); //red rocket top
 
         drawables.addAll(generateGameElements());
 
@@ -189,11 +201,11 @@ public class Destination extends Field {
             }
         }
 
-        elements.add(new Panel(25.5f,11, 0));
+        /*elements.add(new Panel(25.5f,11, 0));
         elements.add(new Panel(25.5f,-11, 0));
 
         elements.add(new Panel(-25.5f,11, 0));
-        elements.add(new Panel(-25.5f,-11, 0));
+        elements.add(new Panel(-25.5f,-11, 0));*/
 
         return elements;
     }
@@ -312,8 +324,6 @@ public class Destination extends Field {
         if (Game.isPlaying() && (sandstormY <= 40 || Game.isAutonomous())) {
             sandstorm.setY(sandstormY);
             sandstorm.draw(b);
-        }  else {
-            if (Game.isPlaying()) Utils.log("no sandstorm");
         }
     }
 }
