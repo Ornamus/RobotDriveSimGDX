@@ -96,12 +96,12 @@ public class Destination extends Field {
             float x = s == 0 ? 6.2f : -9.4f;
             float y = -11.55f;
 
-            SpotToScore left = new SpotToScore(x, y, s == 1, 180-30).configScoring(true, 0);
-            SpotToScore right = new SpotToScore(x+3.2f, y, s == 1, 30).configScoring(true, 0);
+            SpotToScore left = new SpotToScore(x + 0.2f, y - 0.1f, s == 1, 180-30).configScoring(true, 0);
+            SpotToScore right = new SpotToScore(x+3.2f - 0.2f, y - 0.1f, s == 1, 30).configScoring(true, 0);
             scoringSpots.add(left);
             scoringSpots.add(right);
 
-            scoringSpots.add(new SpotToScore(x + 1.615f, y + 1f, s == 1, 270)
+            scoringSpots.add(new SpotToScore(x + 1.615f, y + 0.8f, s == 1, 270)
                     .configScoring(false, 2).setPanelRequirements(left, right));
         }
 
@@ -110,19 +110,22 @@ public class Destination extends Field {
             float x = s == 0 ? 6.2f : -9.4f;
             float y = 11.55f;
 
-            SpotToScore left = new SpotToScore(x, y, s == 1, 180+30).configScoring(true, 0);
-            SpotToScore right = new SpotToScore(x+3.2f, y, s == 1, 180-30).configScoring(true, 0);
+            SpotToScore left = new SpotToScore(x + 0.2f, y + 0.1f, s == 1, 180+30).configScoring(true, 0);
+            SpotToScore right = new SpotToScore(x+3.2f - 0.2f, y + 0.1f, s == 1, 180-30).configScoring(true, 0);
             scoringSpots.add(left);
             scoringSpots.add(right);
 
-            scoringSpots.add(new SpotToScore(x + 1.615f, y - 1f, s == 1, 90)
+            scoringSpots.add(new SpotToScore(x + 1.615f, y - 0.8f, s == 1, 90)
                     .configScoring(false, 2).setPanelRequirements(left, right));
         }
 
         drawables.addAll(scoringSpots);
 
-        drawables.add(new HumanPlayer(-25.95f, 11.2f, true,180));
-        drawables.add(new HumanPlayer(-25.95f, -11.1f, true,180));
+        drawables.add(new HumanPlayer(-26.2f, 11.2f, true,180));
+        drawables.add(new HumanPlayer(-26.2f, -11.1f, true,180));
+
+        drawables.add(new HumanPlayer(26.2f, 11.2f, false,180));
+        drawables.add(new HumanPlayer(26.2f, -11.1f, false,180));
 
 
         PolygonShape s = new PolygonShape();

@@ -38,10 +38,12 @@ public class DestinationMetadata extends RobotMetadata {
     public Entity intakeableCargo = null;
     public Long cargoIntakeStart = null;
     boolean startedIntakingWithCargo = false;
+    boolean cargoToggleWasTrue = false;
 
     public HumanPlayer hpStation = null;
 
-    private final int gearToggle = 5;
+    private final int cargoToggle = Gamepad.BUMPER_LEFT;
+    private final int panelToggle = Gamepad.BUMPER_RIGHT;
 
     public DestinationMetadata() {
         panel = new Sprite(Panel.TEXTURE);
@@ -60,10 +62,14 @@ public class DestinationMetadata extends RobotMetadata {
         boolean cargoIntake = stats.cargoIntake;
 
         if (gamepad != null) {
-            boolean val = gamepad.getButton(gearToggle) && !Game.isAutonomous();
+            boolean val = gamepad.getButton(panelToggle) && !Game.isAutonomous();
+            boolean cargoVal = gamepad.getButton(cargoToggle) && !Game.isAutonomous();
 
             if (val && !panelToggleWasTrue) {
                 startedIntakingWithPanel = hasPanel;
+            }
+
+            if (cargoVal && !cargoToggleWasTrue) {
                 startedIntakingWithCargo = hasCargo;
             }
 
@@ -71,11 +77,8 @@ public class DestinationMetadata extends RobotMetadata {
                 if (hasPanel && startedIntakingWithPanel) {
                     ejectPanel(r);
                 }
-                if (hasCargo && startedIntakingWithCargo) {
-                    ejectCargo(r);
-                }
 
-                if (!hasPanel &&!hasCargo && intakeablePanel != null && !startedIntakingWithPanel && panelIntake) {
+                if (!hasPanel && !hasCargo && intakeablePanel != null && !startedIntakingWithPanel && panelIntake) {
                     if (panelIntakeStart == null) panelIntakeStart = GameScreen.getTime();
                     double a = Math.toRadians(Utils.getAngle(new Point2D.Float(intakeablePanel.getX(), intakeablePanel.getY()), new Point2D.Float(r.getX(), r.getY())));
                     synchronized (Main.WORLD_USE) {
@@ -87,7 +90,20 @@ public class DestinationMetadata extends RobotMetadata {
                         hasPanel = true;
                         panelIntakeStart = null;
                     }
-                } else if (!hasCargo && !hasPanel && intakeableCargo != null && !startedIntakingWithCargo && cargoIntake) {
+                } else if (hpStation != null && !hasPanel && !startedIntakingWithPanel){
+                    float diff = Math.abs(r.getAngle() - hpStation.getAngle());
+                    if (Math.abs(diff - 270) <= 15 || Math.abs(diff - 90) <= 15) {
+                        hasPanel = true;
+                    }
+                }
+
+            }
+            if (cargoVal) {
+                if (hasCargo && startedIntakingWithCargo) {
+                    ejectCargo(r);
+                }
+
+                if (!hasCargo && !hasPanel && intakeableCargo != null && !startedIntakingWithCargo && cargoIntake) {
                     if (cargoIntakeStart == null) cargoIntakeStart = GameScreen.getTime();
                     double a = Math.toRadians(Utils.getAngle(new Point2D.Float(intakeableCargo.getX(), intakeableCargo.getY()), new Point2D.Float(r.getX(), r.getY())));
                     synchronized (Main.WORLD_USE) {
@@ -99,15 +115,10 @@ public class DestinationMetadata extends RobotMetadata {
                         hasCargo = true;
                         cargoIntakeStart = null;
                     }
-                } else if (hpStation != null && !hasPanel && !startedIntakingWithPanel){
-                    float diff = Math.abs(r.getAngle() - hpStation.getAngle());
-                    if (Math.abs(diff - 270) <= 15 || Math.abs(diff - 90) <= 15) {
-                        hasPanel = true;
-                    }
                 }
-
             }
             panelToggleWasTrue = val;
+            cargoToggleWasTrue = cargoVal;
         }
     }
 
@@ -126,7 +137,7 @@ public class DestinationMetadata extends RobotMetadata {
             } else if (e instanceof Cargo) {
                 if (canCargo) intakeableCargo = e;
                 contact.setEnabled(false);
-            } else if (e instanceof HumanPlayer) {
+            } else if (e instanceof HumanPlayer && ((HumanPlayer)e).blue == r.blue && canPanel) {
                 hpStation = (HumanPlayer) e;
             }
         }
@@ -155,7 +166,7 @@ public class DestinationMetadata extends RobotMetadata {
             } else if (e == intakeableCargo && canCargo) {
                 intakeableCargo = null;
                 cargoIntakeStart = null;
-            } else if (e == hpStation) {
+            } else if (e == hpStation && canPanel) {
                 hpStation = null;
             }
         }
@@ -254,7 +265,7 @@ public class DestinationMetadata extends RobotMetadata {
             if (!canScore) {
 
                 // Drop the cargo, placing it into the world
-                float distance = -1.5f; //1.75f
+                float distance = 1.5f; //-1.5f;
                 float xChange = -distance * (float) Math.sin(Math.toRadians(basisForDrop.getAngle()));
                 float yChange = distance * (float) Math.cos(Math.toRadians(basisForDrop.getAngle()));
 

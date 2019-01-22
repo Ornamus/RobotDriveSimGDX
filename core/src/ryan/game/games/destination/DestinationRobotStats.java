@@ -20,12 +20,12 @@ public class DestinationRobotStats extends RobotStats {
     public float cargoIntakeRate = 650;
     public float cargoIntakeStrength = 10f;
 
-    public boolean differentiateBetweenIntakes = false;
+    public boolean differentiateBetweenIntakes = true;
 
     public DestinationRobotStats() {
         robotWidth = (29 * 1.5f) * 0.0254f;
         robotHeight = (31 * 1.5f) * 0.0254f;
-        intakeWidth = robotWidth * .6f;
+        intakeWidth = robotWidth * .5f;
 
         maxMPS = (25f) / 3.28084f;
         maxAccel = (18.5448f) * (robotWidth / 0.9144f); //TODO: recalculate when width changes
@@ -42,14 +42,17 @@ public class DestinationRobotStats extends RobotStats {
         if (hasIntake) {
             float width = intakeWidth, height = robotHeight / 8;
             Body in = BodyFactory.getRectangleDynamic(x - (robotWidth / 2), y + robotHeight + height, width, height, width * height);
-            r.addPart(new Intake(width * 2, height * 2, in));
+            Part p = new Intake(width * 2, height * 2, in);
+            p.tags.add("cargo_eject");
+            p.tags.add("panel");
+            r.addPart(p);
 
-            width = robotWidth * 0.5f;
+
+            width = robotWidth * 0.75f;
             height = robotHeight / 8;
             in = BodyFactory.getRectangleDynamic(x - (robotWidth / 2), y - robotHeight - height - .01f, width, height, 0.05f);
-            Part p = new Intake(width * 2, height * 2, in);
-            p.tags.clear();
-            p.tags.add("cargo_eject");
+            p = new Intake(width * 2, height * 2, in);
+            p.tags.add("cargo");
             r.addPart(p);
         }
     }

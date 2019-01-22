@@ -252,8 +252,6 @@ public class GameScreen extends Screen  {
         if (Gdx.input.isKeyPressed(Input.Keys.R) || resetField) {
             field.resetField(Main.drawables);
             resetField = false;
-
-            //TODO: SUPER TEMPORARY
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
             if (rankings == null) {
