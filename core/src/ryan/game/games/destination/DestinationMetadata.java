@@ -10,13 +10,12 @@ import ryan.game.Utils;
 import ryan.game.controls.Gamepad;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
-import ryan.game.entity.destination.Cargo;
-import ryan.game.entity.destination.HumanPlayer;
-import ryan.game.entity.destination.Panel;
-import ryan.game.entity.destination.SpotToScore;
+import ryan.game.entity.destination.*;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
 import ryan.game.screens.GameScreen;
+import sun.security.krb5.internal.crypto.Des;
+
 import java.awt.geom.Point2D;
 
 public class DestinationMetadata extends RobotMetadata {
@@ -40,6 +39,9 @@ public class DestinationMetadata extends RobotMetadata {
     boolean startedIntakingWithCargo = false;
     boolean cargoToggleWasTrue = false;
 
+    public Hab climbingHab = null;
+    public Long habClimbStart = null;
+
     public HumanPlayer hpStation = null;
 
     private final int cargoToggle = Gamepad.BUMPER_LEFT;
@@ -58,7 +60,6 @@ public class DestinationMetadata extends RobotMetadata {
         Gamepad gamepad = r.getManipulator();
         DestinationRobotStats stats = (DestinationRobotStats) r.stats;
 
-        boolean panelIntake = stats.panelIntake;
         boolean cargoIntake = stats.cargoIntake;
 
         if (gamepad != null) {
@@ -78,7 +79,7 @@ public class DestinationMetadata extends RobotMetadata {
                     ejectPanel(r);
                 }
 
-                if (!hasPanel && !hasCargo && intakeablePanel != null && !startedIntakingWithPanel && panelIntake) {
+                if (!hasPanel && !hasCargo && intakeablePanel != null && !startedIntakingWithPanel && stats.panelFloor) {
                     if (panelIntakeStart == null) panelIntakeStart = GameScreen.getTime();
                     double a = Math.toRadians(Utils.getAngle(new Point2D.Float(intakeablePanel.getX(), intakeablePanel.getY()), new Point2D.Float(r.getX(), r.getY())));
                     synchronized (Main.WORLD_USE) {
@@ -132,18 +133,29 @@ public class DestinationMetadata extends RobotMetadata {
                 if (canPanel) peg = e;
                 contact.setEnabled(false);
             } else if (e instanceof Panel) {
-                if (canPanel && !((Panel)e).failed) intakeablePanel = e;
+                if (canPanel && !((Panel)e).failed && stats.panelFloor) intakeablePanel = e;
                 contact.setEnabled(false);
             } else if (e instanceof Cargo) {
                 if (canCargo) intakeableCargo = e;
                 contact.setEnabled(false);
-            } else if (e instanceof HumanPlayer && ((HumanPlayer)e).blue == r.blue && canPanel) {
+            } else if (e instanceof HumanPlayer && ((HumanPlayer)e).blue == r.blue && canPanel && stats.panelIntake) {
                 hpStation = (HumanPlayer) e;
             }
         }
         if (r.isPart("cargo_eject", self)) {
             if (e.getName().equalsIgnoreCase("peg")) {
                 pegOnBack = e;
+            }
+        }
+
+        if (e instanceof Hab) {
+            Hab h = (Hab) e;
+            if (h.level <= stats.hab_level) {
+                contact.setEnabled(false);
+                if (climbingHab == null || h.level > climbingHab.level) {
+                    climbingHab = h;
+                    habClimbStart = GameScreen.getTime();
+                }
             }
         }
     }
@@ -166,7 +178,7 @@ public class DestinationMetadata extends RobotMetadata {
             } else if (e == intakeableCargo && canCargo) {
                 intakeableCargo = null;
                 cargoIntakeStart = null;
-            } else if (e == hpStation && canPanel) {
+            } else if (e == hpStation && canPanel && stats.panelIntake) {
                 hpStation = null;
             }
         }
@@ -179,6 +191,7 @@ public class DestinationMetadata extends RobotMetadata {
 
     @Override
     public void draw(SpriteBatch batch, Robot r) {
+        DestinationRobotStats stats = (DestinationRobotStats) r.stats;
         Vector2 pos = r.getPhysicsPosition();
 
         if (hasPanel) {
@@ -194,16 +207,25 @@ public class DestinationMetadata extends RobotMetadata {
             cargo.setRotation(r.getAngle());
             cargo.draw(batch);
         }
+
+        if (habClimbStart != null && (Game.getMatchTime() <= 30 || !Game.isPlaying())) {
+            float speed = climbingHab.level == 2 ? stats.habLevel2Speed : stats.habLevel3Speed;
+            Utils.drawProgressBar(r.getX(), r.getY() + 1f, 2f, .5f, ((GameScreen.getTime() - habClimbStart)/((speed*1000))), batch);
+        }
     }
 
     public void ejectPanel(Robot r) {
         boolean canScore = false;
         SpotToScore s = null;
+        DestinationRobotStats stats  = (DestinationRobotStats) r.stats;
         if (peg != null) {
             float diff = Math.abs(r.getAngle() - peg.getAngle());
             if (Math.abs(diff - 270) <= 25 || Math.abs(diff - 90) <= 25) canScore = true;
             s = (SpotToScore) peg;
-            if (!s.canPanel || s.hasPanel) canScore = false;
+            if (s.maxPanel == 0 || s.maxPanel == s.numPanel) canScore = false;
+            if (!stats.elevator && s.numPanel >= 1) {
+                canScore = false;
+            }
         }
         if (hasPanel) {
             if (!canScore) {
@@ -213,7 +235,7 @@ public class DestinationMetadata extends RobotMetadata {
                 float yChange = distance * (float) Math.cos(Math.toRadians(r.getAngle()));
 
                 Panel e = new Panel(r.getX() + xChange, r.getY() + yChange, r.getAngle());
-                e.failed = true;
+                //e.failed = true;
 
                 Main.spawnEntity(e);
                 synchronized (Main.WORLD_USE) {
@@ -227,7 +249,7 @@ public class DestinationMetadata extends RobotMetadata {
             } else {
                 hasPanel = false;
                 //if (GameScreen.matchPlay) {
-                s.hasPanel = true;
+                s.numPanel++;
                 //}
             }
         }
@@ -237,17 +259,19 @@ public class DestinationMetadata extends RobotMetadata {
         boolean canScore = false;
         SpotToScore s = null;
         Entity basisForDrop = r;
+        DestinationRobotStats stats  = (DestinationRobotStats) r.stats;
         if (pegOnBack != null) {
             float diff = Math.abs(r.getAngle() - pegOnBack.getAngle());
             if (Math.abs(diff - 270) <= 25 || Math.abs(diff - 90) <= 25) canScore = true;
             s = (SpotToScore) pegOnBack;
-            if (s.numCargo >= s.maxCargo || (s.canPanel && !s.hasPanel)) canScore = false;
+            if (s.numCargo >= s.maxCargo || (s.maxPanel > 0 && s.numPanel == 0)) canScore = false;
+            if (!stats.elevator && s.numCargo >= 2) canScore = false;
             if (s.panelRequirements != null) {
                 int currentMax = 0;
                 SpotToScore lastEmpty = null;
                 for (SpotToScore spot : s.panelRequirements) {
-                    if (spot.canPanel && spot.hasPanel) {
-                        currentMax++;
+                    if (spot.maxPanel > 0 && spot.numPanel > 0) {
+                        currentMax += spot.numPanel;
                     } else {
                         lastEmpty = spot;
                     }
@@ -265,7 +289,7 @@ public class DestinationMetadata extends RobotMetadata {
             if (!canScore) {
 
                 // Drop the cargo, placing it into the world
-                float distance = 1.5f; //-1.5f;
+                float distance = 1.6f; //-1.5f;
                 float xChange = -distance * (float) Math.sin(Math.toRadians(basisForDrop.getAngle()));
                 float yChange = distance * (float) Math.cos(Math.toRadians(basisForDrop.getAngle()));
 
@@ -282,9 +306,7 @@ public class DestinationMetadata extends RobotMetadata {
                 hasCargo = false;
             } else {
                 hasCargo = false;
-                //if (GameScreen.matchPlay) {
                 s.numCargo++;
-                //}
             }
         }
     }

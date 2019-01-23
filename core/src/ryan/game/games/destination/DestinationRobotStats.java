@@ -11,8 +11,8 @@ import ryan.game.entity.parts.Part;
 
 public class DestinationRobotStats extends RobotStats {
 
-    public boolean panelHPStation = true;
-    public boolean panelIntake = true;
+    public boolean panelIntake = false;
+    public boolean panelFloor = true;
     public float panelIntakeRate = 650;
     public float panelIntakeStrength = 10f;
 
@@ -20,7 +20,12 @@ public class DestinationRobotStats extends RobotStats {
     public float cargoIntakeRate = 650;
     public float cargoIntakeStrength = 10f;
 
-    public boolean differentiateBetweenIntakes = true;
+    public boolean differentiateBetweenIntakes = false;
+    public boolean elevator = true;
+
+    public int hab_level = 2;
+    public float habLevel2Speed = 1;
+    public float habLevel3Speed = 2;
 
     public DestinationRobotStats() {
         robotWidth = (29 * 1.5f) * 0.0254f;
@@ -28,7 +33,7 @@ public class DestinationRobotStats extends RobotStats {
         intakeWidth = robotWidth * .5f;
 
         maxMPS = (25f) / 3.28084f;
-        maxAccel = (18.5448f) * (robotWidth / 0.9144f); //TODO: recalculate when width changes
+        maxAccel = (18.5448f) * (robotWidth / 0.9144f);
 
     }
 
@@ -45,15 +50,18 @@ public class DestinationRobotStats extends RobotStats {
             Part p = new Intake(width * 2, height * 2, in);
             p.tags.add("cargo_eject");
             p.tags.add("panel");
+            if (!differentiateBetweenIntakes) p.tags.add("cargo");
             r.addPart(p);
 
 
-            width = robotWidth * 0.75f;
-            height = robotHeight / 8;
-            in = BodyFactory.getRectangleDynamic(x - (robotWidth / 2), y - robotHeight - height - .01f, width, height, 0.05f);
-            p = new Intake(width * 2, height * 2, in);
-            p.tags.add("cargo");
-            r.addPart(p);
+            if (differentiateBetweenIntakes) {
+                width = robotWidth * 0.75f;
+                height = robotHeight / 8;
+                in = BodyFactory.getRectangleDynamic(x - (robotWidth / 2), y - robotHeight - height - .01f, width, height, 0.05f);
+                p = new Intake(width * 2, height * 2, in);
+                p.tags.add("cargo");
+                r.addPart(p);
+            }
         }
     }
 }

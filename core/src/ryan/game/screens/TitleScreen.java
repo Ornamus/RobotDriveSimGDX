@@ -18,10 +18,13 @@ import ryan.game.competition.Team;
 import ryan.game.entity.Robot;
 import ryan.game.games.RobotStatBuilder;
 import ryan.game.games.RobotStatSlider;
+import ryan.game.games.destination.DestinationRobotStats;
+import ryan.game.games.destination.DestinationStatBuilder;
 import ryan.game.games.steamworks.SteamStatBuilder;
-import ryan.game.games.steamworks.robots.SteamRobotStats;
 import ryan.game.render.Button;
 import ryan.game.render.Fonts;
+import sun.security.krb5.internal.crypto.Des;
+
 import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -95,7 +98,7 @@ public class TitleScreen extends Screen {
                 if (h.exists()) {
                     File f = h.file();
                     RobotStats s;
-                    s = Utils.fromJSON(f, SteamRobotStats.class); //TODO: make this not game specific
+                    s = Utils.fromJSON(f, DestinationRobotStats.class); //TODO: make this not game specific
                     Robot.addStatOption(s);
                     customBotsLoaded++;
                 }
@@ -146,7 +149,7 @@ public class TitleScreen extends Screen {
             custom_robot_index = Utils.randomInt(0, custom_robots.length-1);
             randomColors();
 
-            statBuilder = new SteamStatBuilder();
+            statBuilder = new DestinationStatBuilder();
             List<RobotStatSlider> steamSliders = statBuilder.getSliders();
 
             int x = -400;
@@ -180,7 +183,7 @@ public class TitleScreen extends Screen {
 
     public void saveRobot() {
         //TODO: for now, assuming Steamworks. Need to make this work by default for all games
-        SteamRobotStats stats = new SteamRobotStats();
+        DestinationRobotStats stats = new DestinationRobotStats();
         stats.texture = custom_robots[custom_robot_index];
         stats.recolorIndex = -1;
         stats.custom_primary = primary;

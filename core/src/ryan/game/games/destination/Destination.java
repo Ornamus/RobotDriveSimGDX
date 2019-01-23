@@ -12,10 +12,7 @@ import ryan.game.competition.Match;
 import ryan.game.competition.RobotStats;
 import ryan.game.entity.Entity;
 import ryan.game.entity.Robot;
-import ryan.game.entity.destination.Cargo;
-import ryan.game.entity.destination.HumanPlayer;
-import ryan.game.entity.destination.Panel;
-import ryan.game.entity.destination.SpotToScore;
+import ryan.game.entity.destination.*;
 import ryan.game.games.Field;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
@@ -59,15 +56,18 @@ public class Destination extends Field {
         drawables.add(new ImageDrawer(-27.6f + oX, -13.5f, 54, 27, "core/assets/2019_field.png"));
 
 
-        drawables.add(Entity.barrier(0 + oX, 13.5f, 28f, .5f)); //top wall
-        drawables.add(Entity.barrier(0 + oX, -13.65f, 28f, .5f)); //bottom wall
-        drawables.add(Entity.barrier(-27.5f + oX, 0, .5f, 30f)); //left wall
-        drawables.add(Entity.barrier(26.5f + oX, 0, .5f, 30f)); //right wall
+        drawables.add(Entity.barrier(0 + oX, 13.5f, 28f, .5f)); // top wall
+        drawables.add(Entity.barrier(0 + oX, -13.65f, 28f, .5f)); // bottom wall
+        drawables.add(Entity.barrier(-27.5f + oX, 0, .5f, 30f)); // left wall
+        drawables.add(Entity.barrier(26.5f + oX, 0, .5f, 30f)); // right wall
 
-        drawables.add(Entity.barrier(24.55f, 0, 2f, 5.2f)); //right hab lvl 3
-        drawables.add(Entity.barrier(-24.55f, 0, 2f, 5.2f)); //blue hab lvl 3
+        drawables.add(Entity.barrier(24.55f, 0, 2f, 5.2f)); // right hab lvl 3
 
-        drawables.add(Entity.barrier(0, 0, 8.25f, 2.15f)); //blue hab lvl 3
+        drawables.add(new Hab(-24.55f, 0.1f, 3, true)); // blue hab lvl 3
+        drawables.add(new Hab(-24.55f, 0.1f + 3.7f, 2, true)); // blue hab lvl 2a
+        drawables.add(new Hab(-24.55f, 0.1f - 3.7f, 2, true)); // blue hab lvl 2b
+
+        //drawables.add(Entity.barrier(0, 0, 8.25f, 2.15f)); // cargo ships
 
         // blue cargo ship sides
         for (int y = 0; y < 2; y++) {
@@ -96,13 +96,13 @@ public class Destination extends Field {
             float x = s == 0 ? 6.2f : -9.4f;
             float y = -11.55f;
 
-            SpotToScore left = new SpotToScore(x + 0.2f, y - 0.1f, s == 1, 180-30).configScoring(true, 0);
-            SpotToScore right = new SpotToScore(x+3.2f - 0.2f, y - 0.1f, s == 1, 30).configScoring(true, 0);
+            SpotToScore left = new SpotToScore(x + 0.2f, y - 0.1f, s == 1, 180-30).configScoring(3, 0);
+            SpotToScore right = new SpotToScore(x+3.2f - 0.2f, y - 0.1f, s == 1, 30).configScoring(3, 0);
             scoringSpots.add(left);
             scoringSpots.add(right);
 
             scoringSpots.add(new SpotToScore(x + 1.615f, y + 0.8f, s == 1, 270)
-                    .configScoring(false, 2).setPanelRequirements(left, right));
+                    .configScoring(0, 6).setPanelRequirements(left, right));
         }
 
         // top blue and red rockets
@@ -110,13 +110,13 @@ public class Destination extends Field {
             float x = s == 0 ? 6.2f : -9.4f;
             float y = 11.55f;
 
-            SpotToScore left = new SpotToScore(x + 0.2f, y + 0.1f, s == 1, 180+30).configScoring(true, 0);
-            SpotToScore right = new SpotToScore(x+3.2f - 0.2f, y + 0.1f, s == 1, 180-30).configScoring(true, 0);
+            SpotToScore left = new SpotToScore(x + 0.2f, y + 0.1f, s == 1, 180+30).configScoring(3, 0);
+            SpotToScore right = new SpotToScore(x+3.2f - 0.2f, y + 0.1f, s == 1, 180-30).configScoring(3, 0);
             scoringSpots.add(left);
             scoringSpots.add(right);
 
             scoringSpots.add(new SpotToScore(x + 1.615f, y - 0.8f, s == 1, 90)
-                    .configScoring(false, 2).setPanelRequirements(left, right));
+                    .configScoring(0, 6).setPanelRequirements(left, right));
         }
 
         drawables.addAll(scoringSpots);
@@ -178,7 +178,7 @@ public class Destination extends Field {
                for (int i = 0; i < 2; i++) {
                    for (SpotToScore s : scoringSpots) {
                        if (s.blue == (i == 0)) {
-                           if (s.hasPanel) scores[i] += 2;
+                           if (s.numPanel > 0) scores[i] += 2 * s.numPanel;
                            if (s.numCargo > 0) scores[i] += 3 * s.numCargo;
                        }
                    }
@@ -203,13 +203,6 @@ public class Destination extends Field {
                 }
             }
         }
-
-        /*elements.add(new Panel(25.5f,11, 0));
-        elements.add(new Panel(25.5f,-11, 0));
-
-        elements.add(new Panel(-25.5f,11, 0));
-        elements.add(new Panel(-25.5f,-11, 0));*/
-
         return elements;
     }
 
@@ -235,7 +228,7 @@ public class Destination extends Field {
 
         for (SpotToScore s : scoringSpots) {
             s.numCargo = 0;
-            s.hasPanel = false;
+            s.numPanel = 0;
         }
 
         for (Robot r : GameScreen.robots) {
@@ -255,7 +248,6 @@ public class Destination extends Field {
     @Override
     public void onMatchEnd() {
         Match current = GameScreen.schedule.getCurrentMatch();
-
 
         int winner = -1;
 
@@ -285,6 +277,7 @@ public class Destination extends Field {
         for (Drawable d : generateGameElements()) {
             field.add(d);
             if (d instanceof Entity) {
+                // TODO: something about this doesn't look done right
                 Entity e = (Entity) d;
                 Main.getInstance().addFriction(e.getPrimary(), e.friction);
             }

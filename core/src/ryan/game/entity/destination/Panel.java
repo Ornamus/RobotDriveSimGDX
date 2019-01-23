@@ -41,19 +41,6 @@ public class Panel extends Entity {
 
     @Override
     public void onCollide(Entity e, Body self, Body other, Contact contact) {
-        if (loadingStation != null && e instanceof Robot && GameScreen.getTime() - creation <= 150) {
-            float diff = Math.abs(e.getAngle() - loadingStation.getAngle());
-            if (diff <= 9.5) {
-                Robot r = (Robot) e;
-                DestinationMetadata meta = (DestinationMetadata) r.metadata;
-                DestinationRobotStats stats = (DestinationRobotStats) r.stats;
-                if (r.isPart("intake", other) && !meta.hasPanel && stats.panelHPStation) {
-                    meta.hasPanel = true;
-                    Main.removeEntity(this);
-                    //Main.getInstance().removeEntity(this);
-                }
-            }
-        }
     }
 
     @Override
