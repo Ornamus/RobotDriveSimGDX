@@ -27,6 +27,7 @@ import ryan.game.entity.parts.Part;
 import ryan.game.entity.steamworks.Boiler;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
+import ryan.game.games.destination.Destination;
 import ryan.game.games.destination.DestinationRobotDefense;
 import ryan.game.games.destination.DestinationRobotStats;
 import ryan.game.games.steamworks.robots.*;
@@ -385,7 +386,7 @@ public class Robot extends Entity {
 
             changeControlsWasTrue = val;
 
-            if ((!Game.isPlaying() || Game.getMatchTime() <= 134) && g != null) {
+            if ((!Game.isPlaying() || (Game.getMatchTime() <= 134 || stats instanceof DestinationRobotStats)) && g != null) {
                 DriveOrder o;
                 if (stats.fieldCentric) {
                     o = fieldCentric.calculate(g);
@@ -538,6 +539,9 @@ public class Robot extends Entity {
     public void drawUnscaled(SpriteBatch b) {
         Match m = GameScreen.schedule.getCurrentMatch();
         if (m != null && GameScreen.allianceSelection == null) {
+            // Do not render team numbers during the Sandstorm period. TODO: do this less jank
+            if (GameScreen.self.field instanceof Destination && Game.isAutonomous()) return;
+
             Fonts.fmsWhiteVerySmall.setColor(255, 255, 255, getAngle() > 110 && getAngle() < 250 ? .3f : 1);
 
             Vector2 pos = getPhysicsPosition();

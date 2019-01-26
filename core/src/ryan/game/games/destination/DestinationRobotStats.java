@@ -11,7 +11,7 @@ import ryan.game.entity.parts.Part;
 
 public class DestinationRobotStats extends RobotStats {
 
-    public boolean panelIntake = false;
+    public boolean panelIntake = true;
     public boolean panelFloor = true;
     public float panelIntakeRate = 650;
     public float panelIntakeStrength = 10f;
@@ -23,9 +23,10 @@ public class DestinationRobotStats extends RobotStats {
     public boolean differentiateBetweenIntakes = false;
     public boolean elevator = true;
 
-    public int hab_level = 2;
-    public float habLevel2Speed = 1;
-    public float habLevel3Speed = 2;
+    public int hab_level = 3;
+    public float habLevel1Speed = 0.5f;
+    public float habLevel2Speed = 2;
+    public float habLevel3Speed = 4;
 
     public DestinationRobotStats() {
         robotWidth = (29 * 1.5f) * 0.0254f;

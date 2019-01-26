@@ -15,6 +15,7 @@ public class RobotStatSlider {
 
     private int x, y;
     public int max, current = 0;
+    public boolean allOrNothing = false;
     public String label;
     public Sprite plus, minus;
     private BiConsumer<RobotStatSlider, RobotStats> affectStats;
@@ -47,6 +48,10 @@ public class RobotStatSlider {
         return (current*1f)/(max*1f);
     }
 
+    public float getVal() {
+        return current;
+    }
+
     public void draw(SpriteBatch b) {
         Utils.drawUnscaledProgressBar(x, y, 200, 40, getProgress(), b);
         Fonts.draw(Fonts.fmsWhiteSmall, label + " (" + current + "/" + max + ")", x+110, y + 28.5f, b);
@@ -60,6 +65,11 @@ public class RobotStatSlider {
 
     public RobotStatSlider setTextChecker(SliderTextChecker textChecker) {
         this.textChecker = textChecker;
+        return this;
+    }
+
+    public RobotStatSlider setAllOrNothing(boolean allOrNothing) {
+        this.allOrNothing = allOrNothing;
         return this;
     }
 

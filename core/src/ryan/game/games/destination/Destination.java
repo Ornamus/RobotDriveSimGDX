@@ -61,13 +61,17 @@ public class Destination extends Field {
         drawables.add(Entity.barrier(-27.5f + oX, 0, .5f, 30f)); // left wall
         drawables.add(Entity.barrier(26.5f + oX, 0, .5f, 30f)); // right wall
 
-        drawables.add(Entity.barrier(24.55f, 0, 2f, 5.2f)); // right hab lvl 3
-
         drawables.add(new Hab(-24.55f, 0.1f, 3, true)); // blue hab lvl 3
         drawables.add(new Hab(-24.55f, 0.1f + 3.7f, 2, true)); // blue hab lvl 2a
         drawables.add(new Hab(-24.55f, 0.1f - 3.7f, 2, true)); // blue hab lvl 2b
+        drawables.add(new Hab(-21f, 0.1f, 1, true)); // blue hab lvl 1
 
-        //drawables.add(Entity.barrier(0, 0, 8.25f, 2.15f)); // cargo ships
+        drawables.add(new Hab(24.55f, 0.1f, 3, false)); // red hab lvl 3
+        drawables.add(new Hab(24.55f, 0.1f + 3.7f, 2, false)); // red hab lvl 2a
+        drawables.add(new Hab(24.55f, 0.1f - 3.7f, 2, false)); // red hab lvl 2b
+        drawables.add(new Hab(21f, 0.1f, 1, false)); // red hab lvl 1
+
+        drawables.add(Entity.barrier(0, 0, 8.25f, 2.15f)); // cargo ships
 
         // blue cargo ship sides
         for (int y = 0; y < 2; y++) {
@@ -175,15 +179,38 @@ public class Destination extends Field {
                 scores[0] = 0;
                 scores[1] = 0;
 
-               for (int i = 0; i < 2; i++) {
-                   for (SpotToScore s : scoringSpots) {
-                       if (s.blue == (i == 0)) {
-                           if (s.numPanel > 0) scores[i] += 2 * s.numPanel;
-                           if (s.numCargo > 0) scores[i] += 3 * s.numCargo;
-                       }
-                   }
-               }
-               return scores;
+                for (int i = 0; i < 2; i++) {
+                    for (SpotToScore s : scoringSpots) {
+                        if (s.blue == (i == 0)) {
+                            if (s.numPanel > 0) scores[i] += 2 * s.numPanel;
+                            if (s.numCargo > 0) scores[i] += 3 * s.numCargo;
+                        }
+                    }
+                }
+
+                for (Robot r : GameScreen.robots) {
+                    DestinationMetadata meta = (DestinationMetadata) r.metadata;
+                    DestinationRobotStats stats = (DestinationRobotStats) r.stats;
+                    Hab h;
+                    if ((h = meta.climbingHab) != null) {
+                        float speed = 99999, points = 0;
+                        if (h.level == 1) {
+                            speed = stats.habLevel1Speed;
+                            points = 3;
+                        } else
+                            if (h.level == 2) {
+                            speed = stats.habLevel2Speed;
+                            points = 6;
+                        } else if (h.level == 3) {
+                            speed = stats.habLevel3Speed;
+                            points = 12;
+                        }
+                        if (GameScreen.getTime() - meta.habClimbStart >= speed * 1000) {
+                            scores[r.blue ? 0 : 1] += points;
+                        }
+                    }
+                }
+                return scores;
             }
         };
         drawables.add(display);

@@ -53,7 +53,7 @@ public class TitleScreen extends Screen {
     Sprite arrow = new Sprite(new Texture("core/assets/ui/arrow.png"));
     RobotStatBuilder statBuilder;
     Button saveRobotButton, backButton, randomColorButton;
-    String builderBonusText = "*Cannot intake gears.\n*Cannot shoot.\n*Cannot intake fuel.\n*Cannot climb.";
+    String builderBonusText = "";
 
     Color primary = Color.GRAY, secondary = Color.PURPLE;
 
@@ -86,9 +86,11 @@ public class TitleScreen extends Screen {
 
         background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
-        music.setLooping(true);
-        music.setVolume(0);
-        music.play();
+        if (GameScreen.PLAY_MUSIC) {
+            music.setLooping(true);
+            music.setVolume(0);
+            music.play();
+        }
 
         //Loading up custom robot files
         if (customBotsLoaded == -1) {
@@ -105,7 +107,7 @@ public class TitleScreen extends Screen {
             }
         }
 
-        //This isn't used for actual tournament stuff (Schedule does that), this is just so the end user can see what's currently loaded
+        // This isn't used for actual tournament stuff (Schedule does that), this is just so the end user can see what's currently loaded
         if (tournamentTeamsLoaded == -1) {
             tournamentTeamsLoaded = 0;
             File f = new File(GameScreen.EVENT_KEY + "/teams.json");
@@ -115,7 +117,7 @@ public class TitleScreen extends Screen {
             }
         }
 
-        //Subpage Robot Builder setup
+        // Subpage Robot Builder setup
         arrow.setScale(2);
         arrow.setPosition(115, 250);
 
@@ -139,18 +141,17 @@ public class TitleScreen extends Screen {
         refreshCustomRobot();
     }
 
-
     public void setSubpage(Subpage p) {
         subpage = p;
         if (subpage == Subpage.TITLE) {
             //?
         } else if (subpage == Subpage.ROBOT_BUILDER) {
-            maxPoints = 30;
             custom_robot_index = Utils.randomInt(0, custom_robots.length-1);
             randomColors();
 
             statBuilder = new DestinationStatBuilder();
             List<RobotStatSlider> steamSliders = statBuilder.getSliders();
+            maxPoints = statBuilder.getMaxPoints();
 
             int x = -400;
             int y = -50;
@@ -182,7 +183,7 @@ public class TitleScreen extends Screen {
     }
 
     public void saveRobot() {
-        //TODO: for now, assuming Steamworks. Need to make this work by default for all games
+        //TODO: for now, assuming Deep Space. Need to make this work by default for all games
         DestinationRobotStats stats = new DestinationRobotStats();
         stats.texture = custom_robots[custom_robot_index];
         stats.recolorIndex = -1;
@@ -193,6 +194,7 @@ public class TitleScreen extends Screen {
         Gson g = new GsonBuilder().setPrettyPrinting().create();
 
         if (buildingTournamentBot) {
+            // TODO: make not ugly
             String num = JOptionPane.showInputDialog("Please enter team number:");
             int number = Integer.parseInt(num);
             List<Team> tournamentTeams = Utils.teamListFromJSON(new File(GameScreen.EVENT_KEY + "/teams.json"));
@@ -207,7 +209,7 @@ public class TitleScreen extends Screen {
             //Robot.addStatOption(stats);
             //customBotsLoaded++;
         }
-        //TODO: one day, don't save tournament robots into the sandbox too. For now we save them to the sandbox for ease of practice
+        // TODO: one day, don't save tournament robots into the sandbox too. For now we save them to the sandbox for ease of practice
         FileHandle[] existingRobots = Gdx.files.internal("custom_robots").list();
         Utils.writeFile("custom_robots/robot_" + (existingRobots.length+1) + ".json", g.toJson(stats));
         Robot.addStatOption(stats);
@@ -250,8 +252,8 @@ public class TitleScreen extends Screen {
             }
         }
         if (added == 0) string = "";
-        else if (added == 1) string = "Notice:\n" + string;
-        else string = "Notices:\n" + string;
+        else if (added == 1) string = "Note:\n" + string;
+        else string = "Notes:\n" + string;
         builderBonusText = string;
     }
 
@@ -324,18 +326,36 @@ public class TitleScreen extends Screen {
             }
             for (RobotStatSlider s : statBuilder.getSliders()) {
                 if (s.plus.getBoundingRectangle().contains(pos.x, pos.y)) {
-                    if (maxPoints > 0 && s.current < s.max) {
-                        maxPoints--;
-                        s.current++;
+                    if (s.allOrNothing) {
+                        if (maxPoints >= s.max && s.current < s.max) {
+                            maxPoints -= s.max;
+                            s.current = s.max;
+                            updateBonusText();
+                            return true;
+                        }
+                    } else {
+                        if (maxPoints > 0 && s.current < s.max) {
+                            maxPoints--;
+                            s.current++;
+                            updateBonusText();
+                            return true;
+                        }
+                    }
+                } else if (s.minus.getBoundingRectangle().contains(pos.x, pos.y)) {
+                    if (s.allOrNothing) {
+                        if (s.current > 0) {
+                            s.current = 0;
+                            maxPoints += s.max;
+                        }
+                        updateBonusText();
+                        return true;
+                    } else {
+                        s.current--;
+                        if (s.current < 0) s.current = 0;
+                        else maxPoints++;
                         updateBonusText();
                         return true;
                     }
-                } else if (s.minus.getBoundingRectangle().contains(pos.x, pos.y)) {
-                    s.current--;
-                    if (s.current < 0) s.current = 0;
-                    else maxPoints++;
-                    updateBonusText();
-                    return true;
                 }
             }
         }

@@ -430,5 +430,348 @@
         "a": 1.0
       }
     }
+  },
+  {
+    "number": 77,
+    "primary": {
+      "r": 0.48235294,
+      "g": 0.24313726,
+      "b": 0.27058825,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.6901961,
+      "g": 0.78431374,
+      "b": 0.9372549,
+      "a": 1.0
+    },
+    "robotStats": {
+      "gearHPStation": true,
+      "gearIntake": true,
+      "gearIntakeRate": 650.0,
+      "gearIntakeStrength": 10.0,
+      "fuelIntake": true,
+      "fuelIntakeRate": 250.0,
+      "fuelIntakeStrength": 1.0,
+      "differentiateBetweenIntakes": false,
+      "shooter": true,
+      "timePerShoot": 166.0,
+      "shooterIsTurret": false,
+      "turretWidth": 0.275,
+      "turretHeight": 0.275,
+      "shooterVisible": false,
+      "shooterPosition": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "turretTexture": "core/assets/118_turret.png",
+      "shootHeight": 1.0,
+      "shootHeightVariance": 0.09,
+      "shootPower": 24.0,
+      "shootPowerVariance": 3.0,
+      "shootAngleVariance": 2.0,
+      "maxFuel": 45,
+      "climber": true,
+      "climbSpeed": 2.0,
+      "climbSuccess": 1.0,
+      "gearScoreSuccess": 1.0,
+      "gearDropOnCollide": 0.0,
+      "robotWidth": 1.1049,
+      "robotHeight": 1.1811,
+      "maxMPS": 3.3528,
+      "maxMPSLow": 0.0,
+      "maxAccel": 22.4083,
+      "hasIntake": true,
+      "intakeWidth": 0.44196,
+      "fieldCentric": false,
+      "needsStateGenerator": false,
+      "fieldCentricStrafeMult": 0.7,
+      "recolorIndex": -1,
+      "turnPivotOffset": 0.75,
+      "texture": "core/assets/robot_custom6.png",
+      "custom_primary": {
+        "r": 0.48235294,
+        "g": 0.24313726,
+        "b": 0.27058825,
+        "a": 1.0
+      },
+      "custom_secondary": {
+        "r": 0.6901961,
+        "g": 0.78431374,
+        "b": 0.9372549,
+        "a": 1.0
+      }
+    }
+  },
+  {
+    "number": 67,
+    "primary": {
+      "r": 0.050980393,
+      "g": 1.0,
+      "b": 0.03137255,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.25490198,
+      "g": 0.3019608,
+      "b": 0.043137256,
+      "a": 1.0
+    },
+    "robotStats": {
+      "gearHPStation": true,
+      "gearIntake": true,
+      "gearIntakeRate": 650.0,
+      "gearIntakeStrength": 10.0,
+      "fuelIntake": true,
+      "fuelIntakeRate": 250.0,
+      "fuelIntakeStrength": 1.0,
+      "differentiateBetweenIntakes": true,
+      "shooter": true,
+      "timePerShoot": 166.0,
+      "shooterIsTurret": false,
+      "turretWidth": 0.275,
+      "turretHeight": 0.275,
+      "shooterVisible": false,
+      "shooterPosition": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "turretTexture": "core/assets/118_turret.png",
+      "shootHeight": 1.0,
+      "shootHeightVariance": 0.09,
+      "shootPower": 24.0,
+      "shootPowerVariance": 3.0,
+      "shootAngleVariance": 2.0,
+      "maxFuel": 45,
+      "climber": true,
+      "climbSpeed": 2.0,
+      "climbSuccess": 1.0,
+      "gearScoreSuccess": 1.0,
+      "gearDropOnCollide": 0.0,
+      "robotWidth": 1.1049,
+      "robotHeight": 1.1811,
+      "maxMPS": 11.5824,
+      "maxMPSLow": 0.0,
+      "maxAccel": 22.4083,
+      "hasIntake": true,
+      "intakeWidth": 1.1049,
+      "fieldCentric": false,
+      "needsStateGenerator": false,
+      "fieldCentricStrafeMult": 0.7,
+      "recolorIndex": -1,
+      "turnPivotOffset": 0.75,
+      "texture": "core/assets/robot_custom2.png",
+      "custom_primary": {
+        "r": 0.050980393,
+        "g": 1.0,
+        "b": 0.03137255,
+        "a": 1.0
+      },
+      "custom_secondary": {
+        "r": 0.25490198,
+        "g": 0.3019608,
+        "b": 0.043137256,
+        "a": 1.0
+      }
+    }
+  },
+  {
+    "number": 89,
+    "primary": {
+      "r": 0.33333334,
+      "g": 0.58431375,
+      "b": 0.95686275,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.9764706,
+      "g": 0.28627452,
+      "b": 0.15294118,
+      "a": 1.0
+    },
+    "robotStats": {
+      "gearHPStation": true,
+      "gearIntake": true,
+      "gearIntakeRate": 650.0,
+      "gearIntakeStrength": 10.0,
+      "fuelIntake": true,
+      "fuelIntakeRate": 250.0,
+      "fuelIntakeStrength": 1.0,
+      "differentiateBetweenIntakes": true,
+      "shooter": true,
+      "timePerShoot": 166.0,
+      "shooterIsTurret": false,
+      "turretWidth": 0.275,
+      "turretHeight": 0.275,
+      "shooterVisible": false,
+      "shooterPosition": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "turretTexture": "core/assets/118_turret.png",
+      "shootHeight": 1.0,
+      "shootHeightVariance": 0.09,
+      "shootPower": 24.0,
+      "shootPowerVariance": 3.0,
+      "shootAngleVariance": 2.0,
+      "maxFuel": 45,
+      "climber": true,
+      "climbSpeed": 2.0,
+      "climbSuccess": 1.0,
+      "gearScoreSuccess": 1.0,
+      "gearDropOnCollide": 0.0,
+      "robotWidth": 1.1049,
+      "robotHeight": 1.1811,
+      "maxMPS": 8.2296,
+      "maxMPSLow": 0.0,
+      "maxAccel": 22.4083,
+      "hasIntake": true,
+      "intakeWidth": 1.1049,
+      "fieldCentric": false,
+      "needsStateGenerator": false,
+      "fieldCentricStrafeMult": 0.7,
+      "recolorIndex": -1,
+      "turnPivotOffset": 0.75,
+      "texture": "core/assets/robot_custom6.png",
+      "custom_primary": {
+        "r": 0.33333334,
+        "g": 0.58431375,
+        "b": 0.95686275,
+        "a": 1.0
+      },
+      "custom_secondary": {
+        "r": 0.9764706,
+        "g": 0.28627452,
+        "b": 0.15294118,
+        "a": 1.0
+      }
+    }
+  },
+  {
+    "number": 1902,
+    "primary": {
+      "r": 0.7921569,
+      "g": 0.3882353,
+      "b": 0.5254902,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.3372549,
+      "g": 0.6745098,
+      "b": 0.19215687,
+      "a": 1.0
+    },
+    "robotStats": {
+      "gearHPStation": true,
+      "gearIntake": true,
+      "gearIntakeRate": 650.0,
+      "gearIntakeStrength": 10.0,
+      "fuelIntake": true,
+      "fuelIntakeRate": 250.0,
+      "fuelIntakeStrength": 1.0,
+      "differentiateBetweenIntakes": true,
+      "shooter": true,
+      "timePerShoot": 166.0,
+      "shooterIsTurret": false,
+      "turretWidth": 0.275,
+      "turretHeight": 0.275,
+      "shooterVisible": false,
+      "shooterPosition": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "turretTexture": "core/assets/118_turret.png",
+      "shootHeight": 1.0,
+      "shootHeightVariance": 0.09,
+      "shootPower": 24.0,
+      "shootPowerVariance": 3.0,
+      "shootAngleVariance": 2.0,
+      "maxFuel": 45,
+      "climber": true,
+      "climbSpeed": 2.0,
+      "climbSuccess": 1.0,
+      "gearScoreSuccess": 1.0,
+      "gearDropOnCollide": 0.0,
+      "robotWidth": 1.1049,
+      "robotHeight": 1.1811,
+      "maxMPS": 8.2296,
+      "maxMPSLow": 0.0,
+      "maxAccel": 22.4083,
+      "hasIntake": true,
+      "intakeWidth": 1.1049,
+      "fieldCentric": false,
+      "needsStateGenerator": false,
+      "fieldCentricStrafeMult": 0.7,
+      "recolorIndex": -1,
+      "turnPivotOffset": 0.75,
+      "texture": "core/assets/robot_custom3.png",
+      "custom_primary": {
+        "r": 0.7921569,
+        "g": 0.3882353,
+        "b": 0.5254902,
+        "a": 1.0
+      },
+      "custom_secondary": {
+        "r": 0.3372549,
+        "g": 0.6745098,
+        "b": 0.19215687,
+        "a": 1.0
+      }
+    }
+  },
+  {
+    "number": 1,
+    "primary": {
+      "r": 0.9843137,
+      "g": 0.16078432,
+      "b": 0.23137255,
+      "a": 1.0
+    },
+    "secondary": {
+      "r": 0.050980393,
+      "g": 0.72156864,
+      "b": 0.09803922,
+      "a": 1.0
+    },
+    "robotStats": {
+      "panelIntake": true,
+      "panelFloor": false,
+      "panelIntakeRate": 1000.0,
+      "panelIntakeStrength": 9.0,
+      "cargoIntake": true,
+      "cargoIntakeRate": 580.0,
+      "cargoIntakeStrength": 10.8,
+      "differentiateBetweenIntakes": true,
+      "elevator": true,
+      "hab_level": 3,
+      "habLevel1Speed": 0.5,
+      "habLevel2Speed": 2.0,
+      "habLevel3Speed": 4.0,
+      "robotWidth": 1.1049,
+      "robotHeight": 1.1811,
+      "maxMPS": 5.9131203,
+      "maxMPSLow": 0.0,
+      "maxAccel": 22.4083,
+      "hasIntake": true,
+      "intakeWidth": 0.77343005,
+      "fieldCentric": false,
+      "needsStateGenerator": false,
+      "fieldCentricStrafeMult": 0.7,
+      "recolorIndex": -1,
+      "turnPivotOffset": 0.75,
+      "texture": "core/assets/robot_custom2.png",
+      "custom_primary": {
+        "r": 0.9843137,
+        "g": 0.16078432,
+        "b": 0.23137255,
+        "a": 1.0
+      },
+      "custom_secondary": {
+        "r": 0.050980393,
+        "g": 0.72156864,
+        "b": 0.09803922,
+        "a": 1.0
+      }
+    }
   }
 ]

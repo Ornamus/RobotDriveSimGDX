@@ -122,6 +122,7 @@ public class GameScreen extends Screen  {
 
                 }
                 index++;
+                Utils.log("ROBOT");
             }
         }
 

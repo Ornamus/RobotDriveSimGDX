@@ -63,8 +63,8 @@ public class DestinationMetadata extends RobotMetadata {
         boolean cargoIntake = stats.cargoIntake;
 
         if (gamepad != null) {
-            boolean val = gamepad.getButton(panelToggle) && !Game.isAutonomous();
-            boolean cargoVal = gamepad.getButton(cargoToggle) && !Game.isAutonomous();
+            boolean val = gamepad.getButton(panelToggle);
+            boolean cargoVal = gamepad.getButton(cargoToggle);
 
             if (val && !panelToggleWasTrue) {
                 startedIntakingWithPanel = hasPanel;
@@ -152,7 +152,7 @@ public class DestinationMetadata extends RobotMetadata {
             Hab h = (Hab) e;
             if (h.level <= stats.hab_level) {
                 contact.setEnabled(false);
-                if (climbingHab == null || h.level > climbingHab.level) {
+                if (h.blue == r.blue && (climbingHab == null || h.level < climbingHab.level)) {
                     climbingHab = h;
                     habClimbStart = GameScreen.getTime();
                 }
@@ -187,6 +187,11 @@ public class DestinationMetadata extends RobotMetadata {
                 pegOnBack = null;
             }
         }
+
+        if (e == climbingHab) {
+            climbingHab = null;
+            habClimbStart = null;
+        }
     }
 
     @Override
@@ -209,7 +214,10 @@ public class DestinationMetadata extends RobotMetadata {
         }
 
         if (habClimbStart != null && (Game.getMatchTime() <= 30 || !Game.isPlaying())) {
-            float speed = climbingHab.level == 2 ? stats.habLevel2Speed : stats.habLevel3Speed;
+            float speed = 99999;
+            if (climbingHab.level == 1) speed = stats.habLevel1Speed;
+            else if (climbingHab.level == 2) speed = stats.habLevel2Speed;
+            else if (climbingHab.level == 3) speed = stats.habLevel3Speed;
             Utils.drawProgressBar(r.getX(), r.getY() + 1f, 2f, .5f, ((GameScreen.getTime() - habClimbStart)/((speed*1000))), batch);
         }
     }

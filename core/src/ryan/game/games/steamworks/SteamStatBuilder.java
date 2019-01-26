@@ -92,4 +92,9 @@ public class SteamStatBuilder extends RobotStatBuilder {
 
         return newSliders;
     }
+
+    @Override
+    public int getMaxPoints() {
+        return 30;
+    }
 }

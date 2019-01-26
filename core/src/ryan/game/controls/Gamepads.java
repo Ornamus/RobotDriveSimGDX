@@ -2,6 +2,7 @@ package ryan.game.controls;
 
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.lwjgl3.Lwjgl3ControllerManager;
+import ryan.game.Utils;
 import ryan.game.entity.Robot;
 import javax.swing.*;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class Gamepads {
     }
 
     public static List<Gamepad> getGamepads() {
+        //Utils.log((gamepads.size() + ""));
         return new ArrayList<>(gamepads);
     }
 

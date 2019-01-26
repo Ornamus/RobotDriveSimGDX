@@ -14,6 +14,8 @@ public abstract class RobotStatBuilder {
 
     public abstract List<RobotStatSlider> createSliders();
 
+    public abstract int getMaxPoints();
+
     public List<RobotStatSlider> getSliders() {
         return sliders;
     }

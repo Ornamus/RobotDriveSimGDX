@@ -3,6 +3,7 @@ package ryan.game.entity.destination;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import ryan.game.Main;
@@ -22,7 +23,7 @@ public class Panel extends Entity {
     static final float radius = 30 * 0.0254f; //TODO: isn't this diameter?
     static final float density = .05f;
 
-    LoadingStation loadingStation = null;
+    LoadingStation loadingStation;
     long creation;
     public boolean failed = false;
 
@@ -45,10 +46,12 @@ public class Panel extends Entity {
 
     @Override
     public void draw(SpriteBatch b) {
+        Vector2 pos = null;
         if (failed) {
             getSprite().setAlpha(0.65f);
+            pos = getPhysicsPosition();
         }
         super.draw(b);
-        if (failed) b.draw(FAILED, getX() - 0.6f, getY() - 0.6f, 1.2f, 1.2f);
+        if (failed) b.draw(FAILED, pos.x - 0.6f, pos.y - 0.6f, 1.2f, 1.2f);
     }
 }

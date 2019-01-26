@@ -85,8 +85,8 @@ public class Main extends ApplicationAdapter implements InputProcessor {
         unscaledBatch = new SpriteBatch();
         batch.setProjectionMatrix(unscaledCamera.combined);
 
-        //setScreen(new TitleScreen());
-        setScreen(new GameScreen());
+        setScreen(new TitleScreen());
+        //setScreen(new GameScreen());
         //setScreen(new WinnerScreen());
     }
 
