@@ -31,7 +31,6 @@ import ryan.game.games.steamworks.SteamRankings;
 import ryan.game.games.steamworks.Steamworks;
 import ryan.game.games.steamworks.robots.SteamRobotStats;
 import ryan.game.render.Drawable;
-import sun.security.krb5.internal.crypto.Des;
 
 import java.awt.geom.Point2D;
 import java.io.File;

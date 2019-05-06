@@ -14,8 +14,6 @@ import ryan.game.entity.destination.*;
 import ryan.game.games.Game;
 import ryan.game.games.RobotMetadata;
 import ryan.game.screens.GameScreen;
-import sun.security.krb5.internal.crypto.Des;
-
 import java.awt.geom.Point2D;
 
 public class DestinationMetadata extends RobotMetadata {
